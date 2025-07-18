@@ -1,0 +1,27 @@
+#!/bin/bash
+set -e
+
+# Install necessary packages
+sudo apt install git -y
+sudo apt install zsh -y
+
+# Try to install powerline and fonts-powerline, continue without them if it fails
+if ! sudo apt install powerline fonts-powerline -y; then
+  echo "Installation of powerline and fonts-powerline failed. Continuing without them."
+fi
+
+# Clone Oh My Zsh repository
+git clone https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
+cp ~/.oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc
+sed -i 's/^ZSH_THEME=".*"/ZSH_THEME="jonathan"/' ~/.zshrc
+
+# Clone additional plugins
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$HOME/.zsh-syntax-highlighting" --depth 1
+echo "source $HOME/.zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> "$HOME/.zshrc"
+git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+sed -i 's/^plugins=(git)$/plugins=(git zsh-autosuggestions)/' ~/.zshrc
+echo "ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=blue,bold'" >> ~/.zshrc    
+echo 'export HIST_STAMPS="%F %T"' >> ~/.zshrc
+zsh -c "source $HOME/.zshrc"
+# User instructions
+echo "Installation finished SUCCESS"
