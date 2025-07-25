@@ -65,12 +65,13 @@ alias logs='journalctl -xe'                                  # Show recent logs 
 alias j100='journalctl -n 100 -f'                           # Follow the last 100 lines of the journal
 alias jfu='sudo journalctl -f -u'                            # Follow the journal for a specific service
 alias ju='sudo journalctl -n 100 -e -u'                     # Show the last 100 lines of logs for a specific service
+
 # Clean system logs
 alias clearlogs='sudo journalctl --vacuum-time=1d'          # Remove logs older than 1 day
 
 # Archiving
 # Create a tar.gz archive
 alias taz='tar -czvf'                                       # Create a compressed tarball
+
 # Extract a tar.gz archive
 alias untaz='tar -xzvf'                                     # Extract a compressed tarball
-
