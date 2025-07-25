@@ -10,8 +10,8 @@ alias df='df -h'                                            # Show disk space us
 alias ..='cd ..'                                            # Go up one directory
 alias ll='ls -lh --color=auto'                              # List files with human-readable sizes and color output
 alias la='ls -lah --color=auto'                             # List all files including hidden ones with color
-alias sm=systemd-manager-tui                                # Open systemd manager in terminal UI
-alias lj=lazyjournal                                         # Alias for lazyjournal app
+alias sm='sudo systemd-manager-tui'                                # Open systemd manager in terminal UI
+alias lj='sudo lazyjournal'                                         # Alias for lazyjournal app
 alias bcat='batcat'                                         # Use batcat as a replacement for cat with syntax highlighting
 alias mkdir='mkdir -pv'                                     # Create directories and show the progress
 alias vi=vim                                               # Use vim as the default editor
