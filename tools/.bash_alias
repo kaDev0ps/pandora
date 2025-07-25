@@ -1,23 +1,23 @@
 # Basic commands
 alias uptime='uptime -p'                                      # Show system uptime in a human-readable format
-alias grep='grep --color=auto'                                 # Enable color output for grep
-alias rgrep='rgrep --color=auto'                               # Enable color output for recursive grep
+alias grep='grep --color=auto'                                # Enable color output for grep
+alias rgrep='rgrep --color=auto'                              # Enable color output for recursive grep
 alias c='clear'                                               # Clear the terminal screen
-alias l='ls -lh'                                             # List files with human-readable sizes
-alias f='find . -name'                                       # Find files by name in the current directory
-alias ll='ls -lah'                                          # List all files with detailed info including hidden ones
-alias df='df -h'                                            # Show disk space usage in human-readable format
-alias ..='cd ..'                                            # Go up one directory
-alias ll='ls -lh --color=auto'                              # List files with human-readable sizes and color output
-alias la='ls -lah --color=auto'                             # List all files including hidden ones with color
-alias sm='sudo systemd-manager-tui'                                # Open systemd manager in terminal UI
-alias lj='sudo lazyjournal'                                         # Alias for lazyjournal app
-alias bcat='batcat'                                         # Use batcat as a replacement for cat with syntax highlighting
-alias mkdir='mkdir -pv'                                     # Create directories and show the progress
-alias vi=vim                                               # Use vim as the default editor
-alias svim='sudo vim -c "set number"'                       # Open vim with line numbers for root
-alias psg='ps aux | grep'                                   # Search for a process by name
-alias cheat='cht.sh'                                       # Access the cheat sheets
+alias l='ls -lh'                                              # List files with human-readable sizes
+alias f='find . -name'                                        # Find files by name in the current directory
+alias ll='ls -lah'                                            # List all files with detailed info including hidden ones
+alias df='df -h'                                              # Show disk space usage in human-readable format
+alias ..='cd ..'                                              # Go up one directory
+alias ll='ls -lh --color=auto'                                # List files with human-readable sizes and color output
+alias la='ls -lah --color=auto'                               # List all files including hidden ones with color
+alias sm='sudo systemd-manager-tui'                           # Open systemd manager in terminal UI
+alias lj='sudo lazyjournal'                                   # Alias for lazyjournal app
+alias bcat='batcat'                                           # Use batcat as a replacement for cat with syntax highlighting
+alias mkdir='mkdir -pv'                                       # Create directories and show the progress
+alias vi=vim                                                  # Use vim as the default editor
+alias svim='sudo vim -c "set number"'                         # Open vim with line numbers for root
+alias psg='ps aux | grep'                                     # Search for a process by name
+alias cheat='cht.sh'                                          # Access the cheat sheets
 
 # Updates
 ## Display system information
@@ -54,8 +54,9 @@ alias sd='sudo systemctl disable'                            # Disable a systemd
 alias sc='sudo systemctl cat'                                # Show the contents of a systemd service file
 alias si='sudo systemctl status'                             # Check the status of a systemd service
 alias sv='sudo systemctl vim'                                # Edit the service file of a systemd service with vim
-alias slist='systemctl list-units --type=service'           # List all systemd services
+alias slist='systemctl list-units --type=service'            # List all systemd services
 alias reboot='sudo systemctl reboot'                         # Restart the computer
+alias sdr= 'sudo systemctl daemon-reload'                    # Reload systemctl
 
 # Journalctl
 # View system logs
