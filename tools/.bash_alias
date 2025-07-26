@@ -55,7 +55,6 @@ alias sc='sudo systemctl cat'                                # Show the contents
 alias si='sudo systemctl status'                             # Check the status of a systemd service
 alias sv='sudo systemctl vim'                                # Edit the service file of a systemd service with vim
 alias slu='sudo systemctl list-units --type=service'         # List all systemd services
-alias sr='sudo systemctl reboot'                             # Restart the computer
 alias sdr='sudo systemctl daemon-reload'                     # Reload systemctl
 alias srr='sudo systemctl reset-failed'                      # Reset systemctl
 
