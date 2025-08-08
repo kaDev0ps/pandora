@@ -73,3 +73,6 @@ alias taz='tar -czvf'                                       # Create a compresse
 
 # Extract a tar.gz archive
 alias untaz='tar -xzvf'                                     # Extract a compressed tarball
+
+# GIT
+alias gitc='git add . && git commit -m "$(date '+%Y-%m-%d %H:%M:%S')"'
