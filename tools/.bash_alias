@@ -8,7 +8,7 @@ alias f='find . -name'                                        # Find files by na
 alias ll='ls -lah'                                            # List all files with detailed info including hidden ones
 alias df='df -h'                                              # Show disk space usage in human-readable format
 alias ..='cd ..'                                              # Go up one directory
-alias ll='ls -lh --color=auto'                                # List files with human-readable sizes and color output
+alias ll='lsd -lh'                                            # List files with human-readable sizes and color output
 alias la='ls -lah --color=auto'                               # List all files including hidden ones with color
 alias sm='sudo systemd-manager-tui'                           # Open systemd manager in terminal UI
 alias lj='sudo lazyjournal'                                   # Alias for lazyjournal app
