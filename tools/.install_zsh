@@ -2,8 +2,7 @@
 set -e
 
 # Install necessary packages
-sudo apt install git -y
-sudo apt install zsh -y
+sudo apt-get install git zsh -y
 
 # Try to install powerline and fonts-powerline, continue without them if it fails
 if ! sudo apt install powerline fonts-powerline -y; then
