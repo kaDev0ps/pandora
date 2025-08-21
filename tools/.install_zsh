@@ -5,7 +5,7 @@ set -e
 sudo apt-get install git zsh -y
 
 # Try to install powerline and fonts-powerline, continue without them if it fails
-if ! sudo apt install powerline fonts-powerline -y; then
+if ! sudo apt-get install powerline fonts-powerline -y; then
   echo "Installation of powerline and fonts-powerline failed. Continuing without them."
 fi
 
