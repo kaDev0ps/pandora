@@ -72,6 +72,8 @@ alias taz='tar -czvf'                                       # Create a compresse
 # Extract a tar.gz archive
 alias untaz='tar -xzvf'                                     # Extract a compressed tarball
 
+# Tools
+export HISTTIMEFORMAT="%d.%m.20%y %T "                      # Time in history
 # GIT
 gitc() {
   git add . && git commit -m "$(date '+%Y-%m-%d %H:%M:%S')"
