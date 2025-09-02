@@ -2,6 +2,7 @@
 alias uptime='uptime -p'                                      # Show system uptime in a human-readable format
 alias grep='grep --color=auto'                                # Enable color output for grep
 alias rgrep='rgrep --color=auto'                              # Enable color output for recursive grep
+alias scat='sudo cat'                                         # Open cat with line numbers for root
 alias c='clear'                                               # Clear the terminal screen
 alias l='ls -lh'                                              # List files with human-readable sizes
 alias f='find . -name'                                        # Find files by name in the current directory
@@ -14,7 +15,7 @@ alias lj='sudo lazyjournal'                                   # Alias for lazyjo
 alias bcat='batcat'                                           # Use batcat as a replacement for cat with syntax highlighting
 alias mkdir='mkdir -pv'                                       # Create directories and show the progress
 alias nvim='sudo nvim'                                        # Use vim as the default editor
-alias svim='sudo vim -c "set number"'                         # Open vim with line numbers for root
+alias svim='sudo vim'                                         # Open vim with line numbers for root
 alias psg='ps aux | grep'                                     # Search for a process by name
 alias cheat='cht.sh'                                          # Access the cheat sheets
 
