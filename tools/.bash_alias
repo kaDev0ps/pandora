@@ -30,7 +30,7 @@ alias h='history'                                            # View command hist
 alias j='jobs -l'                                           # List current jobs
 alias df='df -H'                                            # Show disk space usage in human-readable format
 alias du='du -ch'                                            # Show disk usage of files and directories in human-readable format
-alias top='htop'                                            # Run htop for interactive process monitoring
+alias top='sudo htop'                                            # Run htop for interactive process monitoring
 alias ports='netstat -tulanp'                                # Show open ports and listening sockets
 alias free='free -m -l -t'                                   # Display memory usage in megabytes
 alias psmem='sudo ps auxf | sort -nr -k 4 | head -10'       # Show top 10 processes by memory usage
@@ -41,7 +41,7 @@ alias myip='curl ifconfig.me'                               # Get the external I
 alias ports='sudo ss -tuln'                                 # Display open ports and sockets
 alias dnstop='sudo dnstop -l 5 enp0s3'                      # Monitor DNS traffic for interface enp0s3
 alias vnstat='sudo vnstat -i enp0s3'                        # View network traffic statistics for interface enp0s3
-alias iftop='sudo iftop -i enp0s3'                          # Display bandwidth usage on an interface
+alias ift='sudo iftop -i'                                   # Display bandwidth usage on an interface
 alias tcpdump='sudo tcpdump -i enp0s3'                      # Capture packet data on the specified interface
 
 # Systemctl
@@ -58,8 +58,8 @@ alias srr='sudo systemctl reset-failed'                      # Reset systemctl
 
 # Journalctl
 # View system logs
-alias logs='journalctl -xe'                                  # Show recent logs with detailed error messages
-alias j100='journalctl -n 100 -f'                            # Follow the last 100 lines of the journal
+alias logs='sudo journalctl -xe'                                  # Show recent logs with detailed error messages
+alias j100='sudo journalctl -n 100 -f'                            # Follow the last 100 lines of the journal
 alias jfeu='sudo journalctl -feu'                            # Follow the journal for a specific service
 
 # Clean system logs
