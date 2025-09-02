@@ -60,7 +60,7 @@ alias srr='sudo systemctl reset-failed'                      # Reset systemctl
 # Journalctl
 # View system logs
 alias logs='sudo journalctl -xe'                             # Show recent logs with detailed error messages
-alias jer='sudo journalctl | grep -w "ERROR"'                # Follow the last 100 lines of the journal
+alias err='grep -w "ERROR"'                                  # Follow the last 100 lines of the journal
 alias jfeu='sudo journalctl -feu'                            # Follow the journal for a specific service
 
 # Clean system logs
