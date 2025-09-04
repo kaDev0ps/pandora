@@ -1,4 +1,18 @@
 #!/bin/bash
+# Path to the script
+SCRIPT_PATH="/usr/lib/.backup_configs.sh"
+
+# Cron job for weekly execution
+CRON_JOB="0 0 * * 0 $SCRIPT_PATH"
+
+# Check for the presence of the job in crontab
+if ! crontab -l | grep -Fxq "$CRON_JOB"; then
+    # If the entry is not found, add the job to crontab
+    (crontab -l; echo "$CRON_JOB") | crontab -
+    echo "Cron job added: $CRON_JOB"
+else
+    echo "Cron job already exists: $CRON_JOB"
+fi
 
 # Specify the date for naming the directory
 DATE=$(date +%Y-%m-%d)
