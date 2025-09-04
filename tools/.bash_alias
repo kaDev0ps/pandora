@@ -38,7 +38,7 @@ alias pscpu='sudo ps auxf | sort -nr -k 3 | head -10'       # Show top 10 proces
 alias myip='curl ifconfig.me'                               # Get the external IP address
 
 # Networking
-alias ports='sudo ss -tuln'                                 # Display open ports and sockets
+alias ports='sudo ss -tulnp'                                # Display open ports and sockets
 alias dnstop='sudo dnstop -l 5 enp0s3'                      # Monitor DNS traffic for interface enp0s3
 alias vnstat='sudo vnstat -i enp0s3'                        # View network traffic statistics for interface enp0s3
 alias ift='sudo iftop -i'                                   # Display bandwidth usage on an interface
