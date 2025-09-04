@@ -18,7 +18,7 @@ fi
 DATE=$(date +%Y-%m-%d)
 
 # Create the backup directory
-DEST_DIR="/data/bakcup/services/$DATE"
+DEST_DIR="/data/backup/services/$DATE"
 mkdir -p "$DEST_DIR"
 
 # Array of files to copy
