@@ -21,7 +21,7 @@ alias cheat='cht.sh'                                          # Access the cheat
 
 # Updates
 ## Display system information
-alias mtr='mtr -r -c 10'                                      # Check traceroute to host
+alias mtr10='mtr -r -c 10'                                      # Check traceroute to host
 alias sysinfo='uname -a; lsb_release -a'                     # Show system and version info
 alias update='sudo apt update'                                # Update package lists
 alias clean='sudo apt clean'                                  # Clean up local repository of retrieved package files
