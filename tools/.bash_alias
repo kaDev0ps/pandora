@@ -50,7 +50,6 @@ alias ift='sudo iftop -i'                                   # Display bandwidth 
 alias tcpdump='sudo tcpdump -i enp0s3'                      # Capture packet data on the specified interface
 
 # Systemctl
-alias su='sudo systemctl start'                              # Start a systemd service
 alias ss='sudo systemctl stop'                               # Stop a systemd service
 alias sr='sudo systemctl restart'                            # Restart a systemd service
 alias se='sudo systemctl enable'                             # Enable a systemd service to start on boot
@@ -79,7 +78,8 @@ alias untaz='tar -xzvf'                                     # Extract a compress
 
 # Tools
 export HISTTIMEFORMAT="%d.%m.20%y %T "                      # Time in history
+
 # GIT
 gitc() {
-  git add . && git commit -m "$(date '+%Y-%m-%d %H:%M:%S')"
+  git add . && git commit -m "$(date '+%Y-%m-%d %H:%M:%S')" || echo "Git commit failed"
 }
