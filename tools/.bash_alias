@@ -18,6 +18,8 @@ alias nvim='sudo nvim'                                        # Use vim as the d
 alias svim='sudo vim'                                         # Open vim with line numbers for root
 alias psg='ps aux | grep'                                     # Search for a process by name
 alias cheat='cht.sh'                                          # Access the cheat sheets
+alias t='tmux'                                                # Launch tmux
+alias r='ranger'                                              # Launch ranger
 
 # Updates
 ## Display system information
