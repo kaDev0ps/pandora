@@ -25,3 +25,5 @@ zsh -c "source $HOME/.zshrc"
 chsh -s /bin/zsh
 # User instructions
 echo "Installation finished SUCCESS"
+wget https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/.bash_alias -O ~/.bash_aliases && echo "if [ -f ~/.bash_aliases ]; then . ~/.bash_aliases; fi" >> ~/.bashrc && echo "if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi" >> ~/.zshrc && zsh
+echo "Aliases added SUCCESS"
