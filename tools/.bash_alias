@@ -20,6 +20,7 @@ alias psg='ps aux | grep'                                     # Search for a pro
 alias cheat='cht.sh'                                          # Access the cheat sheets
 alias t='tmux'                                                # Launch tmux
 alias r='sudo ranger'                                         # Launch ranger
+alias del='sudo rm -rf'                                       # Recurse delete
 
 # Updates
 ## Display system information
