@@ -19,7 +19,7 @@ alias svim='sudo vim'                                         # Open vim with li
 alias psg='ps aux | grep'                                     # Search for a process by name
 alias cheat='cht.sh'                                          # Access the cheat sheets
 alias t='tmux'                                                # Launch tmux
-alias r='ranger'                                         # Launch ranger
+alias r='ranger'                                              # Launch ranger
 alias del='sudo rm -rf'                                       # Recurse delete
 
 # Updates
@@ -80,6 +80,7 @@ alias untaz='tar -xzvf'                                     # Extract a compress
 export HISTTIMEFORMAT="%d.%m.20%y %T "                      # Time in history
 
 # GIT
+alias gitp='gitc && git push'                               # Add to remote repo
 gitc() {
   git add . && git commit -m "$(date '+%Y-%m-%d %H:%M:%S')" || echo "Git commit failed"
 }
