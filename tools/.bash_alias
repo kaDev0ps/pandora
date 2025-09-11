@@ -1,48 +1,48 @@
 # Basic commands
-alias uptime='uptime -p'                                      # Show system uptime in a human-readable format
-alias grep='grep --color=auto'                                # Enable color output for grep
-alias rgrep='rgrep --color=auto'                              # Enable color output for recursive grep
-alias scat='sudo cat'                                         # Open cat with line numbers for root
-alias c='clear'                                               # Clear the terminal screen
-alias l='ls -lh'                                              # List files with human-readable sizes
-alias f='find . -name'                                        # Find files by name in the current directory
-alias df='df -h'                                              # Show disk space usage in human-readable format
-alias ..='cd ..'                                              # Go up one directory
-alias ll='lsd -lh --icon=never'                               # List files with human-readable sizes and color output
-alias la='ls -lah --color=auto'                               # List all files including hidden ones with color
-alias sm='sudo systemd-manager-tui'                           # Open systemd manager in terminal UI
-alias lj='sudo lazyjournal'                                   # Alias for lazyjournal app
-alias bcat='batcat'                                           # Use batcat as a replacement for cat with syntax highlighting
-alias mkdir='mkdir -pv'                                       # Create directories and show the progress
-alias nvim='sudo nvim'                                        # Use vim as the default editor
-alias svim='sudo vim'                                         # Open vim with line numbers for root
-alias psg='ps aux | grep'                                     # Search for a process by name
-alias cheat='cht.sh'                                          # Access the cheat sheets
-alias t='tmux'                                                # Launch tmux
-alias r='ranger'                                              # Launch ranger
-alias del='sudo rm -rf'                                       # Recurse delete
-alias duse='du -ah --max-depth=1 $(pwd) | sort -rh | head -n 10'# chek size file
+alias uptime='uptime -p'                                            # Show system uptime in a human-readable format
+alias grep='grep --color=auto'                                      # Enable color output for grep
+alias rgrep='rgrep --color=auto'                                    # Enable color output for recursive grep
+alias scat='sudo cat'                                               # Open cat with line numbers for root
+alias c='clear'                                                     # Clear the terminal screen
+alias l='ls -lh'                                                    # List files with human-readable sizes
+alias f='find . -name'                                              # Find files by name in the current directory
+alias df='df -h'                                                    # Show disk space usage in human-readable format
+alias ..='cd ..'                                                    # Go up one directory
+alias ll='lsd -lh --icon=never'                                     # List files with human-readable sizes and color output
+alias la='ls -lah --color=auto'                                     # List all files including hidden ones with color
+alias sm='sudo systemd-manager-tui'                                 # Open systemd manager in terminal UI
+alias lj='sudo lazyjournal'                                         # Alias for lazyjournal app
+alias bcat='batcat'                                                 # Use batcat as a replacement for cat with syntax highlighting
+alias mkdir='mkdir -pv'                                             # Create directories and show the progress
+alias nvim='sudo nvim'                                              # Use vim as the default editor
+alias svim='sudo vim'                                               # Open vim with line numbers for root
+alias psg='ps aux | grep'                                           # Search for a process by name
+alias cheat='cht.sh'                                                # Access the cheat sheets
+alias t='tmux'                                                      # Launch tmux
+alias r='ranger'                                                    # Launch ranger
+alias del='sudo rm -rf'                                             # Recurse delete
+alias duse='du -ah --max-depth=1 $(pwd) | sort -rh | head -n 10'    # chek size file
 alias dlog='du -sh /var/log/* 2>/dev/null | sort -hr | head -n 10'
 
 # Updates
 ## Display system information
-alias mtr10='mtr -r -c 10'                                    # Check traceroute to host 10
-alias mtr100='mtr -r -c 100'                                  # Check traceroute to host 100
-alias sysinfo='uname -a; lsb_release -a'                     # Show system and version info
-alias update='sudo apt update'                                # Update package lists
-alias clean='sudo apt clean'                                  # Clean up local repository of retrieved package files
-alias autoremove='sudo apt autoremove -y'                     # Remove unnecessary packages automatically
+alias mtr10='mtr -r -c 10'                                          # Check traceroute to host 10
+alias mtr100='mtr -r -c 100'                                        # Check traceroute to host 100
+alias sysinfo='uname -a; lsb_release -a'                            # Show system and version info
+alias update='sudo apt update'                                      # Update package lists
+alias clean='sudo apt clean'                                        # Clean up local repository of retrieved package files
+alias autoremove='sudo apt autoremove -y'                           # Remove unnecessary packages automatically
 
 # Monitoring
-alias h='history'                                            # View command history
-alias j='jobs -l'                                           # List current jobs
-alias df='df -H'                                            # Show disk space usage in human-readable format
-alias du='du -ch'                                            # Show disk usage of files and directories in human-readable format
-alias ports='netstat -tulanp'                                # Show open ports and listening sockets
-alias free='free -m -l -t'                                   # Display memory usage in megabytes
-alias psmem='sudo ps auxf | sort -nr -k 4 | head -10'       # Show top 10 processes by memory usage
-alias pscpu='sudo ps auxf | sort -nr -k 3 | head -10'       # Show top 10 processes by CPU usage
-alias myip='curl ifconfig.me'                               # Get the external IP address
+alias h='history'                                                   # View command history
+alias j='jobs -l'                                                   # List current jobs
+alias df='df -H'                                                    # Show disk space usage in human-readable format
+alias du='du -ch'                                                   # Show disk usage of files and directories in human-readable format
+alias ports='netstat -tulanp'                                       # Show open ports and listening sockets
+alias free='free -m -l -t'                                          # Display memory usage in megabytes
+alias psmem='sudo ps auxf | sort -nr -k 4 | head -10'               # Show top 10 processes by memory usage
+alias pscpu='sudo ps auxf | sort -nr -k 3 | head -10'               # Show top 10 processes by CPU usage
+alias myip='curl ifconfig.me'                                       # Get the external IP address
 
 # Networking
 alias ports='sudo ss -tulnp'                                # Display open ports and sockets
