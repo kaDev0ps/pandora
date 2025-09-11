@@ -21,6 +21,8 @@ alias cheat='cht.sh'                                          # Access the cheat
 alias t='tmux'                                                # Launch tmux
 alias r='ranger'                                              # Launch ranger
 alias del='sudo rm -rf'                                       # Recurse delete
+alias duse='du -ah --max-depth=1 $(pwd) | sort -rh | head -n 10'# chek size file
+alias dlog='du -sh /var/log/* 2>/dev/null | sort -hr | head -n 10'
 
 # Updates
 ## Display system information
@@ -63,7 +65,7 @@ alias srr='sudo systemctl reset-failed'                      # Reset systemctl
 # Journalctl
 # View system logs
 alias logs='sudo journalctl -xe'                             # Show recent logs with detailed error messages
-alias err='grep -w "ERROR"'                                  # Follow the last 100 lines of the journal
+alias err='grep -biw "error"'                                # Follow the last lines of the journal after reboot service
 alias jfeu='sudo journalctl -feu'                            # Follow the journal for a specific service
 
 # Clean system logs
@@ -81,6 +83,8 @@ export HISTTIMEFORMAT="%d.%m.20%y %T "                      # Time in history
 
 # GIT
 alias gitp='gitc && git push'                               # Add to remote repo
+
+# Function
 gitc() {
   git add . && git commit -m "$(date '+%Y-%m-%d %H:%M:%S')" || echo "Git commit failed"
 }
