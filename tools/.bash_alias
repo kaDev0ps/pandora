@@ -52,12 +52,12 @@ alias ift='sudo iftop -i'                                   # Display bandwidth 
 alias tcpdump='sudo tcpdump -i enp0s3'                      # Capture packet data on the specified interface
 
 # Systemctl
-alias ss='sudo systemctl stop'                               # Stop a systemd service
-alias sr='sudo systemctl restart'                            # Restart a systemd service
-alias se='sudo systemctl enable'                             # Enable a systemd service to start on boot
-alias sd='sudo systemctl disable'                            # Disable a systemd service from starting on boot
-alias sc='sudo systemctl cat'                                # Show the contents of a systemd service file
-alias si='sudo systemctl status'                             # Check the status of a systemd service
+alias sss='sudo systemctl stop'                               # Stop a systemd service
+alias ssr='sudo systemctl restart'                            # Restart a systemd service
+alias sse='sudo systemctl enable'                             # Enable a systemd service to start on boot
+alias ssd='sudo systemctl disable'                            # Disable a systemd service from starting on boot
+alias ssc='sudo systemctl cat'                                # Show the contents of a systemd service file
+alias ssi='sudo systemctl status'                             # Check the status of a systemd service
 alias slu='sudo systemctl list-units --type=service'         # List all systemd services
 alias sdr='sudo systemctl daemon-reload'                     # Reload systemctl
 alias srr='sudo systemctl reset-failed'                      # Reset systemctl
