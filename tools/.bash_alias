@@ -80,6 +80,8 @@ alias untaz='tar -xzvf'                                     # Extract a compress
 
 # Tools
 export HISTTIMEFORMAT="%d.%m.20%y %T "                      # Time in history
+alias envr="source ~/ranger-env/bin/activate"               # Start ranger in environtment
+alias envs="deactivate"                                     # Stop envirentment
 
 # GIT
 alias gitp='gitc && git push'                               # Add to remote repo
