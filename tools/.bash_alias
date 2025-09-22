@@ -58,30 +58,32 @@ alias sse='sudo systemctl enable'                             # Enable a systemd
 alias ssd='sudo systemctl disable'                            # Disable a systemd service from starting on boot
 alias ssc='sudo systemctl cat'                                # Show the contents of a systemd service file
 alias ssi='sudo systemctl status'                             # Check the status of a systemd service
-alias slu='sudo systemctl list-units --type=service'         # List all systemd services
-alias sdr='sudo systemctl daemon-reload'                     # Reload systemctl
-alias srr='sudo systemctl reset-failed'                      # Reset systemctl
+alias slu='sudo systemctl list-units --type=service'          # List all systemd services
+alias sdr='sudo systemctl daemon-reload'                      # Reload systemctl
+alias srr='sudo systemctl reset-failed'                       # Reset systemctl
 
 # Journalctl
 # View system logs
-alias logs='sudo journalctl -xe'                             # Show recent logs with detailed error messages
-alias err='grep -biw "error"'                                # Follow the last lines of the journal after reboot service
-alias jfeu='sudo journalctl -feu'                            # Follow the journal for a specific service
+alias logs='sudo journalctl -xe'                              # Show recent logs with detailed error messages
+alias err='grep -biw "error"'                                 # Follow the last lines of the journal after reboot service
+alias jfeu='sudo journalctl -feu'                             # Follow the journal for a specific service
 
 # Clean system logs
-alias clearlogs='sudo journalctl --vacuum-time=1d'           # Remove logs older than 1 day
+alias clearlogs='sudo journalctl --vacuum-time=1d'            # Remove logs older than 1 day
 
 # Archiving
 # Create a tar.gz archive
-alias taz='tar -czvf'                                        # Create a compressed tarball
+alias taz='tar -czvf'                                         # Create a compressed tarball
 
 # Extract a tar.gz archive
-alias untaz='tar -xzvf'                                     # Extract a compressed tarball
+alias untaz='tar -xzvf'                                       # Extract a compressed tarball
 
 # Tools
-export HISTTIMEFORMAT="%d.%m.20%y %T "                      # Time in history
-alias envr="source ~/ranger-env/bin/activate"               # Start ranger in environtment
-alias envs="deactivate"                                     # Stop envirentment
+alias iot='sudo iotop -oPa'                                   # TOP processes that actively use the disk (I/O)
+alias ios='iostat  -mpxz'                                     # Information on the loading of specific discs/sections
+export HISTTIMEFORMAT="%d.%m.20%y %T "                        # Time in history
+alias envr="source ~/ranger-env/bin/activate"                 # Start ranger in environtment
+alias envs="deactivate"                                       # Stop envirentment
 
 # GIT
 alias gitp='gitc && git push'                               # Add to remote repo
