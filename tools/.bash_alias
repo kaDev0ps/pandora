@@ -88,6 +88,9 @@ alias envs="deactivate"                                       # Stop envirentmen
 # GIT
 alias gitp='gitc && git push'                               # Add to remote repo
 
+# N3. Netrika
+alias n3='for UNIT in $(systemctl list-unit-files "N3.*.service" --type=service --no-legend | awk "{print \$1}"); do PORT=$(systemctl show "$UNIT" --property=Environment | grep -oP "(?<=:)\d+"); if [ -n "$PORT" ]; then echo "$PORT $UNIT"; fi; done'
+
 # Function
 gitc() {
   git add . && git commit -m "$(date '+%Y-%m-%d %H:%M:%S')" || echo "Git commit failed"
