@@ -4,6 +4,7 @@ alias grep='grep --color=auto'                                      # Enable col
 alias rgrep='rgrep --color=auto'                                    # Enable color output for recursive grep
 alias scat='sudo cat'                                               # Open cat with line numbers for root
 alias c='clear'                                                     # Clear the terminal screen
+alias ip='ip -br -c a'                                              # Show network interfaces adnd IP
 alias l='ls -lh'                                                    # List files with human-readable sizes
 alias f='find . -name'                                              # Find files by name in the current directory
 alias df='df -h'                                                    # Show disk space usage in human-readable format
