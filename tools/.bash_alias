@@ -87,6 +87,7 @@ alias ios='iostat  -mpxz'                                     # Information on t
 export HISTTIMEFORMAT="%d.%m.20%y %T "                        # Time in history
 alias envr="source ~/ranger-env/bin/activate"                 # Start ranger in environtment
 alias envs="deactivate"                                       # Stop envirentment
+alias pssh="parallel-ssh"                                     # Parallel launch scripts and commands
 
 # GIT
 alias gitp='gitc && git push'                               # Add to remote repo
