@@ -1,33 +1,77 @@
-#!/bin/bash
-set -e
+#!/bin/bash -xve
+set -xve
 
-# Install necessary packages
-apt-get update && apt-get install git zsh -y
+# Check if the script is run as root, exit if true
+if [ "$EUID" -eq 0 ]; then
+  echo "This script should be run as a regular user, not root."
+  exit 1
+fi
 
-# Try to install powerline and fonts-powerline, continue without them if it fails
-if ! apt-get install powerline fonts-powerline -y; then
+# Update package list and install git and zsh using sudo
+sudo apt-get update && sudo apt-get install git zsh -y
+
+# Try to install powerline and fonts-powerline, continue even if it fails
+if ! sudo apt-get install powerline fonts-powerline -y; then
   echo "Installation of powerline and fonts-powerline failed. Continuing without them."
 fi
 
-# Clone Oh My Zsh repository
-git clone https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
-cp ~/.oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc
-sed -i 's/^ZSH_THEME=".*"/ZSH_THEME="jonathan"/' ~/.zshrc
+# Remove existing Oh My Zsh directory if it exists in the home directory
+if [ -d "$HOME/.oh-my-zsh" ]; then
+  rm -rf "$HOME/.oh-my-zsh"
+fi
 
-# Clone additional plugins
+# Clone the Oh My Zsh repository into the user's home directory
+git clone https://github.com/robbyrussell/oh-my-zsh.git "$HOME/.oh-my-zsh"
+
+# Copy the template zsh configuration to the user's home
+cp "$HOME/.oh-my-zsh/templates/zshrc.zsh-template" "$HOME/.zshrc"
+
+# Change the default ZSH theme in the config file
+sed -i 's/^ZSH_THEME=".*"/ZSH_THEME="jonathan"/' "$HOME/.zshrc"
+
+# Remove existing zsh-syntax-highlighting directory if exists
+if [ -d "$HOME/.zsh-syntax-highlighting" ]; then
+  rm -rf "$HOME/.zsh-syntax-highlighting"
+fi
+
+# Clone the syntax highlighting plugin with shallow depth
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$HOME/.zsh-syntax-highlighting" --depth 1
-echo "source $HOME/.zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> "$HOME/.zshrc"
-git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
-sed -i 's/^plugins=(git)$/plugins=(git zsh-autosuggestions)/' ~/.zshrc
-echo "ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=blue,bold'" >> ~/.zshrc   
 
+# Add source command for syntax highlighting plugin to .zshrc
+echo "source $HOME/.zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> "$HOME/.zshrc"
+
+# Remove existing zsh-autosuggestions directory if exists
+if [ -d "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]; then
+  rm -rf "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+fi
+
+# Clone the autosuggestions plugin into the custom plugins directory
+git clone https://github.com/zsh-users/zsh-autosuggestions "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+
+# Add the autosuggestions plugin to the plugins list in the config
+sed -i 's/^plugins=(git)$/plugins=(git zsh-autosuggestions)/' "$HOME/.zshrc"
+
+# Set style for autosuggestions in .zshrc
+echo "ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=blue,bold'" >> "$HOME/.zshrc"
+
+# Append additional shell options and aliases to .zshrc
 echo "setopt extended_history
 HIST_STAMPS=\"yyyy-mm-dd hh:mm:ss\"
-alias history=\"fc -l -i\"" >> ~/.zshrc
+alias history=\"fc -l -i\"" >> "$HOME/.zshrc"
 
+# Source the updated .zshrc in a non-interactive shell
 zsh -c "source $HOME/.zshrc"
-chsh -s /bin/zsh $USER
-# User instructions
-echo "Installation finished SUCCESS"
-wget https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/.bash_alias -O ~/.bash_aliases && echo "if [ -f ~/.bash_aliases ]; then . ~/.bash_aliases; fi" >> ~/.bashrc && echo "if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi" >> ~/.zshrc && zsh
-echo "Aliases added SUCCESS"
+
+# Change default shell to zsh for the current user (requires sudo)
+sudo chsh -s /bin/zsh "$USER"
+
+# Download bash aliases and add source commands for bash and zsh
+wget https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/.bash_alias -O "$HOME/.bash_aliases"
+echo "if [ -f ~/.bash_aliases ]; then . ~/.bash_aliases; fi" >> "$HOME/.bashrc"
+echo "if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi" >> "$HOME/.zshrc"
+
+# Start a new zsh shell
+zsh
+
+# Inform the user the installation finished successfully
+echo "Installation finished successfully."
