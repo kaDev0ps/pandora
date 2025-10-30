@@ -2,10 +2,10 @@
 set -e
 
 # Install necessary packages
-sudo apt-get update && sudo apt-get install git zsh -y
+apt-get update && sudo apt-get install git zsh -y
 
 # Try to install powerline and fonts-powerline, continue without them if it fails
-if ! sudo apt-get install powerline fonts-powerline -y; then
+if ! apt-get install powerline fonts-powerline -y; then
   echo "Installation of powerline and fonts-powerline failed. Continuing without them."
 fi
 
@@ -26,7 +26,7 @@ HIST_STAMPS=\"yyyy-mm-dd hh:mm:ss\"
 alias history=\"fc -l -i\"" >> ~/.zshrc
 
 zsh -c "source $HOME/.zshrc"
-sudo chsh -s /bin/zsh $USER
+chsh -s /bin/zsh $USER
 # User instructions
 echo "Installation finished SUCCESS"
 wget https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/.bash_alias -O ~/.bash_aliases && echo "if [ -f ~/.bash_aliases ]; then . ~/.bash_aliases; fi" >> ~/.bashrc && echo "if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi" >> ~/.zshrc && zsh
