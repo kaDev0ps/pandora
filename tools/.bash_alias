@@ -89,6 +89,7 @@ alias envr="source ~/ranger-env/bin/activate"                 # Start ranger in 
 alias envs="deactivate"                                       # Stop envirentment
 alias pssh="parallel-ssh"                                     # Parallel launch scripts and commands
 alias pssc="parallel-scp"                                     # Parallel copy files
+alias fd="fdfind"  # Find files in OS
 
 # GIT
 alias gitp='gitc && git push'                               # Add to remote repo
