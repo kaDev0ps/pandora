@@ -29,6 +29,9 @@ cp "$HOME/.oh-my-zsh/templates/zshrc.zsh-template" "$HOME/.zshrc"
 # Change the default ZSH theme in the config file
 sed -i 's/^ZSH_THEME=".*"/ZSH_THEME="jonathan"/' "$HOME/.zshrc"
 
+# Disable auto update zsh
+sed -i '/^ZSH_THEME=/a DISABLE_AUTO_UPDATE="true"' "$HOME/.zshrc"
+
 # Remove existing zsh-syntax-highlighting directory if exists
 if [ -d "$HOME/.zsh-syntax-highlighting" ]; then
   rm -rf "$HOME/.zsh-syntax-highlighting"
