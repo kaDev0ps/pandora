@@ -1,12 +1,11 @@
 # Basic commands
 alias uptime='uptime -p'                                            # Show system uptime in a human-readable format
-alias grep='grep --color=auto'                                      # Enable color output for grep
-alias rgrep='rgrep --color=auto'                                    # Enable color output for recursive grep
+alias rg='ripgrep --color=auto                                      # Enable color output for grep
 alias scat='sudo cat'                                               # Open cat with line numbers for root
 alias c='clear'                                                     # Clear the terminal screen
 alias ip='ip -br -c a'                                              # Show network interfaces adnd IP
 alias l='ls -lh'                                                    # List files with human-readable sizes
-alias f='find . -name'                                              # Find files by name in the current directory
+alias lo='locate'                                                   # Find files by name in the current directory
 alias df='df -h'                                                    # Show disk space usage in human-readable format
 alias ..='cd ..'                                                    # Go up one directory
 alias ll='lsd -lh --icon=never'                                     # List files with human-readable sizes and color output
