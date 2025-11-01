@@ -95,3 +95,4 @@ add_line_if_not_exists "$HOME/.zshrc" 'if [ -f ~/.bash_aliases ]; then source ~/
 source "$HOME/.zshrc"
 
 echo "Installation completed successfully."
+zsh
