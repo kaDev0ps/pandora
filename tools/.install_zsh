@@ -1,73 +1,73 @@
 #!/bin/bash -xve
 set -xve
 
-# Check if the script is run as root, exit if true
+# Check that the script is NOT run as root
 if [ "$EUID" -eq 0 ]; then
-  echo "This script should be run as a regular user, not root."
+  echo "This script should be run NOT as root."
   exit 1
 fi
 
 # Update package list and install git and zsh
 sudo apt-get update && sudo apt-get install git zsh -y
 
-# Try to install powerline and fonts-powerline, continue even if it fails
+# Try to install powerline and fonts-powerline, continue if it fails
 if ! sudo apt-get install powerline fonts-powerline -y; then
-  echo "Installation of powerline and fonts-powerline failed. Continuing without them."
+  echo "Failed to install powerline and fonts-powerline. Continuing without them."
 fi
 
-# Function to add line to file if not already present
+# Function to add line to file if it doesn't exist
 add_line_if_not_exists() {
   local file="$1"
   local line="$2"
   grep -qxF "$line" "$file" 2>/dev/null || echo "$line" >> "$file"
 }
 
-# Remove existing Oh My Zsh directory if it exists
+# Remove existing oh-my-zsh directory if present
 if [ -d "$HOME/.oh-my-zsh" ]; then
   rm -rf "$HOME/.oh-my-zsh"
 fi
 
-# Clone the Oh My Zsh repository into user's home directory
+# Clone the oh-my-zsh repository
 git clone https://github.com/robbyrussell/oh-my-zsh.git "$HOME/.oh-my-zsh"
 
-# Copy the Oh My Zsh template zsh configuration file
+# Copy the zsh configuration template
 cp "$HOME/.oh-my-zsh/templates/zshrc.zsh-template" "$HOME/.zshrc"
 
-# Change the default ZSH theme in the config file
+# Change the zsh theme to jonathan
 sed -i 's/^ZSH_THEME=".*"/ZSH_THEME="jonathan"/' "$HOME/.zshrc"
 
-# Disable oh-my-zsh auto update if not already set
+# Disable oh-my-zsh auto-update if not already disabled
 if ! grep -q '^DISABLE_AUTO_UPDATE="true"' "$HOME/.zshrc"; then
   sed -i '/^ZSH_THEME=/a DISABLE_AUTO_UPDATE="true"' "$HOME/.zshrc"
 fi
 
-# Remove existing zsh-syntax-highlighting directory if it exists
+# Remove zsh-syntax-highlighting directory if it exists
 if [ -d "$HOME/.zsh-syntax-highlighting" ]; then
   rm -rf "$HOME/.zsh-syntax-highlighting"
 fi
 
-# Clone the syntax highlighting plugin with shallow depth
+# Clone the syntax highlighting plugin with depth 1
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$HOME/.zsh-syntax-highlighting" --depth 1
 
 # Add source command for syntax highlighting plugin to .zshrc if absent
 add_line_if_not_exists "$HOME/.zshrc" "source \$HOME/.zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
-# Remove existing zsh-autosuggestions directory if it exists
+# Remove zsh-autosuggestions directory if present
 if [ -d "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]; then
   rm -rf "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
 fi
 
-# Clone the autosuggestions plugin into the custom plugins directory
+# Clone the autosuggestions plugin
 git clone https://github.com/zsh-users/zsh-autosuggestions "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
 
-# Add the autosuggestions plugin to the plugins list in the config if missing
+# Add autosuggestions plugin to plugins list if missing
 if grep -q '^plugins=(git)' "$HOME/.zshrc"; then
   sed -i 's/^plugins=(git)$/plugins=(git zsh-autosuggestions)/' "$HOME/.zshrc"
 elif ! grep -q 'zsh-autosuggestions' "$HOME/.zshrc"; then
   sed -i '/^plugins=/ s/)/ zsh-autosuggestions)/' "$HOME/.zshrc"
 fi
 
-# Set style for autosuggestions if not already set
+# Set highlight style for autosuggestions if not set
 add_line_if_not_exists "$HOME/.zshrc" "ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=blue,bold'"
 
 # Add extended history options and alias for history command if missing
@@ -79,7 +79,7 @@ alias history="fc -l -i"
 EOF
 fi
 
-# Change default shell to zsh for the current user
+# Change default shell to zsh for the user
 sudo chsh -s /bin/zsh "$USER"
 
 # Download bash aliases file
@@ -91,8 +91,8 @@ add_line_if_not_exists "$HOME/.bashrc" 'if [ -f ~/.bash_aliases ]; then . ~/.bas
 # Add source for .bash_aliases in .zshrc if missing
 add_line_if_not_exists "$HOME/.zshrc" 'if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi'
 
-# Reload the zsh configuration to apply changes
-source "$HOME/.zshrc"
-
 echo "Installation completed successfully."
-zsh
+echo "To apply zsh, open a new terminal or run manually: exec zsh"
+
+# Replace current shell with zsh immediately
+exec zsh
