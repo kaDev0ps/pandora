@@ -15,9 +15,6 @@ if ! sudo apt-get install powerline fonts-powerline -y; then
   echo "Installation of powerline and fonts-powerline failed. Continuing without them."
 fi
 
-# Install grc (Generic Colourizer) for colored command output
-sudo apt-get install grc -y
-
 # Function to add line to file if not already present
 add_line_if_not_exists() {
   local file="$1"
@@ -93,12 +90,6 @@ add_line_if_not_exists "$HOME/.bashrc" 'if [ -f ~/.bash_aliases ]; then . ~/.bas
 
 # Add source for .bash_aliases in .zshrc if missing
 add_line_if_not_exists "$HOME/.zshrc" 'if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi'
-
-# Add environment and source lines for grc to .bashrc and .zshrc if missing
-add_line_if_not_exists "$HOME/.bashrc" 'export GRC_ALIASES=true'
-add_line_if_not_exists "$HOME/.bashrc" '[[ -s "/etc/profile.d/grc.sh" ]] && source /etc/profile.d/grc.sh'
-
-add_line_if_not_exists "$HOME/.zshrc" '[[ -s "/etc/grc.zsh" ]] && source /etc/grc.zsh'
 
 # Reload the zsh configuration to apply changes
 source "$HOME/.zshrc"
