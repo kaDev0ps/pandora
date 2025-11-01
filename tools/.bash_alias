@@ -94,6 +94,13 @@ alias fd="fdfind"  # Find files in OS
 # GIT
 alias gitp='gitc && git push'                               # Add to remote repo
 
+# Load Balanser
+alias nt='sudo nginx -t'                               # Add to remote repo
+alias at='sudo angie -t'                               # Add to remote repo
+alias rnt='sudo systemctl reload nginx'                               # Add to remote repo
+alias rat='sudo systemctl reload angie'                               # Add to remote repo
+
+
 # N3. Netrika
 alias n3='for UNIT in $(systemctl list-unit-files "r*.service" --type=service --no-legend | awk "{print \$1}"); do PORT=$(systemctl show "$UNIT" --property=Environment | grep -oP "(?<=:)\d+"); if [ -n "$PORT" ]; then echo "$PORT $UNIT"; fi; done'
 
