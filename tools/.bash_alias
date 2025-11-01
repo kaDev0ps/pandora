@@ -23,7 +23,8 @@ alias t='tmux'                                                      # Launch tmu
 alias r='ranger'                                                    # Launch ranger
 alias del='sudo rm -rf'                                             # Recurse delete
 alias duse='du -ah --max-depth=1 $(pwd) | sort -rh | head -n 10'    # chek size file
-alias dlog='du -sh /var/log/* 2>/dev/null | sort -hr | head -n 10'
+alias dlog='du -sh /var/log/* 2>/dev/null | sort -hr | head -n 10'  # check size log
+alias ncdu='sudo ncdu'                                              # Show size
 
 # Updates
 ## Display system information
