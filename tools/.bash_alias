@@ -25,6 +25,7 @@ alias del='sudo rm -rf'                                             # Recurse de
 alias duse='du -ah --max-depth=1 $(pwd) | sort -rh | head -n 10'    # chek size file
 alias dlog='du -sh /var/log/* 2>/dev/null | sort -hr | head -n 10'  # check size log
 alias ncdu='sudo ncdu'                                              # Show size
+alias own='sudo chown $USER'                                        # Change owner
 
 # Updates
 ## Display system information
