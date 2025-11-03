@@ -2,8 +2,8 @@
 alias up='uptime -p'                                            # Show system uptime in a human-readable format
 alias rg='ripgrep --color=auto'                                 # Enable color output for ripgrep
 alias scat='sudo cat -n'                                        # Open cat with line numbers for root
-alias c='clear'                                                 # Clear the terminal screen
-alias ip='ip -br -ca'                                           # Show network interfaces and IP
+alias cl='clear'                                                 # Clear the terminal screen
+alias ip='ip -br -c a'                                          # Show network interfaces and IP
 alias l='ls -lh'                                                # List files with human-readable sizes
 alias lo='locate'                                               # Find files by name using the locate database
 alias df='df -h'                                                # Show disk space usage in human-readable format
@@ -16,10 +16,11 @@ alias psg='ps aux | grep'                                       # Search for a p
 alias t='tmux'                                                  # Launch tmux
 alias r='ranger'                                                # Launch ranger
 alias del='sudo rm -rf'                                         # Recursive delete with sudo
-alias duse='du -ah --max-depth=1 $(pwd) | sort -rh | head -n 10'# Check size of files in the current directory
+alias duse='du -ah --max-depth=1 $(pwd) | sort -rh | head -n 10' # Check size of files in the current directory
 alias dlog='du -sh /var/log/* 2>/dev/null | sort -hr | head -n 10' # Check size of logs
 alias ncdu='sudo ncdu'                                          # Show disk usage with ncdu
-alias own='sudo chown $USER'                                    # Change owner to current user
+alias own() { sudo chown "$USER" "$@"; }                        # Change owner to current user
+
 
 # Updates
 ## Display system information
