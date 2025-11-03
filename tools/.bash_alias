@@ -2,7 +2,7 @@
 alias up='uptime -p'                                            # Show system uptime in a human-readable format
 alias rg='ripgrep --color=auto'                                 # Enable color output for ripgrep
 alias scat='sudo cat -n'                                        # Open cat with line numbers for root
-alias cl='clear'                                                 # Clear the terminal screen
+alias c='clear'                                                 # Clear the terminal screen
 alias ip='ip -br -c a'                                          # Show network interfaces and IP
 alias l='ls -lh'                                                # List files with human-readable sizes
 alias lo='locate'                                               # Find files by name using the locate database
