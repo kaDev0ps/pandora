@@ -1,111 +1,103 @@
 # Basic commands
-alias uptime='uptime -p'                                            # Show system uptime in a human-readable format
-alias rg='ripgrep --color=auto                                      # Enable color output for grep
-alias scat='sudo cat'                                               # Open cat with line numbers for root
-alias c='clear'                                                     # Clear the terminal screen
-alias ip='ip -br -c a'                                              # Show network interfaces adnd IP
-alias l='ls -lh'                                                    # List files with human-readable sizes
-alias lo='locate'                                                   # Find files by name in the current directory
-alias df='df -h'                                                    # Show disk space usage in human-readable format
-alias ..='cd ..'                                                    # Go up one directory
-alias ll='lsd -lh --icon=never'                                     # List files with human-readable sizes and color output
-alias la='ls -lah --color=auto'                                     # List all files including hidden ones with color
-alias sm='sudo systemd-manager-tui'                                 # Open systemd manager in terminal UI
-alias lj='sudo lazyjournal'                                         # Alias for lazyjournal app
-alias bcat='batcat'                                                 # Use batcat as a replacement for cat with syntax highlighting
-alias mkdir='mkdir -pv'                                             # Create directories and show the progress
-alias nvim='sudo nvim'                                              # Use vim as the default editor
-alias svim='sudo vim'                                               # Open vim with line numbers for root
-alias psg='ps aux | grep'                                           # Search for a process by name
-alias cheat='cht.sh'                                                # Access the cheat sheets
-alias t='tmux'                                                      # Launch tmux
-alias r='ranger'                                                    # Launch ranger
-alias del='sudo rm -rf'                                             # Recurse delete
-alias duse='du -ah --max-depth=1 $(pwd) | sort -rh | head -n 10'    # chek size file
-alias dlog='du -sh /var/log/* 2>/dev/null | sort -hr | head -n 10'  # check size log
-alias ncdu='sudo ncdu'                                              # Show size
-alias own='sudo chown $USER'                                        # Change owner
+alias up='uptime -p'                                            # Show system uptime in a human-readable format
+alias rg='ripgrep --color=auto'                                 # Enable color output for ripgrep
+alias scat='sudo cat -n'                                        # Open cat with line numbers for root
+alias c='clear'                                                 # Clear the terminal screen
+alias ip='ip -br -ca'                                           # Show network interfaces and IP
+alias l='ls -lh'                                                # List files with human-readable sizes
+alias lo='locate'                                               # Find files by name using the locate database
+alias df='df -h'                                                # Show disk space usage in human-readable format
+alias ..='cd ..'                                                # Go up one directory
+alias ll='lsd -lh --icon=never'                                 # List files with human-readable sizes without icons
+alias la='ls -lah --color=auto'                                 # List all files including hidden ones with color
+alias mkdir='mkdir -pv'                                         # Create directories and show the progress
+alias svim='sudo vim'                                           # Open vim with line numbers for root
+alias psg='ps aux | grep'                                       # Search for a process by name
+alias t='tmux'                                                  # Launch tmux
+alias r='ranger'                                                # Launch ranger
+alias del='sudo rm -rf'                                         # Recursive delete with sudo
+alias duse='du -ah --max-depth=1 $(pwd) | sort -rh | head -n 10'# Check size of files in the current directory
+alias dlog='du -sh /var/log/* 2>/dev/null | sort -hr | head -n 10' # Check size of logs
+alias ncdu='sudo ncdu'                                          # Show disk usage with ncdu
+alias own() { sudo chown "$USER" "$@"; }                        # Change owner to current user
 
 # Updates
 ## Display system information
-alias mtr10='mtr -r -c 10'                                          # Check traceroute to host 10
-alias mtr100='mtr -r -c 100'                                        # Check traceroute to host 100
-alias sysinfo='uname -a; lsb_release -a'                            # Show system and version info
-alias update='sudo apt update'                                      # Update package lists
-alias clean='sudo apt clean'                                        # Clean up local repository of retrieved package files
-alias autoremove='sudo apt autoremove -y'                           # Remove unnecessary packages automatically
+alias mtr10='mtr -r -c 10'                                      # Run traceroute with 10 cycles
+alias mtr100='mtr -r -c 100'                                    # Run traceroute with 100 cycles
+alias sysinfo='uname -a; lsb_release -a'                        # Show system and version info
+alias update='sudo apt update'                                  # Update package lists
+alias clean='sudo apt clean'                                    # Clean local repository of retrieved package files
+alias autoremove='sudo apt autoremove -y'                       # Remove unnecessary packages automatically
 
 # Monitoring
-alias h='history'                                                   # View command history
-alias j='jobs -l'                                                   # List current jobs
-alias df='df -H'                                                    # Show disk space usage in human-readable format
-alias du='du -ch'                                                   # Show disk usage of files and directories in human-readable format
-alias sdu='du -sh /var/log/* 2>/dev/null | sort -hr | head -n 10'   # Check big files in catalog
-alias ports='netstat -tulanp'                                       # Show open ports and listening sockets
-alias free='free -m -l -t'                                          # Display memory usage in megabytes
-alias psmem='sudo ps auxf | sort -nr -k 4 | head -10'               # Show top 10 processes by memory usage
-alias pscpu='sudo ps auxf | sort -nr -k 3 | head -10'               # Show top 10 processes by CPU usage
-alias myip='curl ifconfig.me'                                       # Get the external IP address
+alias h='history'                                               # View command history
+alias j='jobs -l'                                               # List current jobs
+alias du='du -ch'                                               # Show disk usage of files and directories in human-readable format
+alias sdu='du -sh /var/log/* 2>/dev/null | sort -hr | head -n 10' # Check big files in log directory
+alias ports='sudo ss -tulnp'                                    # Show open ports and listening sockets
+alias free='free -m -l -t'                                      # Display memory usage in megabytes
+alias psmem='sudo ps auxf | sort -nr -k 4 | head -10'           # Show top 10 processes by memory usage
+alias pscpu='sudo ps auxf | sort -nr -k 3 | head -10'           # Show top 10 processes by CPU usage
+alias myip='curl ifconfig.me'                                   # Get the external IP address
 
 # Networking
-alias ports='sudo ss -tulnp'                                # Display open ports and sockets
-alias dnstop='sudo dnstop -l 5 enp0s3'                      # Monitor DNS traffic for interface enp0s3
-alias vnstat='sudo vnstat -i enp0s3'                        # View network traffic statistics for interface enp0s3
-alias ift='sudo iftop -i'                                   # Display bandwidth usage on an interface
-alias tcpdump='sudo tcpdump -i enp0s3'                      # Capture packet data on the specified interface
+alias dnstop='sudo dnstop -l 5 enp0s3'                          # Monitor DNS traffic on interface enp0s3
+alias vnstat='sudo vnstat -i enp0s3'                            # View network traffic stats on interface enp0s3
+alias ift='sudo iftop -i'                                       # Display bandwidth usage on an interface
+alias tcpdump='sudo tcpdump -i enp0s3'                          # Capture packet data on the specified interface
 
 # Systemctl
-alias sss='sudo systemctl stop'                               # Stop a systemd service
-alias ssr='sudo systemctl restart'                            # Restart a systemd service
-alias sse='sudo systemctl enable'                             # Enable a systemd service to start on boot
-alias ssd='sudo systemctl disable'                            # Disable a systemd service from starting on boot
-alias ssc='sudo systemctl cat'                                # Show the contents of a systemd service file
-alias ssi='sudo systemctl status'                             # Check the status of a systemd service
-alias slu='sudo systemctl list-units --type=service'          # List all systemd services
-alias sdr='sudo systemctl daemon-reload'                      # Reload systemctl
-alias srr='sudo systemctl reset-failed'                       # Reset systemctl
-alias edit='sudo systemctl edit'                              # Configurate systemd units 
+alias sss='sudo systemctl stop'                                 # Stop a systemd service
+alias ssr='sudo systemctl restart'                              # Restart a systemd service
+alias sse='sudo systemctl enable'                               # Enable a systemd service to start on boot
+alias ssd='sudo systemctl disable'                              # Disable a systemd service from starting on boot
+alias ssc='sudo systemctl cat'                                  # Show the contents of a systemd service file
+alias ssi='sudo systemctl status'                               # Check the status of a systemd service
+alias slu='sudo systemctl list-units --type=service'            # List all systemd services
+alias sdr='sudo systemctl daemon-reload'                        # Reload systemctl
+alias srr='sudo systemctl reset-failed'                         # Reset systemctl failed state
+alias edit='sudo systemctl edit'                                # Edit systemd units
 
 # Journalctl
 # View system logs
-alias logs='sudo journalctl -xe'                              # Show recent logs with detailed error messages
-alias err='grep -biw "error"'                                 # Follow the last lines of the journal after reboot service
-alias jfeu='sudo journalctl -feu'                             # Follow the journal for a specific service
+alias logs='sudo journalctl -xe'                                # Show recent logs with detailed error messages
+alias err='grep -biw "error"'                                   # Search for error keyword in logs
+alias jfeu='sudo journalctl -feu'                               # Follow the journal for a specific service
 
 # Clean system logs
-alias clearlogs='sudo journalctl --vacuum-time=1d'            # Remove logs older than 1 day
+alias clearlogs='sudo journalctl --vacuum-time=1d'              # Remove logs older than 1 day
 
 # Archiving
 # Create a tar.gz archive
-alias taz='tar -czvf'                                         # Create a compressed tarball
+alias taz='tar -czvf'                                           # Create a compressed tarball
 
 # Extract a tar.gz archive
-alias untaz='tar -xzvf'                                       # Extract a compressed tarball
+alias untaz='tar -xzvf'                                         # Extract a compressed tarball
 
 # Tools
-alias iot='sudo iotop -oPa'                                   # TOP processes that actively use the disk (I/O)
-alias ios='iostat  -mpxz'                                     # Information on the loading of specific discs/sections
-export HISTTIMEFORMAT="%d.%m.20%y %T "                        # Time in history
-alias envr="source ~/ranger-env/bin/activate"                 # Start ranger in environtment
-alias envs="deactivate"                                       # Stop envirentment
-alias pssh="parallel-ssh"                                     # Parallel launch scripts and commands
-alias pssc="parallel-scp"                                     # Parallel copy files
-alias fd="fdfind"  # Find files in OS
+alias iot='sudo iotop -oPa'                                     # TOP processes that actively use the disk (I/O)
+alias ios='iostat  -mpxz'                                       # Information on disk usage
+export HISTTIMEFORMAT="%d.%m.20%y %T "                          # Timestamp format in history
+alias envr="source ~/ranger-env/bin/activate"                   # Activate ranger virtual environment
+alias envs="deactivate"                                         # Deactivate virtual environment
+alias pssh="parallel-ssh"                                       # Parallel SSH command execution
+alias pssc="parallel-scp"                                       # Parallel file copy
+alias fd="fdfind"                                               # Find files in OS
 
 # GIT
-alias gitp='gitc && git push'                               # Add to remote repo
+alias gitp='gitc && git push'                                   # Commit and push to remote repo
 
-# Load Balanser
-alias nt='sudo nginx -t'                               # Add to remote repo
-alias at='sudo angie -t'                               # Add to remote repo
-alias rnt='sudo systemctl reload nginx'                               # Add to remote repo
-alias rat='sudo systemctl reload angie'                               # Add to remote repo
-
+# Load Balancer
+alias nt='sudo nginx -t'                                        # Test nginx config
+alias at='sudo angie -t'                                        # Test angie config
+alias rnt='sudo systemctl reload nginx'                         # Reload nginx service
+alias rat='sudo systemctl reload angie'                         # Reload angie service
 
 # N3. Netrika
 alias n3='for UNIT in $(systemctl list-unit-files "r*.service" --type=service --no-legend | awk "{print \$1}"); do PORT=$(systemctl show "$UNIT" --property=Environment | grep -oP "(?<=:)\d+"); if [ -n "$PORT" ]; then echo "$PORT $UNIT"; fi; done'
 
-# Function
+# Functions
 gitc() {
   git add . && git commit -m "$(date '+%Y-%m-%d %H:%M:%S')" || echo "Git commit failed"
 }
