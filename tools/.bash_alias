@@ -15,7 +15,7 @@ alias mkdir='mkdir -pv'                                         # Create directo
 alias svim='sudo vim'                                           # Open vim with line numbers for root
 alias psg='ps aux | grep'                                       # Search for a process by name
 alias vs='sudo visudo'                                          # Launch visudo
-alias ra='ranger'                                               # Launch ranger
+alias r='ranger'                                                # Launch ranger
 alias del='sudo rm -rf'                                         # Recursive delete with sudo
 alias duse='du -ah --max-depth=1 $(pwd) | sort -rh | head -n 10' # Check size of files in the current directory
 alias dlog='du -sh /var/log/* 2>/dev/null | sort -hr | head -n 10' # Check size of logs
