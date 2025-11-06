@@ -9,5 +9,4 @@ mkdir -p "$HOME/tools" && wget -q --show-progress https://raw.githubusercontent.
 # Add users
 mkdir -p "$HOME/tools/pssh" && wget -q --show-progress https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/pssh/add_users.sh -O "$HOME/tools/pssh/add_users.sh" && chmod +x "$HOME/tools/pssh/add_users.sh" && "$HOME/tools/pssh/add_users.sh"
 # Add alias
-wget https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/.bash_alias -O ~/.bash_aliases && echo "if [ -f ~/.bash_aliases ]; then . ~/.bash_aliases; fi" >> ~/.bashrc && echo "if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi" >> ~/.zshrc
-
+wget https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/.bash_alias -O ~/.bash_aliases && grep -qxF 'if [ -f ~/.bash_aliases ]; then . ~/.bash_aliases; fi' ~/.bashrc || echo 'if [ -f ~/.bash_aliases ]; then . ~/.bash_aliases; fi' >> ~/.bashrc && grep -qxF 'if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi' ~/.zshrc || echo 'if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi' >> ~/.zshrc && exec zsh
