@@ -82,24 +82,13 @@ create_or_update_user() {
         sudo chown "$USERNAME" /home/"$USERNAME"/.ssh/authorized_keys
     fi
 
-    # Добавление в sudoers, избегая дублирования
+    # Добавление в sudoers через отдельный файл /etc/sudoers.d/$USERNAME
     SUDOERS_ENTRY="$USERNAME ALL=(ALL) NOPASSWD:ALL"
+    SUDOERS_FILE="/etc/sudoers.d/$USERNAME"
 
-    if [ "$OS_TYPE" = "alt" ]; then
-        SUDOERS_FILE="/etc/sudoers.d/$USERNAME"
-        if [ ! -f "$SUDOERS_FILE" ] || ! sudo grep -qF "$SUDOERS_ENTRY" "$SUDOERS_FILE"; then
-            echo "$SUDOERS_ENTRY" | sudo tee "$SUDOERS_FILE" > /dev/null
-            sudo chmod 440 "$SUDOERS_FILE"
-        fi
-    else
-        SUDOERS_FILE="/etc/sudoers"
-        if ! sudo grep -q "^$SUDOERS_ENTRY" "$SUDOERS_FILE"; then
-            echo "$SUDOERS_ENTRY" | sudo tee -a "$SUDOERS_FILE" > /dev/null
-            # Проверка синтаксиса sudoers
-            if ! sudo visudo -c >/dev/null 2>&1; then
-                echo "Warning: syntax error detected in /etc/sudoers after modification."
-            fi
-        fi
+    if [ ! -f "$SUDOERS_FILE" ] || ! sudo grep -qF "$SUDOERS_ENTRY" "$SUDOERS_FILE"; then
+        echo "$SUDOERS_ENTRY" | sudo tee "$SUDOERS_FILE" > /dev/null
+        sudo chmod 440 "$SUDOERS_FILE"
     fi
 }
 
