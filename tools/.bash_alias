@@ -95,6 +95,9 @@ alias at='sudo angie -t'                                        # Test angie con
 alias srn='sudo systemctl reload nginx'                         # Reload nginx service
 alias sra='sudo systemctl reload angie'                         # Reload angie service
 
+# Environment
+export EDITOR=vim
+
 # N3. Netrika
 alias n3='for UNIT in $(systemctl list-unit-files "r*.service" --type=service --no-legend | awk "{print \$1}"); do PORT=$(systemctl show "$UNIT" --property=Environment | grep -oP "(?<=:)\d+"); if [ -n "$PORT" ]; then echo "$PORT $UNIT"; fi; done'
 
