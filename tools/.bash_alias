@@ -1,7 +1,7 @@
 # Basic commands
 alias up='uptime -p'                                            # Show system uptime in a human-readable format
-alias rg='rg --color=auto'                                      # Enable color output for ripgrep for Alt
-alias arg='ripgrep --color=auto'                                # Enable color output for ripgrep for Astra
+alias arg='rg --color=auto'                                      # Enable color output for ripgrep for Alt
+alias rg='ripgrep --color=auto'                                # Enable color output for ripgrep for Astra
 alias scat='sudo cat -n'                                        # Open cat with line numbers for root
 alias c='clear'                                                 # Clear the terminal screen
 alias ip='ip -br -c a'                                          # Show network interfaces and IP
