@@ -51,4 +51,4 @@ fi
 # Устанавливаем zsh из вашего скрипта
 mkdir -p "$HOME/tools" && wget https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/.install_zsh -O "$HOME/tools/.install_zsh" && chmod +x "$HOME/tools/.install_zsh" && "$HOME/tools/.install_zsh"
 # Connect Aliash
-wget https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/.bash_alias -O ~/.bash_aliases && echo "if [ -f ~/.bash_aliases ]; then . ~/.bash_aliases; fi" >> ~/.bashrc && echo "if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi" >> ~/.zshrc
+wget https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/.bash_alias -O ~/.bash_aliases && grep -qxF 'if [ -f ~/.bash_aliases ]; then . ~/.bash_aliases; fi' ~/.bashrc || echo 'if [ -f ~/.bash_aliases ]; then . ~/.bash_aliases; fi' >> ~/.bashrc && grep -qxF 'if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi' ~/.zshrc || echo 'if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi' >> ~/.zshrc && exec zsh
