@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Установим vim редактором по умолчанию для visudo
-export EDITOR=vim
-
 # Пользователи и их данные (логины, хэши паролей, SSH-ключи)
 USER1=netrika_ka
 PASSWORD_HASH1='$6$XbcQtpB9Zo3SioF8$Ay.zAYsryFKcRO5PAHKn9V.yh8UoWoUowWCrr/ZEQhrFiYQrCDjfrR81vH9xJMcuPnVqMPPBku5nIl3uRNUAc.'
@@ -29,12 +26,10 @@ create_or_update_user() {
     local PASSWORD_HASH=$2
     local SSH_KEY=$3
 
-    # Определяем ОС с учетом регистра: ищем 'alt' или 'ALT' в ID/DISTRIB_ID
     if [ -f /etc/os-release ]; then
         . /etc/os-release
         OS_NAME=$ID
         DISTRO_ID="${DISTRIB_ID:-}"
-        # Приводим к нижнему регистру для сравнения
         OS_NAME_LC=$(echo "$OS_NAME" | tr '[:upper:]' '[:lower:]')
         DISTRO_ID_LC=$(echo "$DISTRO_ID" | tr '[:upper:]' '[:lower:]')
         if [ -z "$DISTRO_ID_LC" ] && command -v lsb_release >/dev/null 2>&1; then
@@ -52,14 +47,12 @@ create_or_update_user() {
         exit 1
     fi
 
-    # Выбор группы для sudo (wheel для Alt, sudo для Astra)
     if [ "$OS_TYPE" = "alt" ]; then
         SUDO_GROUP=wheel
     else
         SUDO_GROUP=sudo
     fi
 
-    # Проверка и создание пользователя
     if id "$USERNAME" &>/dev/null; then
         echo "User $USERNAME exists, updating info..."
         sudo usermod -p "$PASSWORD_HASH" -s /bin/bash "$USERNAME"
@@ -68,31 +61,34 @@ create_or_update_user() {
         sudo useradd -m -d /home/"$USERNAME" -s /bin/bash -p "$PASSWORD_HASH" -G "$SUDO_GROUP" "$USERNAME"
     fi
 
-    # Настройка .ssh
     if [ ! -d /home/"$USERNAME"/.ssh ]; then
         sudo mkdir -p /home/"$USERNAME"/.ssh
-        sudo chown "$USERNAME" /home/"$USERNAME"/.ssh
+        sudo chown "$USERNAME":"$USERNAME" /home/"$USERNAME"/.ssh
         sudo chmod 700 /home/"$USERNAME"/.ssh
     fi
 
-    # Добавление ключа, если ещё нет
     if [ ! -f /home/"$USERNAME"/.ssh/authorized_keys ] || ! sudo grep -qF "$SSH_KEY" /home/"$USERNAME"/.ssh/authorized_keys; then
         echo "$SSH_KEY" | sudo tee -a /home/"$USERNAME"/.ssh/authorized_keys > /dev/null
         sudo chmod 600 /home/"$USERNAME"/.ssh/authorized_keys
-        sudo chown "$USERNAME" /home/"$USERNAME"/.ssh/authorized_keys
+        sudo chown "$USERNAME":"$USERNAME" /home/"$USERNAME"/.ssh/authorized_keys
     fi
 
-    # Добавление в sudoers через отдельный файл /etc/sudoers.d/$USERNAME
     SUDOERS_ENTRY="$USERNAME ALL=(ALL) NOPASSWD:ALL"
     SUDOERS_FILE="/etc/sudoers.d/$USERNAME"
 
-    if [ ! -f "$SUDOERS_FILE" ] || ! sudo grep -qF "$SUDOERS_ENTRY" "$SUDOERS_FILE"; then
-        echo "$SUDOERS_ENTRY" | sudo tee "$SUDOERS_FILE" > /dev/null
-        sudo chmod 440 "$SUDOERS_FILE"
+    # Удаляем все строки с $USERNAME в /etc/sudoers
+    sudo sed -i "/^$USERNAME\s\+ALL=(ALL).*NOPASSWD:ALL$/d" /etc/sudoers
+
+    # Удаляем старую запись в файле sudoers.d, если есть
+    if [ -f "$SUDOERS_FILE" ]; then
+        sudo sed -i "\|^$SUDOERS_ENTRY\$|d" "$SUDOERS_FILE"
     fi
+
+    # Добавляем новую запись в sudoers.d
+    echo "$SUDOERS_ENTRY" | sudo tee "$SUDOERS_FILE" > /dev/null
+    sudo chmod 440 "$SUDOERS_FILE"
 }
 
-# Добавление всех пользователей
 create_or_update_user "$USER1" "$PASSWORD_HASH1" "$SSH_KEY1"
 create_or_update_user "$USER2" "$PASSWORD_HASH2" "$SSH_KEY2"
 create_or_update_user "$USER3" "$PASSWORD_HASH3" "$SSH_KEY3"
