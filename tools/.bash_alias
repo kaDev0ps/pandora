@@ -1,6 +1,7 @@
 # Basic commands
 alias up='uptime -p'                                            # Show system uptime in a human-readable format
-alias rg='ripgrep --color=auto'                                 # Enable color output for ripgrep
+alias rg='rg --color=auto'                                      # Enable color output for ripgrep for Alt
+alias arg='ripgrep --color=auto'                                # Enable color output for ripgrep for Astra
 alias scat='sudo cat -n'                                        # Open cat with line numbers for root
 alias c='clear'                                                 # Clear the terminal screen
 alias ip='ip -br -c a'                                          # Show network interfaces and IP
@@ -13,7 +14,7 @@ alias la='ls -lah --color=auto'                                 # List all files
 alias mkdir='mkdir -pv'                                         # Create directories and show the progress
 alias svim='sudo vim'                                           # Open vim with line numbers for root
 alias psg='ps aux | grep'                                       # Search for a process by name
-alias t='tmux'                                                  # Launch tmux
+alias vs='sudo visudo'                                          # Launch visudo
 alias r='ranger'                                                # Launch ranger
 alias del='sudo rm -rf'                                         # Recursive delete with sudo
 alias duse='du -ah --max-depth=1 $(pwd) | sort -rh | head -n 10' # Check size of files in the current directory
