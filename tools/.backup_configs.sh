@@ -33,7 +33,7 @@ FILES_TO_COPY=(
 )
 
 # Find and copy the specified files
-find /opt/N3/N3.*/r*/ -type f | while read -r FILE; do
+find /opt/N3/N3.*/*/ -type f | while read -r FILE; do
     # Extract the file name from the path
     FILENAME=$(basename "$FILE")
 
