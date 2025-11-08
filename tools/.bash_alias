@@ -105,3 +105,7 @@ alias n3='for UNIT in $(systemctl list-unit-files "r*.service" --type=service --
 gitc() {
   git add . && git commit -m "$(date '+%Y-%m-%d %H:%M:%S')" || echo "Git commit failed"
 }
+
+# Data in history
+setopt extendedhistory
+HIST_STAMPS="%F %T"
