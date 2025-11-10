@@ -20,6 +20,7 @@ alias del='sudo rm -rf'                                         # Recursive dele
 alias duse='du -ah --max-depth=1 $(pwd) | sort -rh | head -n 10' # Check size of files in the current directory
 alias dlog='du -sh /var/log/* 2>/dev/null | sort -hr | head -n 10' # Check size of logs
 alias ncdu='sudo ncdu'                                          # Show disk usage with ncdu
+alias lsof='sudo lsof -i'                                       # Show services on my ports
 
 
 # Updates
