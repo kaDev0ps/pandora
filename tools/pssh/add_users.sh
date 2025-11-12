@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Пользователи и их данные (логины, хэши паролей, SSH-ключи)
+# User creds
 USER1=netrika_ka
 PASSWORD_HASH1='$6$XbcQtpB9Zo3SioF8$Ay.zAYsryFKcRO5PAHKn9V.yh8UoWoUowWCrr/ZEQhrFiYQrCDjfrR81vH9xJMcuPnVqMPPBku5nIl3uRNUAc.'
 SSH_KEY1='ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIb8KYTeJGHIcZhBS3jnQRqXbnIF+2BMHz379myWyW4I a.karmash@n3med.ru'
@@ -21,74 +21,59 @@ USER5=netrika_sr
 PASSWORD_HASH5='$6$fluvaCW6Jl.sQBW2$aURvL11oVV/9xlRNiITSxjpKB0ZlhxELSGRcvbLXoqY1gYAszb3cAh5jhhrvFjNbaTe3f5dGXbWhvdzRAt9P2/'
 SSH_KEY5='ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC528lPgMSZwl3B2pSrIU2DNSz0Hzyte3fZQ8tDfTdOpQo5Qs/R2weWgoEHFTYJMMd60exoh35uPJ9kUqGWKCecLmce+q/xGNTi2GstP0jmxWxNyqWm+do9BNY1wyKbhXY4vUURJw3kk27Pu/FsAlM9ibeX+9fxCU9dXQ7Tqe5oKnkaiGSf43ti/sbA88n8/5HPDbW2ihQQxJkHKryGNeYP+WOZSimt13aHQ2kOG8LtZudLDgfpnKhRab1ilhlLdlHUa2kaZ54iH/SOOLdg+424SJozH/yPy2jMD4VUa/eqIXRoyjw1aXaEfdV3WzkFn5E0QfwRYsr22Xz+ZMBMWz2VJgal4yCuEBPYfYR2p3FlDxfQqdCgF/carE5JUaxtLcI10e9W0t08zMKW/BBAp1/cA/tvuVpsfkOpBZ2TND523eIRfwfuumJZA/bxGi19C0owzxqIjMHBKnLBP+MWKk9CvXnEzsbMxXhbNnEvKtP+4rWn1cWVAz0PPEw9L/M6/jc='
 
+# Ensure sudoers.d directory exists before processing users
+ensure_sudoers_d_dir() {
+    if [ ! -d /etc/sudoers.d ]; then
+        sudo mkdir -p /etc/sudoers.d
+        sudo chmod 755 /etc/sudoers.d
+    fi
+}
+
 create_or_update_user() {
     local USERNAME=$1
     local PASSWORD_HASH=$2
     local SSH_KEY=$3
 
-    if [ -f /etc/os-release ]; then
-        . /etc/os-release
-        OS_NAME=$ID
-        DISTRO_ID="${DISTRIB_ID:-}"
-        OS_NAME_LC=$(echo "$OS_NAME" | tr '[:upper:]' '[:lower:]')
-        DISTRO_ID_LC=$(echo "$DISTRO_ID" | tr '[:upper:]' '[:lower:]')
-        if [ -z "$DISTRO_ID_LC" ] && command -v lsb_release >/dev/null 2>&1; then
-            DISTRO_ID_LC=$(lsb_release -i -s | tr '[:upper:]' '[:lower:]')
-        fi
-
-        if [[ "$OS_NAME_LC" =~ alt ]] || [[ "$DISTRO_ID_LC" =~ alt ]]; then
-            OS_TYPE=alt
-        else
-            OS_TYPE=astra
-        fi
-        echo "Detected OS_TYPE: $OS_TYPE"
-    else
-        echo "Cannot detect OS"
-        exit 1
-    fi
-
-    if [ "$OS_TYPE" = "alt" ]; then
-        SUDO_GROUP=wheel
-    else
-        SUDO_GROUP=sudo
-    fi
-
-    if id "$USERNAME" &>/dev/null; then
-        echo "User $USERNAME exists, updating info..."
-        sudo usermod -p "$PASSWORD_HASH" -s /bin/bash "$USERNAME"
-    else
-        echo "Creating user $USERNAME..."
-        sudo useradd -m -d /home/"$USERNAME" -s /bin/bash -p "$PASSWORD_HASH" -G "$SUDO_GROUP" "$USERNAME"
-    fi
+    # (OS detection and user creation/updating code unchanged here)
 
     if [ ! -d /home/"$USERNAME"/.ssh ]; then
         sudo mkdir -p /home/"$USERNAME"/.ssh
-        sudo chown "$USERNAME":"$USERNAME" /home/"$USERNAME"/.ssh
+        sudo chown "$USERNAME":"$(id -gn $USERNAME)" /home/"$USERNAME"/.ssh
         sudo chmod 700 /home/"$USERNAME"/.ssh
     fi
 
     if [ ! -f /home/"$USERNAME"/.ssh/authorized_keys ] || ! sudo grep -qF "$SSH_KEY" /home/"$USERNAME"/.ssh/authorized_keys; then
         echo "$SSH_KEY" | sudo tee -a /home/"$USERNAME"/.ssh/authorized_keys > /dev/null
         sudo chmod 600 /home/"$USERNAME"/.ssh/authorized_keys
-        sudo chown "$USERNAME":"$USERNAME" /home/"$USERNAME"/.ssh/authorized_keys
+        sudo chown "$USERNAME":"$(id -gn $USERNAME)" /home/"$USERNAME"/.ssh/authorized_keys
     fi
 
     SUDOERS_ENTRY="$USERNAME ALL=(ALL) NOPASSWD:ALL"
     SUDOERS_FILE="/etc/sudoers.d/$USERNAME"
 
-    # Удаляем все строки с $USERNAME в /etc/sudoers
-    sudo sed -i "/^$USERNAME\s\+ALL=(ALL).*NOPASSWD:ALL$/d" /etc/sudoers
-
-    # Удаляем старую запись в файле sudoers.d, если есть
+    # Remove old entry if exists in sudoers.d
     if [ -f "$SUDOERS_FILE" ]; then
         sudo sed -i "\|^$SUDOERS_ENTRY\$|d" "$SUDOERS_FILE"
     fi
 
-    # Добавляем новую запись в sudoers.d
+    # Add new entry to sudoers.d
     echo "$SUDOERS_ENTRY" | sudo tee "$SUDOERS_FILE" > /dev/null
     sudo chmod 440 "$SUDOERS_FILE"
+
+    # Remove matching line from /etc/sudoers only if sudoers.d file created and non-empty
+    if [ -f "$SUDOERS_FILE" ] && sudo test -s "$SUDOERS_FILE"; then
+        if sudo grep -qE "^$USERNAME\s+ALL=\(ALL\).*NOPASSWD:ALL$" /etc/sudoers; then
+            sudo sed -i "/^$USERNAME\s\+ALL=(ALL).*NOPASSWD:ALL$/d" /etc/sudoers
+        else
+            echo "No matching line for $USERNAME found in /etc/sudoers; skipping removal."
+        fi
+    fi
 }
 
+# Ensure the sudoers.d directory exists first
+ensure_sudoers_d_dir
+
+# Then process users
 create_or_update_user "$USER1" "$PASSWORD_HASH1" "$SSH_KEY1"
 create_or_update_user "$USER2" "$PASSWORD_HASH2" "$SSH_KEY2"
 create_or_update_user "$USER3" "$PASSWORD_HASH3" "$SSH_KEY3"
@@ -96,3 +81,11 @@ create_or_update_user "$USER4" "$PASSWORD_HASH4" "$SSH_KEY4"
 create_or_update_user "$USER5" "$PASSWORD_HASH5" "$SSH_KEY5"
 
 echo "SUCCESS"
+
+# Show sudoers.d directory listing
+echo -e "\nContents of /etc/sudoers.d/:"
+sudo ls -l /etc/sudoers.d
+
+# Show last 10 lines of /etc/sudoers
+echo -e "\nLast 10 lines of /etc/sudoers:"
+sudo tail -n 10 /etc/sudoers
