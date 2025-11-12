@@ -13,7 +13,7 @@ else
 fi
 
 # Общие пакеты для всех дистрибутивов
-COMMON_PACKAGES=(htop btop wget nmap mtr tree ncdu ripgrep ccze ranger lsof icdiff grc )
+COMMON_PACKAGES=(htop btop wget nmap mtr tree ncdu ripgrep ccze ranger lsof iotop icdiff grc )
 
 # Пакеты для Astra Linux
 ASTRA_PACKAGES=(locate)
