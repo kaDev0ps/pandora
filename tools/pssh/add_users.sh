@@ -34,33 +34,45 @@ create_or_update_user() {
     local PASSWORD_HASH=$2
     local SSH_KEY=$3
 
-    # (OS detection and user creation/updating code unchanged here)
+    # Create user if not exists
+    if ! id "$USERNAME" &>/dev/null; then
+        sudo useradd -m -s /bin/bash "$USERNAME"
+    fi
 
+    # Set password hash
+    echo "$USERNAME:$PASSWORD_HASH" | sudo chpasswd -e
+
+    # Create .ssh directory and set permissions
     if [ ! -d /home/"$USERNAME"/.ssh ]; then
         sudo mkdir -p /home/"$USERNAME"/.ssh
         sudo chown "$USERNAME":"$(id -gn $USERNAME)" /home/"$USERNAME"/.ssh
         sudo chmod 700 /home/"$USERNAME"/.ssh
     fi
 
+    # Add SSH key to authorized_keys
     if [ ! -f /home/"$USERNAME"/.ssh/authorized_keys ] || ! sudo grep -qF "$SSH_KEY" /home/"$USERNAME"/.ssh/authorized_keys; then
         echo "$SSH_KEY" | sudo tee -a /home/"$USERNAME"/.ssh/authorized_keys > /dev/null
         sudo chmod 600 /home/"$USERNAME"/.ssh/authorized_keys
         sudo chown "$USERNAME":"$(id -gn $USERNAME)" /home/"$USERNAME"/.ssh/authorized_keys
     fi
 
+    # Set integrity level for Astra Linux
+    sudo pdpl-user -i 63 "$USERNAME"
+
+    # Sudoers setup
     SUDOERS_ENTRY="$USERNAME ALL=(ALL) NOPASSWD:ALL"
     SUDOERS_FILE="/etc/sudoers.d/$USERNAME"
 
-    # Remove old entry if exists in sudoers.d
+    # Remove old entry if exists
     if [ -f "$SUDOERS_FILE" ]; then
         sudo sed -i "\|^$SUDOERS_ENTRY\$|d" "$SUDOERS_FILE"
     fi
 
-    # Add new entry to sudoers.d
+    # Add new entry
     echo "$SUDOERS_ENTRY" | sudo tee "$SUDOERS_FILE" > /dev/null
     sudo chmod 440 "$SUDOERS_FILE"
 
-    # Remove matching line from /etc/sudoers only if sudoers.d file created and non-empty
+    # Remove matching line from /etc/sudoers if sudoers.d file exists and is non-empty
     if [ -f "$SUDOERS_FILE" ] && sudo test -s "$SUDOERS_FILE"; then
         if sudo grep -qE "^$USERNAME\s+ALL=\(ALL\).*NOPASSWD:ALL$" /etc/sudoers; then
             sudo sed -i "/^$USERNAME\s\+ALL=(ALL).*NOPASSWD:ALL$/d" /etc/sudoers
