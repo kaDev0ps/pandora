@@ -3,14 +3,21 @@
 # Run this command once manually (outside the script) to create and set log file ownership:
 # sudo touch /var/log/backupSZPV.log && sudo chown netrika_ka /var/log/backupSZPV.log
 
+# For Server ClickHouse
+## sudo mkdir /data/Backups_db_szpv && sudo chown -R netrika_ka /data/Backups_db_szpv && ln -s /data/Backups_db_szpv ~/Backups_db_szpv
+
+# Create SSH key
+## ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -C "netrika_ka" && chmod 600 ~/.ssh/id_ed25519 && chmod 644 ~/.ssh/id_ed25519.pub && ssh-copy-id -i ~/.ssh/id_ed25519.pub netrika_ka@172.16.8.56
+
 # Create file for logs
 sudo touch /var/log/backupSZPV.log && sudo chown netrika_ka /var/log/backupSZPV.log
+
 # Directories for backup files and script storage
 BACKUP_DIR="/data/backupDB"
 SCRIPT_DIR="/data/backupDB"
 SCRIPT_NAME="backupDB.sh"
 REMOTE_USER="netrika_ka"
-REMOTE_HOST="10.2.255.197"
+REMOTE_HOST="10.0.10.168"
 REMOTE_DIR="Backups_db_szpv"
 SSH_KEY="/home/netrika_ka/.ssh/id_ed25519"
 DATE=$(date +'%Y-%m-%d')
@@ -63,13 +70,13 @@ for db in $DBS; do
       /usr/bin/pg_dump -U postgres -F c -f "$backup_file" "$db" >> "$LOG_FILE" 2>&1
       if [ $? -eq 0 ]; then
         echo "$(date +'%Y-%m-%d %H:%M:%S') - Backup of $db successful: $backup_file" >> "$LOG_FILE"
-        echo "Backup of $db successful, copying to remote server..."
+        echo "Backup of $db successful, attempting to copy to remote server..."
         scp -i "$SSH_KEY" "$backup_file" "$REMOTE_USER@$REMOTE_HOST:/home/netrika_ka/$REMOTE_DIR/$(basename "$backup_file")" >> "$LOG_FILE" 2>&1
         if [ $? -eq 0 ]; then
           echo "$(date +'%Y-%m-%d %H:%M:%S') - Successfully copied $backup_file to remote server." >> "$LOG_FILE"
         else
           echo "$(date +'%Y-%m-%d %H:%M:%S') - Warning: Failed to copy backup $backup_file to remote server." >> "$LOG_FILE"
-          echo "Warning: Failed to copy backup $backup_file to remote server."
+          echo "Warning: Failed to copy backup $backup_file to remote server. Local backup retained."
         fi
       else
         echo "$(date +'%Y-%m-%d %H:%M:%S') - Error: Backup of $db failed, skipping copy. See above for pg_dump error." >> "$LOG_FILE"
@@ -80,5 +87,5 @@ for db in $DBS; do
   done
 done
 
-# Note: The link /home/netrika_ka/backupDB -> /var/backupDB should be created once manually as follows:
-# ln -s /var/backupDB /home/netrika_ka/backupDB
+ls -l $BACKUP_DIR/
+cat /var/log/backupSZPV.log
