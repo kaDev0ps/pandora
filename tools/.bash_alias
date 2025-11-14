@@ -21,6 +21,8 @@ alias duse='du -ah --max-depth=1 $(pwd) | sort -rh | head -n 10' # Check size of
 alias dlog='du -sh /var/log/* 2>/dev/null | sort -hr | head -n 10' # Check size of logs
 alias ncdu='sudo ncdu'                                          # Show disk usage with ncdu
 alias lsof='sudo lsof -i'                                       # Show services on my ports
+alias gr="grep -Ev '^\s*#|^$'"                                  # Show file without comment and empty line
+
 
 
 # Updates
