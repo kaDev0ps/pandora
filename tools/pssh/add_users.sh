@@ -1,5 +1,16 @@
 #!/bin/bash
 
+# Detect if OS is Alt Linux
+is_alt_linux() {
+    if [ -f /etc/os-release ]; then
+        . /etc/os-release
+        if [[ "$ID" == "altlinux" ]]; then
+            return 0
+        fi
+    fi
+    return 1
+}
+
 # User creds
 USER1=netrika_ka
 PASSWORD_HASH1='$6$XbcQtpB9Zo3SioF8$Ay.zAYsryFKcRO5PAHKn9V.yh8UoWoUowWCrr/ZEQhrFiYQrCDjfrR81vH9xJMcuPnVqMPPBku5nIl3uRNUAc.'
@@ -56,8 +67,13 @@ create_or_update_user() {
         sudo chown "$USERNAME":"$(id -gn $USERNAME)" /home/"$USERNAME"/.ssh/authorized_keys
     fi
 
-    # Set integrity level for Astra Linux
-    sudo pdpl-user -i 63 "$USERNAME"
+    # For Astra Linux, run pdpl-user to set integrity level only if NOT Alt Linux
+    if ! is_alt_linux; then
+        sudo pdpl-user -i 63 "$USERNAME"
+    else
+        # On Alt Linux, add user to wheel group
+        sudo usermod -aG wheel "$USERNAME"
+    fi
 
     # Sudoers setup
     SUDOERS_ENTRY="$USERNAME ALL=(ALL) NOPASSWD:ALL"
