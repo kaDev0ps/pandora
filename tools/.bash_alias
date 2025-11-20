@@ -23,8 +23,6 @@ alias ncdu='sudo ncdu'                                          # Show disk usag
 alias lsof='sudo lsof -i'                                       # Show services on my ports
 alias gr="grep -Ev '^\s*#|^$'"                                  # Show file without comment and empty line
 
-
-
 # Updates
 ## Display system information
 alias mtr10='mtr -r -c 10'                                      # Run traceroute with 10 cycles
@@ -112,3 +110,78 @@ gitc() {
 # Data in history
 setopt extendedhistory
 HIST_STAMPS="%F %T"
+
+### DOCKER ###
+# Basic Docker aliases
+alias d='docker'                            # Main Docker command shortcut
+alias di='docker info'                      # Detailed info about Docker setup
+alias ds='docker stats'                     # Real-time container resource usage
+alias dps='docker ps -a'                    # List all containers
+alias drun='docker run -it'                 # Interactive container startup
+alias dexec='docker exec -it'               # Enter container session interactively
+alias dlogs='docker logs'                   # View container logs
+alias drm='docker rm'                       # Remove container
+alias dimages='docker images'               # List images
+alias dclean='docker system prune -f'       # Clean unused resources
+alias dbuild='docker build -t'              # Build image with tag
+alias dvl='docker volume ls'                # List Docker volumes
+alias dvrm='docker volume rm'               # Remove Docker volume
+alias dnet='docker network ls'              # List Docker networks
+alias dneti='docker network inspect'        # Get network details
+alias dcup='docker-compose up -d'           # Start docker-compose in background
+alias dcdown='docker-compose down'          # Stop docker-compose
+
+# Important flags (for reference)
+# -it    — interactive mode
+# -d     — run in background
+# -e     — set environment variables
+# --name — specify container name
+# -p     — port mapping
+# -v     — mount volume
+
+# User and access management
+alias adduserd='sudo usermod -aG docker $USER'                    # Add user to "docker" group (run once, then re-login).
+alias dmip='docker-machine ip default'                            # Get Docker Machine's IP (if using Docker Machine).
+
+# Docker container management
+alias drun='docker run -it'                                      # Interactive container startup. Example: drun ubuntu bash — run an interactive Ubuntu container.
+alias drunn='docker run --name'                                  # Start container with a name. Example: drunn mycontainer -it ubuntu bash — start container named "mycontainer."
+alias drund='docker run -d'                                      # Start a container in the background. Example: drund nginx — run nginx container in background.
+alias dps='docker ps -a'                                         # List all containers, including stopped ones. Example: dps
+alias dstop='docker stop'                                        # Stop a container. Example: dstop mycontainer — stop a container called "mycontainer."
+alias dstart='docker start'                                      # Start a previously stopped container. Example: dstart mycontainer
+alias dr='docker restart'                                        # Restart a container. Example: drestart mycontainer
+alias drm='docker rm'                                            # Remove a container. Example: drm mycontainer
+alias drmexited='docker rm -v $(docker ps -aq -f status=exited)' # Remove all stopped containers. Example: drmexited
+alias drmiall='docker rmi $(docker images -q) --force'           # Remove all images. Example: drmiall
+
+# Image and storage management
+alias ddf='docker system df'                                     # Check image and resource usage size. Example: ddf
+alias dimagesrm='docker images -a -q | xargs docker rmi'         # Delete all images. Example: dimagesrm
+
+# Network and configuration
+alias drunhost='docker run -h'                                   # Set custom hostname for the container. Example: drunhost myhost -it ubuntu bash
+alias dinspect='docker inspect'                                  # View container's IP address. Example: dinspectip mycontainer
+alias drunp='docker run -d -p'                                   # Port forwarding. Example: drunp 8000:8080 nginx
+alias dexec='docker exec -it'                                    # Enter a running container interactively. Example: dexec mycontainer bash
+alias ddiff='docker diff'                                        # Changes in the container's filesystem. Example: ddiff mycontainer
+alias dcp='docker cp'                                            # Copy a file into a container. Example: dcp myfile.txt mycontainer:/root/
+alias dcreate='docker create -it --name'                         # Create container without starting. Example: dcreate mycontainer ubuntu
+alias drename='docker rename'                                    # Rename a container. Example: drename oldname newname
+alias dcommit='docker commit'                                    # Save container changes as a new image. Example: dcommit mycontainer mynewimage
+
+# Logs and runtime state
+alias dlogs='docker logs'                                        # View container logs. Example: dlogs mycontainer
+alias devents='docker events'                                    # Show Docker events stream. Example: devents
+alias drestartsvc='sudo systemctl restart docker'                # Restart the Docker service. Example: drestartsvc
+alias dattach='docker attach'                                    # Attach to a running container. Example: dattach mycontainer
+
+# Image search and distribution
+alias dsearch='docker search'                                    # Search images on Docker Hub. Example: dsearch nginx
+alias dpull='docker pull'                                        # Pull/download an image. Example: dpull nginx
+alias dpush='docker push'                                        # Push your image to a registry. Example: dpush myimage
+
+# Mounting and permissions
+alias drunvol='docker run --name -p -v -d'                       # Mount host folder into container with port mapping. Example: drunvol mycontainer -p 8080:80 -v /host/path:/container/path -d nginx
+alias dexecmkdir='docker exec -it <name> mkdir'                  # Create folder in a running container. Example: dexecmkdir mycontainer /data
+alias dexecchown='docker exec -it <name> chown <user>:<group>'   # Change directory owner inside container. Example: dexecchown mycontainer user:group /data
