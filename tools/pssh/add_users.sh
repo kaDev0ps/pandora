@@ -18,7 +18,7 @@ SSH_KEY1='!!!!!!!!!!!!!!!!!!!!!!SSH KEY!!!!!!!!!!!!'
 
 USER2=netrika_sd
 PASSWORD_HASH2='!!!!!!!!!!!!!!!!SHA256!!!!!!!!!!!!!'
-SSH_KEY2=!!!!!!!!!!!!!!!!!!!!!!SSH KEY!!!!!!!!!!!!'
+SSH_KEY2='!!!!!!!!!!!!!!!!!!!!!!SSH KEY!!!!!!!!!!!!'
 
 USER3=netrika_na
 PASSWORD_HASH3='!!!!!!!!!!!!!!!!SHA256!!!!!!!!!!!!!'
