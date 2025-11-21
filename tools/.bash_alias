@@ -22,6 +22,8 @@ alias dlog='du -sh /var/log/* 2>/dev/null | sort -hr | head -n 10' # Check size 
 alias ncdu='sudo ncdu'                                          # Show disk usage with ncdu
 alias lsof='sudo lsof -i'                                       # Show services on my ports
 alias gr="grep -Ev '^\s*#|^$'"                                  # Show file without comment and empty line
+alias col='column -t -s'                                        # Column tail     Example: col ' ' or col ','
+alias cutc='cut -c'                                             # Show short logs Example: cutc 1-200 
 
 # Updates
 ## Display system information
