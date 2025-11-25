@@ -114,47 +114,20 @@ setopt extendedhistory
 HIST_STAMPS="%F %T"
 
 ### DOCKER ###
-# Basic Docker aliases
-alias d='docker'                            # Main Docker command shortcut
-alias di='docker info'                      # Detailed info about Docker setup
-alias ds='docker stats'                     # Real-time container resource usage
-alias dps='docker ps -a'                    # List all containers
-alias drun='docker run -it'                 # Interactive container startup
-alias dexec='docker exec -it'               # Enter container session interactively
-alias dlogs='docker logs'                   # View container logs
-alias drm='docker rm'                       # Remove container
-alias dimages='docker images'               # List images
-alias dclean='docker system prune -f'       # Clean unused resources
-alias dbuild='docker build -t'              # Build image with tag
-alias dvl='docker volume ls'                # List Docker volumes
-alias dvrm='docker volume rm'               # Remove Docker volume
-alias dnet='docker network ls'              # List Docker networks
-alias dneti='docker network inspect'        # Get network details
-alias dcup='docker-compose up -d'           # Start docker-compose in background
-alias dcdown='docker-compose down'          # Stop docker-compose
-
-# Important flags (for reference)
-# -it    — interactive mode
-# -d     — run in background
-# -e     — set environment variables
-# --name — specify container name
-# -p     — port mapping
-# -v     — mount volume
 
 # User and access management
-alias adduserd='sudo usermod -aG docker $USER'                   # Add user to "docker" group (run once, then re-login).
-alias dmip='docker-machine ip default'                           # Get Docker Machine's IP (if using Docker Machine).
+alias adduserd='sudo usermod -aG docker netrika_ka'                   # Add user to "docker" group (run once, then re-login).
 
 # Docker container management
 alias drun='docker run -it'                                      # Interactive container startup.                   Example: drun ubuntu bash  container.
-alias drunn='docker run --name'                                  # Start container with a name.                     Example: drunn mycontainer -it ubuntu bash 
+alias drunn='docker run --name'                                  # Start container with a name.                     Example: drunn mynameubuntu -it ubuntu bash 
 alias drund='docker run -d'                                      # Start a container in the background.             Example: drund nginx
 alias dps='docker ps -a'                                         # List all containers, including stopped ones.     Example: dps
 alias dstop='docker stop'                                        # Stop a container.                                Example: dstop mycontainer 
 alias dstart='docker start'                                      # Start a previously stopped container.            Example: dstart mycontainer
 alias dr='docker restart'                                        # Restart a container.                             Example: drestart mycontainer
 alias drm='docker rm'                                            # Remove a container.                              Example: drm mycontainer
-alias drmexited='docker rm -v $(docker ps -aq -f status=exited)' # Remove all stopped containers.                   Example: drmexited
+alias drmcall='docker rm -v $(docker ps -aq -f status=exited)'   # Remove all stopped containers.                   Example: drmcall
 alias drmiall='docker rmi $(docker images -q) --force'           # Remove all images.                               Example: drmiall
 
 # Image and storage management
