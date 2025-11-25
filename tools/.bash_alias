@@ -118,28 +118,28 @@ HIST_STAMPS="%F %T"
 # User and access management
 alias adduserd='sudo usermod -aG docker netrika_ka'                   # Add user to "docker" group (run once, then re-login).
 
+# Check status Docker
+alias dps='docker ps -a'                                         # List all containers, including stopped ones.     Example: dps
+alias ddf='docker system df'                                     # Check image and resource usage size.             Example: ddf
+alias dinspect='docker inspect'                                  # View container's IP address.                     Example: dinspect mycontainer
+alias ddiff='docker diff'                                        # Changes in the container's filesystem.           Example: ddiff mycontainer
+
 # Docker container management
 alias drun='docker run -it'                                      # Interactive container startup.                   Example: drun ubuntu bash  container.
 alias drunn='docker run --name'                                  # Start container with a name.                     Example: drunn mynameubuntu -it ubuntu bash 
 alias drund='docker run -d'                                      # Start a container in the background.             Example: drund nginx
-alias dps='docker ps -a'                                         # List all containers, including stopped ones.     Example: dps
 alias dstop='docker stop'                                        # Stop a container.                                Example: dstop mycontainer 
 alias dstart='docker start'                                      # Start a previously stopped container.            Example: dstart mycontainer
 alias dr='docker restart'                                        # Restart a container.                             Example: drestart mycontainer
 alias drm='docker rm'                                            # Remove a container.                              Example: drm mycontainer
 alias drmcall='docker rm -v $(docker ps -aq -f status=exited)'   # Remove all stopped containers.                   Example: drmcall
 alias drmiall='docker rmi $(docker images -q) --force'           # Remove all images.                               Example: drmiall
-
-# Image and storage management
-alias ddf='docker system df'                                     # Check image and resource usage size.             Example: ddf
 alias dimagesrm='docker images -a -q | xargs docker rmi'         # Delete all images.                               Example: dimagesrm
 
 # Network and configuration
 alias drunhost='docker run -h'                                   # Set custom hostname for the container.           Example: drunhost myhost -it ubuntu bash
-alias dinspect='docker inspect'                                  # View container's IP address.                     Example: dinspectip mycontainer
 alias drunp='docker run -d -p'                                   # Port forwarding.                                 Example: drunp 8000:8080 nginx
 alias dexec='docker exec -it'                                    # Enter a running container interactively.         Example: dexec mycontainer bash
-alias ddiff='docker diff'                                        # Changes in the container's filesystem.           Example: ddiff mycontainer
 alias dcp='docker cp'                                            # Copy a file into a container.                    Example: dcp myfile.txt mycontainer:/root/
 alias dcreate='docker create -it --name'                         # Create container without starting.               Example: dcreate mycontainer ubuntu
 alias drename='docker rename'                                    # Rename a container.                              Example: drename oldname newname
@@ -148,7 +148,7 @@ alias dcommit='docker commit'                                    # Save containe
 # Logs and runtime state
 alias dlogs='docker logs'                                        # View container logs.                             Example: dlogs mycontainer
 alias devents='docker events'                                    # Show Docker events stream.                       Example: devents
-alias drestartsvc='sudo systemctl restart docker'                # Restart the Docker service.                      Example: drestartsvc
+alias drestart='sudo systemctl restart docker'                   # Restart the Docker service.                      Example: drestartsvc
 alias dattach='docker attach'                                    # Attach to a running container.                   Example: dattach mycontainer
 
 # Image search and distribution
