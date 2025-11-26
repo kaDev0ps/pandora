@@ -175,3 +175,13 @@ alias dcrm='docker compose rm'                                   # Remove stoppe
 alias dcpull='docker compose pull'                               # Pull the latest images from the registry.                    Example: dcpull
 alias dccfg='docker compose config'                              # Validate and show merged docker-compose configuration.       Example: dccfg
 alias dcscale='docker compose up --scale'                        # Scale a service to N instances.                              Example: dcscale web=3
+
+# Docker stack
+alias dsdeploy='docker stack deploy --compose-file'              # Deploy or update a stack using a compose file.               Example: dstackdeploy docker-compose.yml mystack
+alias dsls='docker stack ls'                                     # List all stacks deployed in the swarm.                       Example: dstackls
+alias dsservices='docker stack services'                         # List services running in a specific stack.                   Example: dstackservices mystack
+alias dsps='docker stack ps'                                     # List all tasks (containers) in a stack with their status.    Example: dstackps mystack
+alias dsrm='docker stack rm'                                     # Remove a stack and all its services.                         Example: dstackrm mystack
+alias dslogs='docker service logs'                               # View logs for a specific service in a stack.                 Example: dservicelogs mystack_web
+alias dsconfig='docker stack config'                             # Show the combined configuration of a stack.                  Example: dstackconfig mystack
+
