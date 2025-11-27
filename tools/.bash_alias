@@ -178,6 +178,7 @@ alias dcscale='docker compose up --scale'                        # Scale a servi
 
 # Docker stack
 alias dnls='docker node ls'                                      # Check my cluster docker compose                              Example: dnls
+alias dsls='docker service ls                                    # Check my services in cluster                                 Example: dsls
 alias dsdeploy='docker stack deploy --compose-file'              # Deploy or update a stack using a compose file.               Example: dstackdeploy docker-compose.yml mystack
 alias dsls='docker stack ls'                                     # List all stacks deployed in the swarm.                       Example: dstackls
 alias dsservices='docker stack services'                         # List services running in a specific stack.                   Example: dstackservices mystack
