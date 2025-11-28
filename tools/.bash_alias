@@ -67,7 +67,7 @@ alias edit='sudo systemctl edit'                                # Edit systemd u
 # View system logs
 alias logs='sudo journalctl -xe'                                # Show recent logs with detailed error messages
 alias err='grep -biw "error"'                                   # Search for error keyword in logs
-alias jfeu='sudo journalctl -feu'                               # Follow the journal for a specific service
+alias jfeu='sudo journalctl -n 20 -feu'                         # Sjow 20 last line and new logs
 
 # Clean system logs
 alias clearlogs='sudo journalctl --vacuum-time=1d'              # Remove logs older than 1 day
