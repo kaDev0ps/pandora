@@ -62,6 +62,7 @@ alias slu='sudo systemctl list-units --type=service'            # List all syste
 alias sdr='sudo systemctl daemon-reload'                        # Reload systemctl
 alias srr='sudo systemctl reset-failed'                         # Reset systemctl failed state
 alias edit='sudo systemctl edit'                                # Edit systemd units
+alias scg='systemd-cgtop -d 5'                                  # Show more loaded services
 
 # Journalctl
 # View system logs
