@@ -189,5 +189,5 @@ alias dsconfig='docker stack config'                             # Show the comb
 
 # Run welcome script on SSH login
 if [[ -n "$SSH_CONNECTION" ]]; then
-  ~/welcome.sh
+  ~/tools/welcome.sh
 fi
