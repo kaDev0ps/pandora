@@ -7,6 +7,9 @@ if [ "$EUID" -eq 0 ]; then
   exit 1
 fi
 
+# Install Welcome
+mkdir -p "$HOME/tools" && wget -q --show-progress https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/welcome.sh -O "$HOME/tools/welcome.sh" && chmod +x "$HOME/tools/welcome.sh" && "$HOME/tools/welcome.sh"
+
 # Update package list and install git and zsh
 sudo apt-get update && sudo apt-get install git zsh -y
 
