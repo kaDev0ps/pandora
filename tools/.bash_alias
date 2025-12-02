@@ -102,7 +102,7 @@ alias sra='sudo systemctl reload angie'                         # Reload angie s
 export EDITOR=vim
 
 # N3. Netrika
-alias n3="for UNIT in \$(systemctl list-unit-files 'r*.service' --type=service --no-legend | awk '{print \$1}'); do PORT=\$(systemctl show \"\$UNIT\" --property=Environment | grep -oP '(?<=:)\\d+'); if [ -n \"\$PORT\" ]; then echo \"\$PORT \$UNIT\"; fi; done"
+alias n3='for UNIT in $(systemctl list-unit-files "r*.service" --type=service --no-legend | awk "{print \$1}"); do PORT=$(systemctl show "$UNIT" --property=Environment | grep -oP "(?<=:)\d+"); if [ -n "$PORT" ]; then echo "$PORT $UNIT"; fi; done'
 
 # Functions
 gitc() {
@@ -187,3 +187,7 @@ alias dsrm='docker stack rm'                                     # Remove a stac
 alias dslogs='docker service logs'                               # View logs for a specific service in a stack.                 Example: dservicelogs mystack_web
 alias dsconfig='docker stack config'                             # Show the combined configuration of a stack.                  Example: dstackconfig mystack
 
+# Run welcome script on SSH login
+if [[ -n "$SSH_CONNECTION" ]]; then
+  ~/welcome.sh
+fi
