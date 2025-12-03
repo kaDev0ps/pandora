@@ -37,7 +37,6 @@ alias autoremove='sudo apt autoremove -y'                       # Remove unneces
 alias h='history'                                               # View command history
 alias j='jobs -l'                                               # List current jobs
 alias du='du -ch'                                               # Show disk usage of files and directories in human-readable format
-alias sdu='du -sh /var/log/* 2>/dev/null | sort -hr | head -n 10' # Check big files in log directory
 alias ports='sudo ss -tulnp'                                    # Show open ports and listening sockets
 alias free='free -m -l -t'                                      # Display memory usage in megabytes
 alias psmem='sudo ps auxf | sort -nr -k 4 | head -10'           # Show top 10 processes by memory usage
