@@ -1,14 +1,13 @@
 # Basic commands
 alias up='uptime -p'                                            # Show system uptime in a human-readable format
-alias arg='rg --color=auto'                                      # Enable color output for ripgrep for Alt
 alias scat='sudo cat -n'                                        # Open cat with line numbers for root
 alias c='clear'                                                 # Clear the terminal screen
-alias ipa='ip -br -c a'                                          # Show network interfaces and IP
-alias l='ls -lh'                                                # List files with human-readable sizes
+alias ipa='ip -br -c a'                                         # Show network interfaces and IP
+alias ll='ls -lh'                                               # List files with human-readable sizes
 alias lo='locate'                                               # Find files by name using the locate database
 alias df='df -h'                                                # Show disk space usage in human-readable format
 alias ..='cd ..'                                                # Go up one directory
-alias ll='lsd -lh --icon=never'                                 # List files with human-readable sizes without icons
+alias lsd='lsd -lh --icon=never'                                # List files with human-readable sizes without icons
 alias la='ls -lah --color=auto'                                 # List all files including hidden ones with color
 alias mkdir='mkdir -pv'                                         # Create directories and show the progress
 alias svim='sudo vim'                                           # Open vim with line numbers for root
@@ -44,10 +43,10 @@ alias pscpu='sudo ps auxf | sort -nr -k 3 | head -10'           # Show top 10 pr
 alias myip='curl ifconfig.me'                                   # Get the external IP address
 
 # Networking
-alias dnstop='sudo dnstop -l 5 enp0s3'                          # Monitor DNS traffic on interface enp0s3
-alias vnstat='sudo vnstat -i enp0s3'                            # View network traffic stats on interface enp0s3
-alias ift='sudo iftop -i'                                       # Display bandwidth usage on an interface
-alias tcpdump='sudo tcpdump -i enp0s3'                          # Capture packet data on the specified interface
+alias dnstop='sudo dnstop -l 5'                                 # Monitor DNS traffic on interface                     Example: dnstop enp0s3
+alias vnstat='sudo vnstat -i'                                   # View network traffic stats on interface              Example: vnstat enp0s3
+alias iftop='sudo iftop -i'                                     # Display bandwidth usage on an interface              Example: iftop enp0s3
+alias tcpdump='sudo tcpdump -i'                                 # Capture packet data on the specified interface       Example: tcpdump enp0s3
 
 # Systemctl
 alias sss='sudo systemctl stop'                                 # Stop a systemd service
@@ -65,7 +64,6 @@ alias scg='systemd-cgtop -d 5'                                  # Show more load
 # Journalctl
 # View system logs
 alias logs='sudo journalctl -xe'                                # Show recent logs with detailed error messages
-alias err='grep -biw "error"'                                   # Search for error keyword in logs
 alias jfeu='sudo journalctl -n 20 -feu'                         # Sjow 20 last line and new logs
 
 # Clean system logs
@@ -81,9 +79,6 @@ alias untaz='tar -xzvf'                                         # Extract a comp
 # Tools
 alias iot='sudo iotop -oPa'                                     # TOP processes that actively use the disk (I/O)
 alias ios='iostat  -mpxz'                                       # Information on disk usage
-export HISTTIMEFORMAT="%d.%m.20%y %T "                          # Timestamp format in history
-alias envr="source ~/ranger-env/bin/activate"                   # Activate ranger virtual environment
-alias envs="deactivate"                                         # Deactivate virtual environment
 alias pssh="parallel-ssh"                                       # Parallel SSH command execution
 alias pssc="parallel-scp"                                       # Parallel file copy
 alias fd="fdfind"                                               # Find files in OS
@@ -98,7 +93,14 @@ alias srn='sudo systemctl reload nginx'                         # Reload nginx s
 alias sra='sudo systemctl reload angie'                         # Reload angie service
 
 # Environment
+alias envr="source ~/ranger-env/bin/activate"                   # Activate ranger virtual environment
+alias envs="deactivate"                                         # Deactivate virtual environment
+
+# Exports
+export HISTTIMEFORMAT="%d.%m.20%y %T "                          # Timestamp format in history
 export EDITOR=vim
+setopt extendedhistory
+HIST_STAMPS="%F %T"
 
 # N3. Netrika
 alias n3='for UNIT in $(systemctl list-unit-files "r*.service" --type=service --no-legend | awk "{print \$1}"); do PORT=$(systemctl show "$UNIT" --property=Environment | grep -oP "(?<=:)\d+"); if [ -n "$PORT" ]; then echo "$PORT $UNIT"; fi; done'
@@ -108,12 +110,7 @@ gitc() {
   git add . && git commit -m "$(date '+%Y-%m-%d %H:%M:%S')" || echo "Git commit failed"
 }
 
-# Data in history
-setopt extendedhistory
-HIST_STAMPS="%F %T"
-
 ### DOCKER ###
-
 # User and access management
 alias adduserd='sudo usermod -aG docker netrika_ka'                   # Add user to "docker" group (run once, then re-login).
 
@@ -186,7 +183,8 @@ alias dsrm='docker stack rm'                                     # Remove a stac
 alias dslogs='docker service logs'                               # View logs for a specific service in a stack.                 Example: dservicelogs mystack_web
 alias dsconfig='docker stack config'                             # Show the combined configuration of a stack.                  Example: dstackconfig mystack
 
-# Run welcome script on SSH login
+# Additional scripts
+## Run welcome script on SSH login
 if [[ -n "$SSH_CONNECTION" ]]; then
   ~/tools/welcome.sh
 fi
