@@ -116,6 +116,7 @@ alias adduserd='sudo usermod -aG docker $USER'                   # Add user to "
 
 # Check status Docker
 alias dps='docker ps -a'                                         # List all containers, including stopped ones.     Example: dps
+alias di='docker images'                                         # List all images, including stopped ones.         Example: di
 alias ddf='docker system df'                                     # Check image and resource usage size.             Example: ddf
 alias dinspect='docker inspect'                                  # View container's IP address.                     Example: dinspect mycontainer
 alias ddiff='docker diff'                                        # Changes in the container's filesystem.           Example: ddiff mycontainer
@@ -135,18 +136,19 @@ alias dstop='docker stop'                                        # Stop a contai
 alias dstart='docker start'                                      # Start a previously stopped container.            Example: dstart mycontainer
 alias dr='docker restart'                                        # Restart a container.                             Example: drestart mycontainer
 alias drm='docker rm'                                            # Remove a container.                              Example: drm mycontainer
+alias drmi='docker rmi'                                          # Remove the image.                                Example: drmi <image_name>
 alias drmcall='docker rm -v $(docker ps -aq -f status=exited)'   # Remove all stopped containers.                   Example: drmcall
 alias drmiall='docker rmi $(docker images -q) --force'           # Remove all images.                               Example: drmiall
 alias dimagesrm='docker images -a -q | xargs docker rmi'         # Delete all images.                               Example: dimagesrm
 alias dsp='docker system prune'                                  # Delete stopped conteiners, networks, images and cash.   Example: dsp
 alias dvp='docker volume prune'                                  # Delete unused volume.                            Example: dvp
 alias drestart='sudo systemctl restart docker'                   # Restart the Docker service.                      Example: drestartsvc
-alias dattach='docker attach'                                    # Attach to a running container.                   Example: dattach mycontainer
 
 # Network and configuration
 alias drunhost='docker run -h'                                   # Set custom hostname for the container.           Example: drunhost myhost -it ubuntu bash
 alias drunp='docker run -d -p'                                   # Port forwarding.                                 Example: drunp 8000:8080 nginx
 alias dexec='docker exec -it'                                    # Enter a running container interactively.         Example: dexec mycontainer bash
+alias dattach='docker attach'                                    # Attach to a running container.                   Example: dattach mycontainer
 alias dcp='docker cp'                                            # Copy a file into a container.                    Example: dcp myfile.txt mycontainer:/root/
 alias dcreate='docker create -it --name'                         # Create container without starting.               Example: dcreate mycontainer ubuntu
 alias drename='docker rename'                                    # Rename a container.                              Example: drename oldname newname
@@ -156,10 +158,6 @@ alias dcommit='docker commit'                                    # Save containe
 alias dsearch='docker search'                                    # Search images on Docker Hub.                     Example: dsearch nginx
 alias dpull='docker pull'                                        # Pull/download an image.                          Example: dpull nginx
 alias dpush='docker push'                                        # Push your image to a registry.                   Example: dpush myimage
-
-# Mounting and permissions
-alias dexecmkdir='docker exec -it'                               # Create folder in a running container.            Example: dexecmkdir mycontainer /data
-
 
 # Docker Compose aliases
 alias dcconfig='docker compose config'                           # Check docker-compose.yml.                                    Example: dcconfig
