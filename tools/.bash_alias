@@ -112,7 +112,7 @@ gitc() {
 
 ### DOCKER ###
 # User and access management
-alias adduserd='sudo usermod -aG docker netrika_ka'                   # Add user to "docker" group (run once, then re-login).
+alias adduserd='sudo usermod -aG docker $USER'                   # Add user to "docker" group (run once, then re-login).
 
 # Check status Docker
 alias dps='docker ps -a'                                         # List all containers, including stopped ones.     Example: dps
