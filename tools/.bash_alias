@@ -99,7 +99,6 @@ alias envs="deactivate"                                         # Deactivate vir
 # Exports
 export HISTTIMEFORMAT="%d.%m.20%y %T "                          # Timestamp format in history
 export EDITOR=vim
-setopt extendedhistory
 HIST_STAMPS="%F %T"
 
 # N3. Netrika
