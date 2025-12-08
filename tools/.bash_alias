@@ -115,6 +115,7 @@ gitc() {
 alias adduserd='sudo usermod -aG docker $USER'                   # Add user to "docker" group (run once, then re-login).
 
 # Check status Docker
+alias dv='docker version'                                        # Show docker version                              Example: dv
 alias dps='docker ps -a'                                         # List all containers, including stopped ones.     Example: dps
 alias di='docker images'                                         # List all images, including stopped ones.         Example: di
 alias ddf='docker system df'                                     # Check image and resource usage size.             Example: ddf
@@ -123,6 +124,7 @@ alias ddiff='docker diff'                                        # Changes in th
 alias dih='docker image history'                               # Analiz images and way to see all changes in layers Example: dih <image>
 alias dlogs='docker logs'                                        # View container logs.                             Example: dlogs mycontainer
 alias devents='docker events'                                    # Show Docker events stream.                       Example: devents
+alias drename='docker rename'                                    # Rename a container.                              Example: drename oldname newname
 
 # Docker container management
 alias dbuildcache='docker build --no-cache -t'                   # Build images without cache                       Example: dbuildcache my_app_image:latest .
@@ -151,7 +153,6 @@ alias dexec='docker exec -it'                                    # Enter a runni
 alias dattach='docker attach'                                    # Attach to a running container.                   Example: dattach mycontainer
 alias dcp='docker cp'                                            # Copy a file into a container.                    Example: dcp myfile.txt mycontainer:/root/
 alias dcreate='docker create -it --name'                         # Create container without starting.               Example: dcreate mycontainer ubuntu
-alias drename='docker rename'                                    # Rename a container.                              Example: drename oldname newname
 alias dcommit='docker commit'                                    # Save container changes as a new image.           Example: dcommit mycontainer mynewimage
 
 # Image search and distribution
