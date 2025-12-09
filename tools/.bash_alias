@@ -114,16 +114,18 @@ gitc() {
 alias adduserd='sudo usermod -aG docker $USER'                   # Add user to "docker" group (run once, then re-login).
 
 # Check status Docker
+alias d='docker'                                                 # Docker                                           Example: d
 alias dv='docker version'                                        # Show docker version                              Example: dv
 alias dps='docker ps -a'                                         # List all containers, including stopped ones.     Example: dps
 alias di='docker images'                                         # List all images, including stopped ones.         Example: di
 alias ddf='docker system df'                                     # Check image and resource usage size.             Example: ddf
 alias dinspect='docker inspect'                                  # View container's IP address.                     Example: dinspect mycontainer
 alias ddiff='docker diff'                                        # Changes in the container's filesystem.           Example: ddiff mycontainer
-alias dih='docker image history'                               # Analiz images and way to see all changes in layers Example: dih <image>
+alias dih='docker image history'                                 # Analiz images and way to see all changes in layers Example: dih <image>
 alias dlogs='docker logs'                                        # View container logs.                             Example: dlogs mycontainer
 alias devents='docker events'                                    # Show Docker events stream.                       Example: devents
 alias drename='docker rename'                                    # Rename a container.                              Example: drename oldname newname
+alias dsearch='docker search'                                    # Show images in remote repo                        Example: dsearch
 
 # Docker container management
 alias dbuildcache='docker build --no-cache -t'                   # Build images without cache                       Example: dbuildcache my_app_image:latest .
