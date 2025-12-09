@@ -128,6 +128,7 @@ alias drename='docker rename'                                    # Rename a cont
 alias dsearch='docker search'                                    # Show images in remote repo                        Example: dsearch
 
 # Docker container management
+alias dsearch='docker search'                                    # Show images in remote repo                       Example: dsearch ubuntu
 alias dbuildcache='docker build --no-cache -t'                   # Build images without cache                       Example: dbuildcache my_app_image:latest .
 alias dunit='docker unit'                                        # Initialization and create template for docker project. Example: dunit
 alias drun='docker run -it'                                      # Interactive container startup.                   Example: drun ubuntu bash  container.
