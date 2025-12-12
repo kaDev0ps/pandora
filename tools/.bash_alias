@@ -130,6 +130,7 @@ alias dstats='docker stats --no-stream'                          # Show containe
 
 # Docker container management
 alias dsearch='docker search'                                    # Show images in remote repo                       Example: dsearch ubuntu
+alias dupdate='docker update'                                    # Update launched container                        Example: update my-container
 alias dbuildcache='docker build --no-cache -t'                   # Build images without cache                       Example: dbuildcache my_app_image:latest .
 alias dunit='docker unit'                                        # Initialization and create template for docker project. Example: dunit
 alias drun='docker run -it'                                      # Interactive container startup.                   Example: drun ubuntu bash  container.
@@ -147,10 +148,12 @@ alias drmiall='docker rmi $(docker images -q) --force'           # Remove all im
 alias dimagesrm='docker images -a -q | xargs docker rmi'         # Delete all images.                               Example: dimagesrm
 alias dsp='docker system prune'                                  # Delete stopped conteiners, networks, images and cash.   Example: dsp
 alias dvp='docker volume prune'                                  # Delete unused volume.                            Example: dvp
+alias dvc='docker volume create'                                 # Create new volume.                               Example: dvc data_volume
 alias drestart='sudo systemctl restart docker'                   # Restart the Docker service.                      Example: drestartsvc
 
 # Network and configuration
 alias drunhost='docker run -h'                                   # Set custom hostname for the container.           Example: drunhost myhost -it ubuntu bash
+alias dnetwork='docker network ls'                               # Show all networks                                Example: dnetwork
 alias drunp='docker run -d -p'                                   # Port forwarding.                                 Example: drunp 8000:8080 nginx
 alias dexec='docker exec -it'                                    # Enter a running container interactively.         Example: dexec mycontainer bash
 alias dattach='docker attach'                                    # Attach to a running container.                   Example: dattach mycontainer
