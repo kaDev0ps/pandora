@@ -115,6 +115,8 @@ alias adduserd='sudo usermod -aG docker $USER'                   # Add user to "
 
 # Check status Docker
 alias d='docker'                                                 # Docker                                           Example: d
+alias dcls='docker container ls'                                 # Show status containers                           Example: dcls
+alias dt='docker top'                                            # Show top process in container                    Example: dt my-container
 alias dv='docker version'                                        # Show docker version                              Example: dv
 alias dps='docker ps -a'                                         # List all containers, including stopped ones.     Example: dps
 alias di='docker images'                                         # List all images, including stopped ones.         Example: di
@@ -122,8 +124,10 @@ alias ddf='docker system df'                                     # Check image a
 alias dinspect='docker inspect'                                  # View container's IP address.                     Example: dinspect mycontainer
 alias ddiff='docker diff'                                        # Changes in the container's filesystem.           Example: ddiff mycontainer
 alias dih='docker image history'                                 # See all changes in layers                        Example: dih <image>
-alias dlogs='docker logs'                                        # View container logs.                             Example: dlogs mycontainer
-alias devents='docker events'                                    # Show Docker events stream.                       Example: devents
+alias dlogs='docker logs -fn50'                                  # View container logs.                             Example: dlogs mycontainer
+alias devents='docker events --since  60m'                       # Show Docker events stream.                       Example: devents
+alias djfeuc='sudo journalctl -feu containerd'                    # Show journalctl for containerd.                 Example: dfeu
+alias djfeud='sudo journalctl -feu docker'                       # Show journalctl for docker.                      Example: dfeu
 alias drename='docker rename'                                    # Rename a container.                              Example: drename oldname newname
 alias dsearch='docker search'                                    # Show images in remote repo                       Example: dsearch
 alias dstats='docker stats --no-stream'                          # Show containers limied                           Example: dstats
