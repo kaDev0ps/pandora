@@ -38,7 +38,7 @@ alias j='jobs -l'                                               # List current j
 alias du='du -ch'                                               # Show disk usage of files and directories in human-readable format
 alias ports='sudo ss -tulnp'                                    # Show open ports and listening sockets
 alias free='free -m -l -t'                                      # Display memory usage in megabytes
-alias info='ps aux --sort=-%cpu | head -n 11 | awk "NR==1 {print \$1,\$2,\$3,\$4,\$9,\$11; next} {print \$1,\$2,\$3,\$4,\$9,\$11}" | column -t'
+alias info='ps aux --sort=-%cpu | head -n 11 | awk '\''NR==1{print $1,$2,$3,$4,$9,$11;next}{print $1,$2,$3,$4,$9,$11}'\'' | column -t'
                                                                 # Show top 10 processes by CPU and memory usage
 
 alias myip='curl ifconfig.me'                                   # Get the external IP address
