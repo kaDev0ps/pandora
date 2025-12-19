@@ -27,7 +27,7 @@ alias cutc='cut -c'                                             # Show short log
 ## Display system information
 alias mtr10='mtr -r -c 10'                                      # Run traceroute with 10 cycles
 alias mtr100='mtr -r -c 100'                                    # Run traceroute with 100 cycles
-alias sysinfo='uname -a; lsb_release -a'                        # Show system and version info
+alias sysinfo='uname -a; lsb_release -a'                        # Show system and versn info
 alias update='sudo apt update'                                  # Update package lists
 alias clean='sudo apt clean'                                    # Clean local repository of retrieved package files
 alias autoremove='sudo apt autoremove -y'                       # Remove unnecessary packages automatically
