@@ -47,7 +47,7 @@ alias dnstop='sudo dnstop -l 5'                                 # Monitor DNS tr
 alias vnstat='sudo vnstat -i'                                   # View network traffic stats on interface              Example: vnstat enp0s3
 alias iftop='sudo iftop -i'                                     # Display bandwidth usage on an interface              Example: iftop enp0s3
 alias tcpdump='sudo tcpdump -i'                                 # Capture packet data on the specified interface       Example: tcpdump enp0s3
-alias connections='alias connections='ss -tan | awk "/ESTAB/ {print \$5}" | cut -d: -f1 | sort | uniq -c | sort -nr | head -10'
+alias connections='ss -tan | awk "/ESTAB/ {print \$5}" | cut -d: -f1 | sort | uniq -c | sort -nr | head -10'
                                                                 # Show  active connections from host                   Example: connections
 # Systemctl
 alias sss='sudo systemctl stop'                                 # Stop a systemd service
