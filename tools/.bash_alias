@@ -37,9 +37,6 @@ alias h='history'                                               # View command h
 alias j='jobs -l'                                               # List current jobs
 alias du='du -ch'                                               # Show disk usage of files and directories in human-readable format
 alias ports='sudo ss -tulnp'                                    # Show open ports and listening sockets
-alias free='free -m -l -t'                                      # Display memory usage in megabytes
-alias info='sudo ps auxf | sort -nr -k 4 | head -10'            # Show top 10 processes by CPU and memory usage
-
 alias myip='curl ifconfig.me'                                   # Get the external IP address
 
 # Networking
@@ -109,8 +106,8 @@ alias n3='for UNIT in $(systemctl list-unit-files "r*.service" --type=service --
 gitc() {
   git add . && git commit -m "$(date '+%Y-%m-%d %H:%M:%S')" || echo "Git commit failed"
 }
-myps() {
-    sudo ps auxf | sort -nr -k 4 | head -10
+info() {
+    echo "USER PID %CPU %MEM COMMAND"; sudo ps -eo user,pid,%cpu,%mem,command --no-headers | sort -nr -k 3 | head -10
 }
 
 ### DOCKER ###
