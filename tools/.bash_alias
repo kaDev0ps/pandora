@@ -109,6 +109,9 @@ alias n3='for UNIT in $(systemctl list-unit-files "r*.service" --type=service --
 gitc() {
   git add . && git commit -m "$(date '+%Y-%m-%d %H:%M:%S')" || echo "Git commit failed"
 }
+myps() {
+    sudo ps auxf | sort -nr -k 4 | head -10
+}
 
 ### DOCKER ###
 # User and access management
