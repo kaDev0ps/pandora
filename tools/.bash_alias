@@ -124,6 +124,7 @@ alias di='docker images'                                         # List all imag
 alias ddf='docker system df'                                     # Check image and resource usage size.             Example: ddf
 alias dinfo='docker system info'                                 # Info about docker host                           Example: dinfo
 alias dinspect='docker inspect'                                  # View container's IP address.                     Example: dinspect mycontainer
+alias diinspect='docker image inspect'                           # View image's info.                               Example: diinspect myimage
 alias ddiff='docker diff'                                        # Changes in the container's filesystem.           Example: ddiff mycontainer
 alias dih='docker image history'                                 # See all changes in layers                        Example: dih <image>
 alias dlogs='docker logs -fn50'                                  # View container logs.                             Example: dlogs mycontainer
