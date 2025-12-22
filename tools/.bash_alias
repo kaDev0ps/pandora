@@ -152,9 +152,10 @@ alias drmi='docker rmi'                                          # Remove the im
 alias drmcall='docker rm -v $(docker ps -aq -f status=exited)'   # Remove all stopped containers.                   Example: drmcall
 alias drmiall='docker rmi $(docker images -q) --force'           # Remove all images.                               Example: drmiall
 alias dimagesrm='docker images -a -q | xargs docker rmi'         # Delete all images.                               Example: dimagesrm
-alias dsp='docker system prune'                                  # Delete stopped conteiners, networks, images and cash.   Example: dsp
+alias dsprune='docker system prune'                              # Delete stopped conteiners, networks, images and cash.   Example: dsprune
 alias dcprune='docker container prune'                           # Delete stopped container.                        Example: dcprune
-alias dvp='docker volume prune'                                  # Delete unused volume.                            Example: dvp
+alias diprune='docker image prune'                               # Delete unused images.                            Example: diprune
+alias dvprune='docker volume prune'                              # Delete unused volume.                            Example: dvprune
 alias dvc='docker volume create'                                 # Create new volume.                               Example: dvc data_volume
 alias drestart='sudo systemctl restart docker'                   # Restart the Docker service.                      Example: drestartsvc
 
