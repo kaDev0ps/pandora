@@ -76,9 +76,19 @@ add_line_if_not_exists "$HOME/.zshrc" "ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=blue,
 # Add extended history options and alias for history command if missing
 if ! grep -q 'setopt extended_history' "$HOME/.zshrc"; then
   cat >> "$HOME/.zshrc" <<'EOF'
-setopt extended_history
-HIST_STAMPS="yyyy-mm-dd hh:mm:ss"
-alias history="fc -l -i"
+# History settings
+HISTFILE=~/.zsh_history
+HISTSIZE=1000000          # Max lines in memory  
+SAVEHIST=1000000          # Max lines saved to file
+setopt EXTENDED_HISTORY   # Timestamps: :start:elapsed;command
+setopt INC_APPEND_HISTORY # Save immediately after each command
+setopt SHARE_HISTORY      # Share history across sessions
+setopt HIST_IGNORE_DUPS   # No duplicates
+
+HIST_STAMPS="yyyy-mm-dd"  # Date format (optional with EXTENDED_HISTORY)
+
+# Show ALL history with timestamps
+alias history="fc -li 1"  # Changed: '1' shows from first entry
 EOF
 fi
 
