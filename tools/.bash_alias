@@ -9,6 +9,7 @@ alias df='df -h'                                                # Show disk spac
 alias ..='cd ..'                                                # Go up one directory
 alias lsd='lsd -lh --icon=never'                                # List files with human-readable sizes without icons
 alias la='ls -lah --color=auto'                                 # List all files including hidden ones with color
+alias lscpu='sudo lscpu'                                        # Check all info about CPU
 alias mkdir='mkdir -pv'                                         # Create directories and show the progress
 alias svim='sudo vim'                                           # Open vim with line numbers for root
 alias psg='ps aux | grep'                                       # Search for a process by name
