@@ -115,82 +115,90 @@ info() {
 # User and access management
 alias adduserd='sudo usermod -aG docker $USER'                   # Add user to "docker" group (run once, then re-login).
 
-# Check status Docker
-alias d='docker'                                                 # Docker                                           Example: d
-alias dcls='docker container ls'                                 # Show status containers                           Example: dcls
-alias dt='docker top'                                            # Show top process in container                    Example: dt my-container
-alias dv='docker version'                                        # Show docker version                              Example: dv
-alias dps='docker ps -a'                                         # List all containers, including stopped ones.     Example: dps
-alias di='docker images'                                         # List all images, including stopped ones.         Example: di
-alias ddf='docker system df'                                     # Check image and resource usage size.             Example: ddf
-alias dinfo='docker system info'                                 # Info about docker host                           Example: dinfo
-alias dinspect='docker inspect'                                  # View container's IP address.                     Example: dinspect mycontainer
-alias diinspect='docker image inspect'                           # View image's info.                               Example: diinspect myimage
-alias ddiff='docker diff'                                        # Changes in the container's filesystem.           Example: ddiff mycontainer
-alias dih='docker image history'                                 # See all changes in layers                        Example: dih <image>
-alias dlogs='docker logs -fn50'                                  # View container logs.                             Example: dlogs mycontainer
-alias dsevents='docker system events --since  60m'               # Show Docker events stream.                       Example: dsevents
-alias djfeuc='sudo journalctl -feu containerd'                   # Show journalctl for containerd.                  Example: dfeu
-alias djfeud='sudo journalctl -feu docker'                       # Show journalctl for docker.                      Example: dfeu
-alias drename='docker rename'                                    # Rename a container.                              Example: drename oldname newname
-alias dsearch='docker search'                                    # Show images in remote repo                       Example: dsearch
-alias dstats='docker stats --no-stream'                          # Show containers limied                           Example: dstats
+# Core Status & Inspect
+alias d='docker'                          # Example: d ps
+alias dps='docker ps'                     # Example: dps
+alias dpa='docker ps -a'                  # Example: dpa
+alias dpsq='docker ps -q'                 # Example: dpsq
+alias dls='docker ps -l -q'               # Example: dls
+alias di='docker images -a'               # Example: di
+alias diq='docker images -q'              # Example: diq
+alias dins='docker inspect'               # Example: dins myapp
+alias diins='docker image inspect'        # Example: diins nginx:alpine
+alias dv='docker version'                 # Example: dv
+alias dinfo='docker system info'          # Example: dinfo
+alias ddf='docker system df'              # Example: ddf
+alias dstats='docker stats'               # Example: dstats (or dstats myapp)
+alias devents='docker system events'      # Example: devents
+alias ddisk='df -h /var/lib/docker'       # Example: ddisk
+alias ddaemon='cat /etc/docker/daemon.json'  # Example: ddaemon
+alias djfeuc='sudo journalctl -feu containerd'                            # Example: dfeuc
+alias djfeud='sudo journalctl -feu docker'                                # Example: dfeud
 
-# Docker container management
-alias dsearch='docker search'                                    # Show images in remote repo                       Example: dsearch ubuntu
-alias dupdate='docker update'                                    # Update launched container                        Example: update my-container
-alias dbuildcache='docker build --no-cache -t'                   # Build images without cache                       Example: dbuildcache my_app_image:latest .
-alias dunit='docker unit'                                        # Initialization and create template for docker project. Example: dunit
-alias drun='docker run -it'                                      # Interactive container startup.                   Example: drun ubuntu bash  container.
-alias drunn='docker run --name'                                  # Start container with a name.                     Example: drunn mynameubuntu -it ubuntu bash 
-alias drund='docker run -d'                                      # Start a container in the background.             Example: drund nginx
-alias drunr='docker run --read-only'                             # Start a container in read-only mode.             Example: drunr ubuntu
-alias drunrm='docker run --rm'                                   # Start a container and remove after exit          Example: drunrm <image_name> <command>
-alias dstop='docker stop'                                        # Stop a container.                                Example: dstop mycontainer 
-alias dstart='docker start'                                      # Start a previously stopped container.            Example: dstart mycontainer
-alias dr='docker restart'                                        # Restart a container.                             Example: drestart mycontainer
-alias drm='docker rm'                                            # Remove a container.                              Example: drm mycontainer
-alias drmi='docker rmi'                                          # Remove the image.                                Example: drmi <image_name>
-alias drmcall='docker rm -v $(docker ps -aq -f status=exited)'   # Remove all stopped containers.                   Example: drmcall
-alias drmiall='docker rmi $(docker images -q) --force'           # Remove all images.                               Example: drmiall
-alias dimagesrm='docker images -a -q | xargs docker rmi'         # Delete all images.                               Example: dimagesrm
-alias dsprune='docker system prune'                              # Delete stopped conteiners, networks, images and cash.   Example: dsprune
-alias dcprune='docker container prune'                           # Delete stopped container.                        Example: dcprune
-alias diprune='docker image prune'                               # Delete unused images.                            Example: diprune
-alias dvprune='docker volume prune'                              # Delete unused volume.                            Example: dvprune
-alias dvc='docker volume create'                                 # Create new volume.                               Example: dvc data_volume
-alias drestart='sudo systemctl restart docker'                   # Restart the Docker service.                      Example: drestartsvc
+# Build & Images
+alias db='docker build -t'                # Example: db myapp:v1 .
+alias dbc='docker build --no-cache -t'    # Example: dbc myapp:debug .
+alias dbf='docker build -f -t'            # Example: dbf Dockerfile.prod -t myapp:prod .
+alias dph='docker pull'                   # Example: dph nginx:alpine
+alias drs='docker search'                 # Example: drs postgres
+alias dih='docker image history'          # Example: dih nginx:alpine
+alias drmi='docker rmi'                   # Example: drmi myapp:v1
 
-# Network and configuration
-alias drunhost='docker run -h'                                   # Set custom hostname for the container.           Example: drunhost myhost -it ubuntu bash
-alias dnetwork='docker network ls'                               # Show all networks                                Example: dnetwork
-alias drunp='docker run -d -p'                                   # Port forwarding.                                 Example: drunp 8000:8080 nginx
-alias dexec='docker exec -it'                                    # Enter a running container interactively.         Example: dexec mycontainer bash
-alias dattach='docker attach'                                    # Attach to a running container.                   Example: dattach mycontainer
-alias dcp='docker cp'                                            # Copy a file into a container.                    Example: dcp myfile.txt mycontainer:/root/
-alias dcreate='docker create -it --name'                         # Create container without starting.               Example: dcreate mycontainer ubuntu
-alias dcommit='docker commit'                                    # Save container changes as a new image.           Example: dcommit mycontainer mynewimage
 
-# Image search and distribution
-alias dsearch='docker search'                                    # Search images on Docker Hub.                     Example: dsearch nginx
-alias dpull='docker pull'                                        # Pull/download an image.                          Example: dpull nginx
-alias dpush='docker push'                                        # Push your image to a registry.                   Example: dpush myimage
+# Run & Exec (Safe defaults)
+alias drun='docker run -it --rm'          # Example: drun nginx:alpine bash
+alias drund='docker run -d --rm'          # Example: drund nginx:alpine
+alias drp='docker run -d -p --rm'         # Example: drp 8080:80 nginx:alpine
+alias drP='docker run -d -P --rm'         # Example: drP nginx:alpine
+alias dex='docker exec -it'               # Example: dex myapp bash
+alias dsh='docker exec -it $(docker ps -lq) sh || docker exec -it $(docker ps -lq) bash'  # Example: dsh (uses last cont)
+alias datt='docker attach'                # Example: datt myapp
 
-# Docker Compose aliases
-alias dcconfig='docker compose config'                           # Check docker-compose.yml.                                    Example: dcconfig
-alias dcupd='docker compose up -d'                               # Start containers detached in the background.                 Example: dcupd
-alias dcstop='docker compose stop'                               # Stop running containers without removing.                    Example: dcstop
-alias dcdown='docker compose down'                               # Stop and remove containers, networks, and default volumes.   Example: dcdown
-alias dcb='docker compose build'                                 # Build or rebuild service images.                             Example: dcb
-alias dcrestart='docker compose down -v && docker compose up -d' # Restart specified service or all if none specified.          Example: `dcrestart`
-alias dcps='docker compose ps'                                   # List running containers and their statuses.                  Example: dcps
-alias dclogs='docker compose logs -f'                            # Show and follow logs live.                                   Example: dclogs
-alias dcexec='docker compose exec'                               # Execute command inside a running service container.          Example (shell): dcexec web sh
-alias dcrun='docker compose run'                                 # Run one-off command in a new container.                      Example: dcrun web npm test
-alias dcrm='docker compose rm'                                   # Remove stopped service containers.                           Example: dcrm
-alias dcpull='docker compose pull'                               # Pull the latest images from the registry.                    Example: dcpull
-alias dccfg='docker compose config'                              # Validate and show merged docker-compose configuration.       Example: dccfg
-alias dcscale='docker compose up -d --scale'                     # Scale a service to N instances.                              Example: dcscale web=3
+# Control & Lifecycle
+alias dlogs='docker logs -f --tail 100'   # Example: dlogs myapp
+alias dstop='docker stop'                 # Example: dstop myapp
+alias dkill='docker kill'                 # Example: dkill myapp
+alias drst='docker restart'               # Example: drst myapp
+alias dstart='docker start'               # Example: dstart myapp
+alias drm='docker rm -f'                  # Example: drm myapp (or dpsq | xargs drm)
+alias drename='docker rename'             # Example: drename oldname newname
+alias dcp='docker cp'                     # Example: dcp README.md myapp:/app/
+
+# Cleanup (Progressive)
+alias dcpr='docker container prune -f'    # Example: dcpr
+alias dipr='docker image prune -a -f'     # Example: dipr
+alias dvpr='docker volume prune -f'       # Example: dvpr
+alias dnpr='docker network prune -f'      # Example: dnpr
+alias dbpr='docker builder prune -a -f'   # Example: dbpr
+alias dspr='docker system prune -a -f'    # Example: dspr
+alias dsprv='docker system prune -a -f --volumes'  # Example: dsprv (⚠️ CAREFUL)
+
+# Volumes
+alias dvl='docker volume ls'              # Example: dvl
+alias dvins='docker volume inspect'       # Example: dvins mydata
+alias dvcr='docker volume create'         # Example: dvcr mydata
+alias dvrm='docker volume rm'             # Example: dvrm mydata
+
+# Docker Compose
+alias dc='docker compose'                 # Example: dc ps
+alias dcu='docker compose up -d'          # Example: dcu
+alias dcub='docker compose up -d --build' # Example: dcub
+alias dcd='docker compose down -v'        # Example: dcd
+alias dcl='docker compose logs -f'        # Example: dcl
+alias dcp='docker compose ps'             # Example: dcp
+alias dce='docker compose exec'           # Example: dce web bash
+alias dcb='docker compose build'          # Example: dcb
+alias dcrm='docker compose rm -f'         # Example: dcrm
+alias dcfg='docker compose config'        # Example: dcfg
+
+# Swarm
+alias dsi='docker swarm init'                # Example: dsi
+alias dsjw='docker swarm join-token worker'  # Example: dsjw
+alias dsjm='docker swarm join-token manager' # Example: dsjm
+alias dsnl='docker node ls'                  # Example: dsnl
+alias dsls='docker service ls'               # Example: dsls
+alias dsdeploy='docker stack deploy --compose-file'  # Example: dsdeploy docker-compose.yml mystack
+alias dsrm='docker stack rm'                 # Example: dsrm mystack
 
 # Docker stack
 alias dnls='docker node ls'                                      # Check my cluster docker compose                              Example: dnls
