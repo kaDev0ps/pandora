@@ -47,6 +47,7 @@ alias iftop='sudo iftop -i'                                     # Display bandwi
 alias tcpdump='sudo tcpdump -i'                                 # Capture packet data on the specified interface       Example: tcpdump enp0s3
 alias connections='ss -tan | awk "/ESTAB/ {print \$5}" | cut -d: -f1 | sort | uniq -c | sort -nr | head -10'
                                                                 # Show  active connections from host                   Example: connections
+alias open='sudo nmap -sUT -p- localhost'                       # Show listen port
 # Systemctl
 alias sss='sudo systemctl stop'                                 # Stop a systemd service
 alias ssr='sudo systemctl restart'                              # Restart a systemd service
