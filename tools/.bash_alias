@@ -220,9 +220,10 @@ alias kcf='kubectl create -f'                     # Kubernetes will create POD `
 alias kgp='kubectl get pods'                      # show you a list of all available PODs
 alias kaf='kubectl apply -f'                      # applying manifest for pod `kaf pod.yml`
 alias kdp='kubectl describe pod'                  # Show describe our pod `kdp nginx`
+alias kdel='kubectl delete pod'                   # Delete  our pod `kdelp nginx`
 alias kgr='kubectl get replicationcontroller'     # show you status `replicationcontroller`
 alias kgrs='kubectl get replicaset'               # show you status `replicaset`
-alias kgrs='kubectl replace replicaset'           # update manifest for `replicaset`
+alias krrs='kubectl replace replicaset'           # update manifest for `krrs replicaset.yml`
 
 # Additional scripts
 ## Run welcome script on SSH login
