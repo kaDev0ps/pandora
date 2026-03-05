@@ -212,6 +212,18 @@ alias dsrm='docker stack rm'                                     # Remove a stac
 alias dslogs='docker service logs'                               # View logs for a specific service in a stack.                 Example: dservicelogs mystack_web
 alias dsconfig='docker stack config'                             # Show the combined configuration of a stack.                  Example: dstackconfig mystack
 
+# K8S
+alias kr='kubectl run'                            # used to deploy an application to a cluster
+alias kci='kubectl cluster-info'                  # used to view cluster information
+alias kgn='kubectl get nodes'                     # used to list all nodes in a cluster
+alias kcf='kubectl create -f'                     # Kubernetes will create POD `kcf pod-definition.yml`
+alias kgp='kubectl get pods'                      # show you a list of all available PODs
+alias kaf='kubectl apply -f'                      # applying manifest for pod `kaf pod.yml`
+alias kdp='kubectl describe pod'                  # Show describe our pod `kdp nginx`
+alias kgr='kubectl get replicationcontroller'     # show you status `replicationcontroller`
+alias kgrs='kubectl get replicaset'               # show you status `replicaset`
+alias kgrs='kubectl replace replicaset'           # update manifest for `replicaset`
+
 # Additional scripts
 ## Run welcome script on SSH login
 if [[ -n "$SSH_CONNECTION" ]]; then
