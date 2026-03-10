@@ -212,34 +212,48 @@ alias dsrm='docker stack rm'                                     # Remove a stac
 alias dslogs='docker service logs'                               # View logs for a specific service in a stack.                 Example: dservicelogs mystack_web
 alias dsconfig='docker stack config'                             # Show the combined configuration of a stack.                  Example: dstackconfig mystack
 
-# K8S
-alias kms='minikube status'                       # Check status minikube
-alias kci='kubectl cluster-info'                  # Check kubectl cluster
+## K8S
+### Minikube
+alias mks='minikube status'                       # Check status minikube
+alias mkr='minikube start'                        # Check status minikube
+alias mks='minikube service'                      # Check status minikube `mks nginx`
 
-alias kr='kubectl run'                            # used to deploy an application to a cluster
-alias kci='kubectl cluster-info'                  # used to view cluster information
+### Get
+
 alias kgn='kubectl get nodes'                     # used to list all nodes in a cluster
-alias kcf='kubectl create -f'                     # Kubernetes will create POD `kcf pod-definition.yml`
 alias kgp='kubectl get pods'                      # show list of all available PODs
-alias kaf='kubectl apply -f'                      # applying manifest for pod `kaf pod.yml`
 alias kgall='kubectl get all'                     # show list of all kubernetes object
-alias kgs='kubectl get service'                     # show list of all kubernetes object
+alias kgs='kubectl get service'                   # show list of all kubernetes object
+alias kgrc='kubectl get replicationcontroller'    # show you status `replicationcontroller`
+alias kgrs='kubectl get replicaset'               # show you status `replicaset`
+
+### Describe
 alias kdp='kubectl describe pod'                  # Show describe our pod `kdp nginx`
-alias kdrs='kubectl describe rs'                  # Show describe our pod `kdp nginx`
-alias kddp='kubectl describe deploy'               # Show describe our pod `kdp nginx`
+alias kds='kubectl describe service'              # Show describe our pod `kds service`
+alias kdrs='kubectl describe rs'                  # Show describe our pod `kdrs nginx`
+alias kddp='kubectl describe deploy'              # Show describe our pod `kddp nginx`
+
+### Clean
 alias kdelpo='kubectl delete pod'                 # Delete  our pod `kdelpo nginx`
 alias kdelrc='kubectl delete rc'                  # Delete  our rc `kdelrc replicaset.yml`
 alias kdelrs='kubectl delete rs'                  # Delete  our rs `kdelrs replicationcontroller.yaml`
 alias kdeldp='kubectl delete deploy'              # Delete  our deploy `kdelrs replicationcontroller.yaml`
-alias kgr='kubectl get replicationcontroller'     # show you status `replicationcontroller`
-alias kgrs='kubectl get replicaset'               # show you status `replicaset`
-alias krrs='kubectl replace replicaset -f'        # update manifest for `krrs replicaset.yml`
-alias kers='kubectl edit replicaset'              # edit  manifest for `krrs replicaset.yml`
-alias kadry='kubectl apply --dry-run=client -f'   # Check file to validate `kadry deploy .yml`
+alias kdels='kubectl delete service'              # Delete  our deploy `kdelrs replicationcontroller.yaml`
 
-alias krstatus='kubectl rollout status deploy'           # Show status update `krstatus deployment/my-app`
+### Deploy
+alias krstatus='kubectl rollout status deploy'    # Show status update `krstatus deployment/my-app`
 alias krhistory='kubectl rollout history'         # Show status deployment revision `krhistory deployment/my-app`
 alias krundo='kubectl rollout undo'               # Rollout to back you update `krundo deployment/my-app`
+
+### Basic
+alias kci='kubectl cluster-info'                  # Check kubectl cluster
+alias kr='kubectl run'                            # used to deploy an application to a cluster
+alias kci='kubectl cluster-info'                  # used to view cluster information
+alias kcf='kubectl create -f'                     # Kubernetes will create POD `kcf pod-definition.yml`
+alias kaf='kubectl apply -f'                      # applying manifest for pod `kaf pod.yml`
+alias krrs='kubectl replace replicaset -f'        # update manifest for `krrs replicaset.yml`
+alias kers='kubectl edit replicaset'              # edit  manifest for `kers replicaset.yml`
+alias kadry='kubectl apply --dry-run=client -f'   # Check file to validate `kadry deploy .yml`
 
 # Additional scripts
 ## Run welcome script on SSH login
