@@ -214,7 +214,7 @@ alias dsconfig='docker stack config'                             # Show the comb
 
 # K8S
 alias kms='minikube status'                       # Check status minikube
-alias kci='kubectl cluster-info                   # Check kubectl cluster
+alias kci='kubectl cluster-info'                  # Check kubectl cluster
 alias kr='kubectl run'                            # used to deploy an application to a cluster
 alias kci='kubectl cluster-info'                  # used to view cluster information
 alias kgn='kubectl get nodes'                     # used to list all nodes in a cluster
