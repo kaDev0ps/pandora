@@ -261,3 +261,8 @@ alias kadry='kubectl apply --dry-run=client -f'   # Check file to validate `kadr
 if [[ -n "$SSH_CONNECTION" ]]; then
   ~/tools/welcome.sh
 fi
+
+## Sudo systemctl vim
+ssv() {
+  sudo systemctl edit "/etc/systemd/system/$@"
+}
