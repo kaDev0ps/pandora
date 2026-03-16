@@ -264,5 +264,5 @@ fi
 
 ## Sudo systemctl vim
 ssv() {
-  sudo systemctl edit "/etc/systemd/system/$@"
+  sudo vim "/etc/systemd/system/$@"
 }
