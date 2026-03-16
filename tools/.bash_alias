@@ -233,6 +233,9 @@ alias kdp='kubectl describe pod'                  # Show describe our pod `kdp n
 alias kds='kubectl describe service'              # Show describe our pod `kds service`
 alias kdrs='kubectl describe rs'                  # Show describe our pod `kdrs nginx`
 alias kddp='kubectl describe deploy'              # Show describe our pod `kddp nginx`
+## Logs and debugging
+alias kl='kubectl logs'                           # Show logs of a pod `kl nginx`
+alias klf='kubectl logs -f'                       # Tail logs of a pod `klf nginx`
 
 ### Clean
 alias kdelpo='kubectl delete pod'                 # Delete  our pod `kdelpo nginx`
