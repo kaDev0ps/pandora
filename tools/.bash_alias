@@ -262,7 +262,7 @@ if [[ -n "$SSH_CONNECTION" ]]; then
   ~/tools/welcome.sh
 fi
 
-## Sudo systemctl vim
+## Sudo systemctl edit
 ssv() {
   sudo vim "/etc/systemd/system/$@"
 }
