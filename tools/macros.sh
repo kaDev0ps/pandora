@@ -4,11 +4,11 @@ mkdir -p "$HOME/tools" && wget https://raw.githubusercontent.com/kaDev0ps/pandor
 mkdir -p "$HOME/tools" && wget https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/.packages.sh -O "$HOME/tools/.packages.sh" && chmod +x "$HOME/tools/.packages.sh" && "$HOME/tools/.packages.sh"
 # Backup configs
 mkdir -p "$HOME/tools" && wget -q --show-progress https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/.backup_configs.sh -O "$HOME/tools/.backup_configs.sh" && chmod +x "$HOME/tools/.backup_configs.sh" && sudo cp "$HOME/tools/.backup_configs.sh" /usr/lib/ && sudo /usr/lib/.backup_configs.sh && ln -sf /usr/lib/.backup_configs.sh "$HOME/backup_configs.sh" || true && ln -sfn /data/backup/services/ "$HOME/backups"
-# Add users
-mkdir -p "$HOME/tools/pssh" && wget -q --show-progress https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/pssh/add_users.sh -O "$HOME/tools/pssh/add_users.sh" && chmod +x "$HOME/tools/pssh/add_users.sh" && "$HOME/tools/pssh/add_users.sh"
 # Welcome
 mkdir -p "$HOME/tools" && wget -q --show-progress https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/welcome.sh -O "$HOME/tools/welcome.sh" && chmod +x "$HOME/tools/welcome.sh" && "$HOME/tools/welcome.sh"
 # Ranger
 mkdir -p "$HOME/tools" && wget -q --show-progress https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/.install_ranger.sh -O "$HOME/tools/install_ranger.sh" && chmod +x "$HOME/tools/install_ranger.sh" && "$HOME/tools/install_ranger.sh"
 # Add alias
 wget https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/.bash_alias -O ~/.bash_aliases && grep -qxF 'if [ -f ~/.bash_aliases ]; then . ~/.bash_aliases; fi' ~/.bashrc || echo 'if [ -f ~/.bash_aliases ]; then . ~/.bash_aliases; fi' >> ~/.bashrc && grep -qxF 'if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi' ~/.zshrc || echo 'if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi' >> ~/.zshrc && exec zsh
+# Install ncdu
+mkdir -p "$HOME/tools" && wget -q --show-progress https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/.ncdu.sh -O "$HOME/tools/install_ncdu.sh" && chmod +x "$HOME/tools/install_ncdu.sh" && "$HOME/tools/install_ncdu.sh"
