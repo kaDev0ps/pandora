@@ -227,7 +227,7 @@ alias kgall='kubectl get all'                     # show list of all available k
 alias kgs='kubectl get service'                   # show list of all kubernetes object
 alias kgrs='kubectl get replicaset'               # show you status `replicaset`
 alias kge='kubectl get endpoints'                 # show list of endpoints kubernetes object
-alias kgealla='kubectl get po -A'                 # show list of all PODs with systems kubernetes object
+alias kgallp='kubectl get po -A'                 # show list of all PODs with systems kubernetes object
 
 ### Describe
 alias kdpo='kubectl describe pod'                 # Show describe our pod `kdp nginx`
