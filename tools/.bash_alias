@@ -221,26 +221,26 @@ alias mks='minikube service'                      # Check status minikube `mks n
 
 ### Get
 
-alias kgn='kubectl get nodes'                     # used to list all nodes in a cluster
-alias kgp='kubectl get pods'                      # show list of all available PODs
-alias kgall='kubectl get all'                     # show list of all kubernetes object
+alias kgno='kubectl get nodes'                    # used to list all nodes in a cluster
+alias kgpo='kubectl get pods'                     # show list of all available PODs
+alias kgall='kubectl get all'                     # show list of all available kubernetes object
 alias kgs='kubectl get service'                   # show list of all kubernetes object
-alias kgrc='kubectl get replicationcontroller'    # show you status `replicationcontroller`
 alias kgrs='kubectl get replicaset'               # show you status `replicaset`
+alias kge='kubectl get endpoints'                 # show list of endpoints kubernetes object
+alias kgealla='kubectl get po -A'                 # show list of all PODs with systems kubernetes object
 
 ### Describe
-alias kdp='kubectl describe pod'                  # Show describe our pod `kdp nginx`
-alias kds='kubectl describe service'              # Show describe our pod `kds service`
+alias kdpo='kubectl describe pod'                 # Show describe our pod `kdp nginx`
+alias kdse='kubectl describe service'             # Show describe our pod `kds service`
 alias kdrs='kubectl describe rs'                  # Show describe our pod `kdrs nginx`
 alias kddp='kubectl describe deploy'              # Show describe our pod `kddp nginx`
-## Logs and debugging
+alias kdn='kubectl describe node'                 # Describe a node <pod-name>
 alias kl='kubectl logs'                           # Show logs of a pod `kl nginx`
 alias klf='kubectl logs -f'                       # Tail logs of a pod `klf nginx`
 
 ### Clean
 alias kdelpo='kubectl delete pod'                 # Delete  our pod `kdelpo nginx`
-alias kdelrc='kubectl delete rc'                  # Delete  our rc `kdelrc replicaset.yml`
-alias kdelrs='kubectl delete rs'                  # Delete  our rs `kdelrs replicationcontroller.yaml`
+alias kdelrs='kubectl delete rs'                  # Delete  our rc `kdelrc replicaset.yml`
 alias kdeldp='kubectl delete deploy'              # Delete  our deploy `kdelrs replicationcontroller.yaml`
 alias kdels='kubectl delete service'              # Delete  our deploy `kdelrs replicationcontroller.yaml`
 
@@ -258,6 +258,12 @@ alias kaf='kubectl apply -f'                      # applying manifest for pod `k
 alias krrs='kubectl replace replicaset -f'        # update manifest for `krrs replicaset.yml`
 alias kers='kubectl edit replicaset'              # edit  manifest for `kers replicaset.yml`
 alias kadry='kubectl apply --dry-run=client -f'   # Check file to validate `kadry deploy .yml`
+
+## Node and cluster info
+alias kci='kubectl cluster-info'                  # Show cluster info
+alias ktop='kubectl top'                          # Show resource usage (requires metrics server)
+alias ktopn='kubectl top node'                    # Show node metrics
+alias ktopp='kubectl top pod'                     # Show pod metrics (CPU, RAM)
 
 # Additional scripts
 ## Run welcome script on SSH login
