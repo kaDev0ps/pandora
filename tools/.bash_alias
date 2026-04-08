@@ -24,6 +24,7 @@ alias lsof='sudo lsof -i'                                       # Show services 
 alias gr="grep -Ev '^\s*#|^$'"                                  # Show file without comment and empty line
 alias col='column -t -s'                                        # Column tail     Example: col ' ' or col ','
 alias cutc='cut -c'                                             # Show short logs Example: cutc 1-200 
+alias killu='sudo pkill -9 -u'                                  # Delete all process users 
 
 # Updates
 ## Display system information
