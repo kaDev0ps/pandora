@@ -1,6 +1,7 @@
 # Basic commands
 alias up='uptime -p'                                            # Show system uptime in a human-readable format
 alias scat='sudo cat -n'                                        # Open cat with line numbers for root
+alias tails='tail -n +1'                                        # Open all file with names Example: `tails *`
 alias c='clear'                                                 # Clear the terminal screen
 alias ipa='ip -br -c a'                                         # Show network interfaces and IP
 alias ll='ls -lh'                                               # List files with human-readable sizes
@@ -25,6 +26,7 @@ alias gr="grep -Ev '^\s*#|^$'"                                  # Show file with
 alias col='column -t -s'                                        # Column tail     Example: col ' ' or col ','
 alias cutc='cut -c'                                             # Show short logs Example: cutc 1-200 
 alias killu='sudo pkill -9 -u'                                  # Delete all process users 
+
 
 # Updates
 ## Display system information
