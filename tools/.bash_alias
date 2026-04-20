@@ -12,7 +12,7 @@ alias lsd='lsd -lh --icon=never'                                # List files wit
 alias la='ls -lah --color=auto'                                 # List all files including hidden ones with color
 alias lscpu='sudo lscpu'                                        # Check all info about CPU
 alias mkdir='mkdir -pv'                                         # Create directories and show the progress
-alias delta='sudo delta --side-by-side --line-numbers --dark --navigate --syntax-theme="Nord" --width=-2  # delta file1.txt file2.txt
+alias delta='sudo delta --side-by-side --line-numbers --dark --navigate --syntax-theme="Nord" --width=-2'  # delta file1.txt file2.txt
 alias svim='sudo vim'                                           # Open vim with line numbers for root
 alias psg='ps aux | grep'                                       # Search for a process by name
 alias vs='sudo visudo'                                          # Launch visudo
