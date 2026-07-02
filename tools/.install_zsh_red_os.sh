@@ -1,0 +1,116 @@
+#!/bin/bash -xve
+set -xve
+
+# Check that the script is NOT run as root
+if [ "$EUID" -eq 0 ]; then
+  echo "This script should be run NOT as root."
+  exit 1
+fi
+
+# Install Welcome
+mkdir -p "$HOME/tools" && wget -q --show-progress https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/welcome.sh -O "$HOME/tools/welcome.sh" && chmod +x "$HOME/tools/welcome.sh" && "$HOME/tools/welcome.sh"
+
+# Update package list and install git and zsh (RED OS uses dnf)
+sudo dnf makecache && sudo dnf install -y git zsh
+
+# Try to install powerline and fonts-powerline, continue if it fails
+if ! sudo dnf install -y powerline powerline-fonts; then
+  echo "Failed to install powerline and fonts-powerline. Continuing without them."
+fi
+
+# Function to add line to file if it doesn't exist
+add_line_if_not_exists() {
+  local file="$1"
+  local line="$2"
+  grep -qxF "$line" "$file" 2>/dev/null || echo "$line" >> "$file"
+}
+
+# Remove existing oh-my-zsh directory if present
+if [ -d "$HOME/.oh-my-zsh" ]; then
+  rm -rf "$HOME/.oh-my-zsh"
+fi
+
+# Clone the oh-my-zsh repository
+git clone https://github.com/robbyrussell/oh-my-zsh.git "$HOME/.oh-my-zsh"
+
+# Copy the zsh configuration template
+cp "$HOME/.oh-my-zsh/templates/zshrc.zsh-template" "$HOME/.zshrc"
+
+# Change the zsh theme to jonathan
+sed -i 's/^ZSH_THEME=".*"/ZSH_THEME="jonathan"/' "$HOME/.zshrc"
+
+# Disable oh-my-zsh auto-update if not already disabled
+if ! grep -q '^DISABLE_AUTO_UPDATE="true"' "$HOME/.zshrc"; then
+  sed -i '/^ZSH_THEME=/a DISABLE_AUTO_UPDATE="true"' "$HOME/.zshrc"
+fi
+
+# Remove zsh-syntax-highlighting directory if it exists
+if [ -d "$HOME/.zsh-syntax-highlighting" ]; then
+  rm -rf "$HOME/.zsh-syntax-highlighting"
+fi
+
+# Clone the syntax highlighting plugin with depth 1
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$HOME/.zsh-syntax-highlighting" --depth 1
+
+# Add source command for syntax highlighting plugin to .zshrc if absent
+add_line_if_not_exists "$HOME/.zshrc" "source \$HOME/.zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+
+# Remove zsh-autosuggestions directory if present
+if [ -d "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]; then
+  rm -rf "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+fi
+
+# Clone the autosuggestions plugin
+git clone https://github.com/zsh-users/zsh-autosuggestions "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+
+# Add autosuggestions plugin to plugins list if missing
+if grep -q '^plugins=(git)' "$HOME/.zshrc"; then
+  sed -i 's/^plugins=(git)$/plugins=(git zsh-autosuggestions)/' "$HOME/.zshrc"
+elif ! grep -q 'zsh-autosuggestions' "$HOME/.zshrc"; then
+  sed -i '/^plugins=/ s/)/ zsh-autosuggestions)/' "$HOME/.zshrc"
+fi
+
+# Set highlight style for autosuggestions if not set
+add_line_if_not_exists "$HOME/.zshrc" "ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=blue,bold'"
+
+# Add extended history options and alias for history command if missing
+if ! grep -q 'setopt extended_history' "$HOME/.zshrc"; then
+  cat >> "$HOME/.zshrc" <<'EOF'
+# History settings
+HISTFILE=~/.zsh_history
+HISTSIZE=1000000          # Max lines in memory  
+SAVEHIST=1000000          # Max lines saved to file
+setopt EXTENDED_HISTORY   # Timestamps: :start:elapsed;command
+setopt INC_APPEND_HISTORY # Save immediately after each command
+setopt SHARE_HISTORY      # Share history across sessions
+setopt HIST_IGNORE_DUPS   # No duplicates
+
+HIST_STAMPS="yyyy-mm-dd"  # Date format (optional with EXTENDED_HISTORY)
+
+# Show ALL history with timestamps
+alias history="fc -li 1"  # Changed: '1' shows from first entry
+EOF
+fi
+
+# Add zsh path to /etc/shells if missing and change default shell to zsh for the user
+ZSH_PATH=$(which zsh)
+if ! grep -q "^$ZSH_PATH$" /etc/shells; then
+  echo "$ZSH_PATH" | sudo tee -a /etc/shells
+fi
+
+sudo chsh -s "$ZSH_PATH" "$USER"
+
+# Download bash aliases file
+wget -q https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/.bash_alias -O "$HOME/.bash_aliases"
+
+# Add source for .bash_aliases in .bashrc if missing
+add_line_if_not_exists "$HOME/.bashrc" 'if [ -f ~/.bash_aliases ]; then . ~/.bash_aliases; fi'
+
+# Add source for .bash_aliases in .zshrc if missing
+add_line_if_not_exists "$HOME/.zshrc" 'if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi'
+
+echo "Installation completed successfully."
+echo "To apply zsh, open a new terminal or run manually: exec zsh"
+
+# Replace current shell with zsh immediately
+exec zsh
