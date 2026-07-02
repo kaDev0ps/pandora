@@ -1,5 +1,8 @@
 # Install ZSH
 mkdir -p "$HOME/tools" && wget https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/.install_zsh -O "$HOME/tools/.install_zsh" && chmod +x "$HOME/tools/.install_zsh" && "$HOME/tools/.install_zsh"
+# Install ZSH for RED OS
+mkdir -p "$HOME/tools" && wget https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/.install_zsh_red_os.sh -O "$HOME/tools/.install_zsh_red_os.sh" && chmod +x "$HOME/tools/.install_zsh_red_os.sh" && "$HOME/tools/.install_zsh_red_os.sh"
+
 # Install packages
 mkdir -p "$HOME/tools" && wget https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/.packages.sh -O "$HOME/tools/.packages.sh" && chmod +x "$HOME/tools/.packages.sh" && "$HOME/tools/.packages.sh"
 # Backup configs
