@@ -1,116 +1,152 @@
-#!/bin/bash -xve
-set -xve
+#!/bin/bash
+set -euo pipefail
+# -e: exit on error, -u: treat unset variables as error, -o pipefail: fail if any part of a pipe fails
 
+# --------------------------------------------------------------------
 # Check that the script is NOT run as root
+# --------------------------------------------------------------------
 if [ "$EUID" -eq 0 ]; then
-  echo "This script should be run NOT as root."
-  exit 1
+    echo "ERROR: This script should be run NOT as root." >&2
+    exit 1
 fi
 
-# Install Welcome
-mkdir -p "$HOME/tools" && wget -q --show-progress https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/welcome.sh -O "$HOME/tools/welcome.sh" && chmod +x "$HOME/tools/welcome.sh" && "$HOME/tools/welcome.sh"
-
-# Update package list and install git and zsh
-sudo apt-get update && sudo apt-get install git zsh -y
-
-# Try to install powerline and fonts-powerline, continue if it fails
-if ! sudo apt-get install powerline fonts-powerline -y; then
-  echo "Failed to install powerline and fonts-powerline. Continuing without them."
-fi
-
-# Function to add line to file if it doesn't exist
-add_line_if_not_exists() {
-  local file="$1"
-  local line="$2"
-  grep -qxF "$line" "$file" 2>/dev/null || echo "$line" >> "$file"
+# --------------------------------------------------------------------
+# Download helpers with timeouts
+# --------------------------------------------------------------------
+download_file() {
+    local url="$1"
+    local output="$2"
+    echo "Downloading $(basename "$output") ..."
+    # Timeouts: connect=10s, overall=60s; retry once after a failure
+    curl -fsSL --connect-timeout 10 --max-time 60 --retry 1 "$url" -o "$output"
 }
 
-# Remove existing oh-my-zsh directory if present
-if [ -d "$HOME/.oh-my-zsh" ]; then
-  rm -rf "$HOME/.oh-my-zsh"
+# --------------------------------------------------------------------
+# 1. Welcome script (download only, do not run automatically)
+# --------------------------------------------------------------------
+mkdir -p "$HOME/tools"
+download_file \
+    "https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/welcome.sh" \
+    "$HOME/tools/welcome.sh"
+chmod +x "$HOME/tools/welcome.sh"
+echo "Welcome script saved to ~/tools/welcome.sh. Run it manually whenever you like."
+
+# --------------------------------------------------------------------
+# 2. Install git and zsh
+# --------------------------------------------------------------------
+sudo apt-get update
+sudo apt-get install -y git zsh
+
+# --------------------------------------------------------------------
+# 3. Powerline (optional)
+# --------------------------------------------------------------------
+if ! sudo apt-get install -y powerline fonts-powerline; then
+    echo "Warning: Failed to install powerline and fonts-powerline. Continuing..."
 fi
 
-# Clone the oh-my-zsh repository
-git clone https://github.com/robbyrussell/oh-my-zsh.git "$HOME/.oh-my-zsh"
+# --------------------------------------------------------------------
+# Helper function
+# --------------------------------------------------------------------
+add_line_if_not_exists() {
+    local file="$1"
+    local line="$2"
+    grep -qxF "$line" "$file" 2>/dev/null || echo "$line" >> "$file"
+}
 
-# Copy the zsh configuration template
+# --------------------------------------------------------------------
+# 4. Oh-My-Zsh
+# --------------------------------------------------------------------
+if [ -d "$HOME/.oh-my-zsh" ]; then
+    rm -rf "$HOME/.oh-my-zsh"
+fi
+git clone https://github.com/robbyrussell/oh-my-zsh.git "$HOME/.oh-my-zsh"
 cp "$HOME/.oh-my-zsh/templates/zshrc.zsh-template" "$HOME/.zshrc"
 
-# Change the zsh theme to jonathan
+# Theme and auto-update
 sed -i 's/^ZSH_THEME=".*"/ZSH_THEME="jonathan"/' "$HOME/.zshrc"
-
-# Disable oh-my-zsh auto-update if not already disabled
 if ! grep -q '^DISABLE_AUTO_UPDATE="true"' "$HOME/.zshrc"; then
-  sed -i '/^ZSH_THEME=/a DISABLE_AUTO_UPDATE="true"' "$HOME/.zshrc"
+    sed -i '/^ZSH_THEME=/a DISABLE_AUTO_UPDATE="true"' "$HOME/.zshrc"
 fi
 
-# Remove zsh-syntax-highlighting directory if it exists
+# --------------------------------------------------------------------
+# 5. Syntax highlighting
+# --------------------------------------------------------------------
 if [ -d "$HOME/.zsh-syntax-highlighting" ]; then
-  rm -rf "$HOME/.zsh-syntax-highlighting"
+    rm -rf "$HOME/.zsh-syntax-highlighting"
 fi
+git clone --depth 1 https://github.com/zsh-users/zsh-syntax-highlighting.git \
+    "$HOME/.zsh-syntax-highlighting"
+add_line_if_not_exists "$HOME/.zshrc" \
+    "source \$HOME/.zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
-# Clone the syntax highlighting plugin with depth 1
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$HOME/.zsh-syntax-highlighting" --depth 1
-
-# Add source command for syntax highlighting plugin to .zshrc if absent
-add_line_if_not_exists "$HOME/.zshrc" "source \$HOME/.zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-
-# Remove zsh-autosuggestions directory if present
+# --------------------------------------------------------------------
+# 6. Autosuggestions
+# --------------------------------------------------------------------
 if [ -d "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]; then
-  rm -rf "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+    rm -rf "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
 fi
+git clone https://github.com/zsh-users/zsh-autosuggestions \
+    "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
 
-# Clone the autosuggestions plugin
-git clone https://github.com/zsh-users/zsh-autosuggestions "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
-
-# Add autosuggestions plugin to plugins list if missing
+# Enable plugin in .zshrc
 if grep -q '^plugins=(git)' "$HOME/.zshrc"; then
-  sed -i 's/^plugins=(git)$/plugins=(git zsh-autosuggestions)/' "$HOME/.zshrc"
+    sed -i 's/^plugins=(git)$/plugins=(git zsh-autosuggestions)/' "$HOME/.zshrc"
 elif ! grep -q 'zsh-autosuggestions' "$HOME/.zshrc"; then
-  sed -i '/^plugins=/ s/)/ zsh-autosuggestions)/' "$HOME/.zshrc"
+    sed -i '/^plugins=/ s/)/ zsh-autosuggestions)/' "$HOME/.zshrc"
 fi
-
-# Set highlight style for autosuggestions if not set
 add_line_if_not_exists "$HOME/.zshrc" "ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=blue,bold'"
 
-# Add extended history options and alias for history command if missing
+# --------------------------------------------------------------------
+# 7. History settings
+# --------------------------------------------------------------------
 if ! grep -q 'setopt extended_history' "$HOME/.zshrc"; then
-  cat >> "$HOME/.zshrc" <<'EOF'
+    cat >> "$HOME/.zshrc" <<'EOF'
+
 # History settings
 HISTFILE=~/.zsh_history
-HISTSIZE=1000000          # Max lines in memory  
-SAVEHIST=1000000          # Max lines saved to file
-setopt EXTENDED_HISTORY   # Timestamps: :start:elapsed;command
-setopt INC_APPEND_HISTORY # Save immediately after each command
-setopt SHARE_HISTORY      # Share history across sessions
-setopt HIST_IGNORE_DUPS   # No duplicates
+HISTSIZE=1000000
+SAVEHIST=1000000
+setopt EXTENDED_HISTORY
+setopt INC_APPEND_HISTORY
+setopt SHARE_HISTORY
+setopt HIST_IGNORE_DUPS
 
-HIST_STAMPS="yyyy-mm-dd"  # Date format (optional with EXTENDED_HISTORY)
-
-# Show ALL history with timestamps
-alias history="fc -li 1"  # Changed: '1' shows from first entry
+HIST_STAMPS="yyyy-mm-dd"
+alias history="fc -li 1"
 EOF
 fi
 
-# Add zsh path to /etc/shells if missing and change default shell to zsh for the user
-ZSH_PATH=$(which zsh)
-if ! grep -q "^$ZSH_PATH$" /etc/shells; then
-  echo "$ZSH_PATH" | sudo tee -a /etc/shells
+# --------------------------------------------------------------------
+# 8. Set zsh as default shell
+# --------------------------------------------------------------------
+ZSH_PATH="$(which zsh)"
+# Add to /etc/shells if missing
+if ! grep -qFx "$ZSH_PATH" /etc/shells; then
+    echo "$ZSH_PATH" | sudo tee -a /etc/shells > /dev/null
+fi
+# Change shell only if not already zsh
+if [ "$SHELL" != "$ZSH_PATH" ]; then
+    echo "Changing default shell to zsh (you may be prompted for your password) ..."
+    sudo chsh -s "$ZSH_PATH" "$USER"
+else
+    echo "Default shell is already zsh."
 fi
 
-sudo chsh -s "$ZSH_PATH" "$USER"
+# --------------------------------------------------------------------
+# 9. Bash aliases
+# --------------------------------------------------------------------
+download_file \
+    "https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/.bash_alias" \
+    "$HOME/.bash_aliases"
+add_line_if_not_exists "$HOME/.bashrc" \
+    'if [ -f ~/.bash_aliases ]; then . ~/.bash_aliases; fi'
+add_line_if_not_exists "$HOME/.zshrc" \
+    'if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi'
 
-# Download bash aliases file
-wget -q https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/.bash_alias -O "$HOME/.bash_aliases"
-
-# Add source for .bash_aliases in .bashrc if missing
-add_line_if_not_exists "$HOME/.bashrc" 'if [ -f ~/.bash_aliases ]; then . ~/.bash_aliases; fi'
-
-# Add source for .bash_aliases in .zshrc if missing
-add_line_if_not_exists "$HOME/.zshrc" 'if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi'
-
+# --------------------------------------------------------------------
+# All done
+# --------------------------------------------------------------------
+echo "--------------------------------------------------"
 echo "Installation completed successfully."
-echo "To apply zsh, open a new terminal or run manually: exec zsh"
-
-# Replace current shell with zsh immediately
-exec zsh
+echo "To start zsh, open a new terminal or run: exec zsh"
+echo "--------------------------------------------------"
