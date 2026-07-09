@@ -69,7 +69,7 @@ alias scg='systemd-cgtop -d 5'                                  # Show more load
 # Journalctl
 # View system logs
 alias logs='sudo journalctl -xe'                                # Show recent logs with detailed error messages
-alias jfeu='sudo journalctl -n 20 -feu'                         # Sjow 20 last line and new logs
+alias jfeu='sudo journalctl -f -b -u'                          # Show last line after restart and new logs
 
 # Clean system logs
 alias clearlogs='sudo journalctl --vacuum-time=1d'              # Remove logs older than 1 day
