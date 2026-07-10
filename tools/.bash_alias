@@ -227,7 +227,7 @@ alias ktopn='kubectl top node'
 alias ktopp='kubectl top pod'
 
 # ---------- NEW: stat alias (run welcome + full config) ----------
-alias stat='~/tools/welcome.sh && echo "=== System Configuration ===" && sysinfo && echo "=== Uptime ===" && up && echo "=== Disk Usage ===" && df -h && echo "=== Memory Usage ===" && free -h'
+alias stat='~/tools/welcome.sh'
 
 # ---------- Functions ----------
 gitc() {
