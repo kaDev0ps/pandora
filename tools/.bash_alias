@@ -1,281 +1,255 @@
-# Basic commands
-alias up='uptime -p'                                            # Show system uptime in a human-readable format
-alias scat='sudo cat -n'                                        # Open cat with line numbers for root
-alias tails='tail -n +1'                                        # Open all file with names Example: `tails *`
-alias c='clear'                                                 # Clear the terminal screen
-alias ipa='ip -br -c a'                                         # Show network interfaces and IP
-alias ll='ls -lh'                                               # List files with human-readable sizes
-alias lo='locate'                                               # Find files by name using the locate database
-alias df='df -h'                                                # Show disk space usage in human-readable format
-alias ..='cd ..'                                                # Go up one directory
-alias lsd='lsd -lh --icon=never'                                # List files with human-readable sizes without icons
-alias la='ls -lah --color=auto'                                 # List all files including hidden ones with color
-alias lscpu='sudo lscpu'                                        # Check all info about CPU
-alias mkdir='mkdir -pv'                                         # Create directories and show the progress
-alias delta='sudo delta --side-by-side --line-numbers --dark --navigate --syntax-theme="Nord" --width=-2'  # delta file1.txt file2.txt
-alias svim='sudo vim'                                           # Open vim with line numbers for root
-alias psg='ps aux | grep'                                       # Search for a process by name
-alias vs='sudo visudo'                                          # Launch visudo
-alias r='ranger'                                                # Launch ranger
-alias sr='sudo ranger'                                          # Launch ranger with sudo 
-alias del='sudo rm -rf'                                         # Recursive delete with sudo
-alias duse='du -ah --max-depth=1 $(pwd) | sort -rh | head -n 10' # Check size of files in the current directory
-alias dlog='du -sh /var/log/* 2>/dev/null | sort -hr | head -n 10' # Check size of logs
-alias ncdu='sudo ncdu'                                          # Show disk usage with ncdu
-alias lsof='sudo lsof -i'                                       # Show services on my ports
-alias gr="grep -Ev '^\s*#|^$'"                                  # Show file without comment and empty line
-alias col='column -t -s'                                        # Column tail     Example: col ' ' or col ','
-alias cutc='cut -c'                                             # Show short logs Example: cutc 1-200 
-alias killu='sudo pkill -9 -u'                                  # Delete all process users 
+# ============================================================
+#  .bash_aliases – clean, safe, no duplicates, no auto-welcome
+# ============================================================
 
+# ---------- Basic commands ----------
+alias up='uptime -p'
+alias scat='sudo cat -n'
+alias tails='tail -n +1'
+alias c='clear'
+alias ipa='ip -br -c a'
+alias ll='ls -lh'
+alias lo='locate'
+alias df='df -h'
+alias ..='cd ..'
+alias lsd='lsd -lh --icon=never'
+alias la='ls -lah --color=auto'
+alias lscpu='sudo lscpu'
+alias mkdir='mkdir -pv'
+alias delta='sudo delta --side-by-side --line-numbers --dark --navigate --syntax-theme="Nord" --width=-2'
+alias svim='sudo vim'
+alias psg='ps aux | grep'
+alias vs='sudo visudo'
+alias r='ranger'
+alias sr='sudo ranger'
+alias del='sudo rm -rf'
+alias duse='du -ah --max-depth=1 $(pwd) | sort -rh | head -n 10'
+alias dlog='du -sh /var/log/* 2>/dev/null | sort -hr | head -n 10'
+alias ncdu='sudo ncdu'
+alias lsof='sudo lsof -i'
+alias gr="grep -Ev '^\s*#|^$'"
+alias col='column -t -s'
+alias cutc='cut -c'
+alias killu='sudo pkill -9 -u'
 
-# Updates
-## Display system information
-alias mtr10='mtr -r -c 10'                                      # Run traceroute with 10 cycles
-alias mtr100='mtr -r -c 100'                                    # Run traceroute with 100 cycles
-alias sysinfo='uname -a; lsb_release -a'                        # Show system and versn info
-alias update='sudo apt update'                                  # Update package lists
-alias clean='sudo apt clean'                                    # Clean local repository of retrieved package files
-alias autoremove='sudo apt autoremove -y'                       # Remove unnecessary packages automatically
+# ---------- Updates & system info ----------
+alias mtr10='mtr -r -c 10'
+alias mtr100='mtr -r -c 100'
+alias sysinfo='uname -a; lsb_release -a'
+alias update='sudo apt update'
+alias clean='sudo apt clean'
+alias autoremove='sudo apt autoremove -y'
 
-# Monitoring
-alias h='history'                                               # View command history
-alias j='jobs -l'                                               # List current jobs
-alias du='du -ch'                                               # Show disk usage of files and directories in human-readable format
-alias ports='sudo ss -tulnp'                                    # Show open ports and listening sockets
-alias myip='curl ifconfig.me'                                   # Get the external IP address
+# ---------- Monitoring ----------
+alias h='history'
+alias j='jobs -l'
+alias du='du -ch'
+alias ports='sudo ss -tulnp'
+alias myip='curl ifconfig.me'
 
-# Networking
-alias dnstop='sudo dnstop -l 5'                                 # Monitor DNS traffic on interface                     Example: dnstop enp0s3
-alias vnstat='sudo vnstat -i'                                   # View network traffic stats on interface              Example: vnstat enp0s3
-alias iftop='sudo iftop -i'                                     # Display bandwidth usage on an interface              Example: iftop enp0s3
-alias tcpdump='sudo tcpdump -i'                                 # Capture packet data on the specified interface       Example: tcpdump enp0s3
-alias connections='ss -tan | awk "/ESTAB/ {print \$5}" | cut -d: -f1 | sort | uniq -c | sort -nr | head -10'
-                                                                # Show  active connections from host                   Example: connections
-alias open='sudo nmap -sUT -p- localhost'                       # Show listen port
-# Systemctl
-alias sss='sudo systemctl stop'                                 # Stop a systemd service
-alias ssr='sudo systemctl restart'                              # Restart a systemd service
-alias sse='sudo systemctl enable'                               # Enable a systemd service to start on boot
-alias ssd='sudo systemctl disable'                              # Disable a systemd service from starting on boot
-alias ssc='sudo systemctl cat'                                  # Show the contents of a systemd service file
-alias ssi='sudo systemctl status'                               # Check the status of a systemd service
-alias slu='sudo systemctl list-units --type=service'            # List all systemd services
-alias sdr='sudo systemctl daemon-reload'                        # Reload systemctl
-alias srr='sudo systemctl reset-failed'                         # Reset systemctl failed state
-alias edit='sudo systemctl edit'                                # Edit systemd units
-alias scg='systemd-cgtop -d 5'                                  # Show more loaded services
+# ---------- Networking ----------
+alias dnstop='sudo dnstop -l 5'
+alias vnstat='sudo vnstat -i'
+alias iftop='sudo iftop -i'
+alias tcpdump='sudo tcpdump -i'
+alias open='sudo nmap -sUT -p- localhost'
 
-# Journalctl
-# View system logs
-alias logs='sudo journalctl -xe'                                # Show recent logs with detailed error messages
-alias jfeu='sudo journalctl -f -b -u'                          # Show last line after restart and new logs
+# ---------- Systemctl ----------
+alias sss='sudo systemctl stop'
+alias ssr='sudo systemctl restart'
+alias sse='sudo systemctl enable'
+alias ssd='sudo systemctl disable'
+alias ssc='sudo systemctl cat'
+alias ssi='sudo systemctl status'
+alias slu='sudo systemctl list-units --type=service'
+alias sdr='sudo systemctl daemon-reload'
+alias srr='sudo systemctl reset-failed'
+alias edit='sudo systemctl edit'
+alias scg='systemd-cgtop -d 5'
 
-# Clean system logs
-alias clearlogs='sudo journalctl --vacuum-time=1d'              # Remove logs older than 1 day
+# ---------- Journalctl ----------
+alias logs='sudo journalctl -xe'
+alias jfeu='sudo journalctl -n 20 -feu'
+alias clearlogs='sudo journalctl --vacuum-time=1d'
 
-# Archiving
-# Create a tar.gz archive
-alias taz='tar -czvf'                                           # Create a compressed tarball
+# ---------- Archiving ----------
+alias taz='tar -czvf'
+alias untaz='tar -xzvf'
 
-# Extract a tar.gz archive
-alias untaz='tar -xzvf'                                         # Extract a compressed tarball
+# ---------- Tools ----------
+alias iot='sudo iotop -oPa'
+alias ios='iostat -mpxz'
+alias pssh="parallel-ssh"
+alias pssc="parallel-scp"
+alias fd="fdfind"
 
-# Tools
-alias iot='sudo iotop -oPa'                                     # TOP processes that actively use the disk (I/O)
-alias ios='iostat  -mpxz'                                       # Information on disk usage
-alias pssh="parallel-ssh"                                       # Parallel SSH command execution
-alias pssc="parallel-scp"                                       # Parallel file copy
-alias fd="fdfind"                                               # Find files in OS
+# ---------- GIT ----------
+alias gitp='gitc && git push'
 
-# GIT
-alias gitp='gitc && git push'                                   # Commit and push to remote repo
+# ---------- Load Balancer ----------
+alias nt='sudo nginx -t'
+alias at='sudo angie -t'
+alias srn='sudo systemctl reload nginx'
+alias sra='sudo systemctl reload angie'
 
-# Load Balancer
-alias nt='sudo nginx -t'                                        # Test nginx config
-alias at='sudo angie -t'                                        # Test angie config
-alias srn='sudo systemctl reload nginx'                         # Reload nginx service
-alias sra='sudo systemctl reload angie'                         # Reload angie service
+# ---------- Environment ----------
+alias envr="source ~/ranger-env/bin/activate"
+alias envs="deactivate"
 
-# Environment
-alias envr="source ~/ranger-env/bin/activate"                   # Activate ranger virtual environment
-alias envs="deactivate"                                         # Deactivate virtual environment
-
-# Exports
-export HISTTIMEFORMAT="%d.%m.20%y %T "                          # Timestamp format in history
+# ---------- Exports ----------
+export HISTTIMEFORMAT="%d.%m.20%y %T "
 export EDITOR=vim
-HIST_STAMPS="%F %T"
+export HIST_STAMPS="%F %T"
 
-# N3. Netrika
-alias n3='for UNIT in $(systemctl list-unit-files "r*.service" --type=service --no-legend | awk "{print \$1}"); do PORT=$(systemctl show "$UNIT" --property=Environment | grep -oP "(?<=:)\d+"); if [ -n "$PORT" ]; then echo "$PORT $UNIT"; fi; done'
+# ---------- Docker ----------
+alias adduserd='sudo usermod -aG docker $USER'
+alias d='docker'
+alias dps='docker ps'
+alias dpa='docker ps -a'
+alias dpsq='docker ps -q'
+alias dls='docker ps -l -q'
+alias di='docker images -a'
+alias diq='docker images -q'
+alias dins='docker inspect'
+alias diins='docker image inspect'
+alias dv='docker version'
+alias dinfo='docker system info'
+alias ddf='docker system df'
+alias dstats='docker stats'
+alias devents='docker system events'
+alias ddisk='df -h /var/lib/docker'
+alias ddaemon='cat /etc/docker/daemon.json'
+alias djfeuc='sudo journalctl -feu containerd'
+alias djfeud='sudo journalctl -feu docker'
 
-# Functions
+alias db='docker build -t'
+alias dbc='docker build --no-cache -t'
+alias dbf='docker build -f -t'
+alias dph='docker pull'
+alias drs='docker search'
+alias dih='docker image history'
+alias drmi='docker rmi'
+
+alias drun='docker run -it --rm'
+alias drund='docker run -d --rm'
+alias drp='docker run -d -p --rm'
+alias drP='docker run -d -P --rm'
+alias dexec='docker exec -it'
+alias dsh='docker exec -it $(docker ps -lq) sh || docker exec -it $(docker ps -lq) bash'
+alias datt='docker attach'
+
+alias dlogs='docker logs -f --tail 100'
+alias dstop='docker stop'
+alias dkill='docker kill'
+alias drst='docker restart'
+alias dstart='docker start'
+alias drm='docker rm -f'
+alias drename='docker rename'
+alias dcp='docker cp'
+
+alias dcpr='docker container prune -f'
+alias dipr='docker image prune -a -f'
+alias dvpr='docker volume prune -f'
+alias dnpr='docker network prune -f'
+alias dbpr='docker builder prune -a -f'
+alias dspr='docker system prune -a -f'
+alias dsprv='docker system prune -a -f --volumes'
+
+alias dvl='docker volume ls'
+alias dvins='docker volume inspect'
+alias dvcr='docker volume create'
+alias dvrm='docker volume rm'
+
+alias dc='docker compose'
+alias dcu='docker compose up -d'
+alias dcub='docker compose up -d --build'
+alias dcd='docker compose down -v'
+alias dcl='docker compose logs -f'
+alias dcp='docker compose ps'
+alias dce='docker compose exec'
+alias dcb='docker compose build'
+alias dcrm='docker compose rm -f'
+alias dcfg='docker compose config'
+
+alias dsi='docker swarm init'
+alias dsjw='docker swarm join-token worker'
+alias dsjm='docker swarm join-token manager'
+alias dsnl='docker node ls'
+alias dsls='docker service ls'
+alias dsdeploy='docker stack deploy --compose-file'
+alias dsrm='docker stack rm'
+alias dstls='docker stack ls'
+alias dsservices='docker stack services'
+alias dsps='docker stack ps'
+alias dslogs='docker service logs'
+alias dsconfig='docker stack config'
+
+# ---------- K8s / Minikube ----------
+alias mks='minikube status'
+alias mkr='minikube start'
+alias mksvc='minikube service'
+
+alias kgno='kubectl get nodes'
+alias kgpo='kubectl get pods'
+alias kgall='kubectl get all'
+alias kgs='kubectl get service'
+alias kgrs='kubectl get replicaset'
+alias kge='kubectl get endpoints'
+alias kgallp='kubectl get po -A'
+
+alias kdpo='kubectl describe pod'
+alias kdse='kubectl describe service'
+alias kdrs='kubectl describe rs'
+alias kddp='kubectl describe deploy'
+alias kdn='kubectl describe node'
+alias kl='kubectl logs'
+alias klf='kubectl logs -f'
+
+alias kdelpo='kubectl delete pod'
+alias kdelrs='kubectl delete rs'
+alias kdeldp='kubectl delete deploy'
+alias kdels='kubectl delete service'
+
+alias krstatus='kubectl rollout status deploy'
+alias krhistory='kubectl rollout history'
+alias krundo='kubectl rollout undo'
+
+alias kci='kubectl cluster-info'
+alias kr='kubectl run'
+alias kcf='kubectl create -f'
+alias kaf='kubectl apply -f'
+alias krrs='kubectl replace replicaset -f'
+alias kers='kubectl edit replicaset'
+alias kadry='kubectl apply --dry-run=client -f'
+
+alias ktop='kubectl top'
+alias ktopn='kubectl top node'
+alias ktopp='kubectl top pod'
+
+# ---------- NEW: stat alias (run welcome + full config) ----------
+alias stat='~/tools/welcome.sh && echo "=== System Configuration ===" && sysinfo && echo "=== Uptime ===" && up && echo "=== Disk Usage ===" && df -h && echo "=== Memory Usage ===" && free -h'
+
+# ---------- Functions ----------
 gitc() {
   git add . && git commit -m "$(date '+%Y-%m-%d %H:%M:%S')" || echo "Git commit failed"
 }
+
 info() {
-    echo "USER PID %CPU %MEM COMMAND"; sudo ps -eo user,pid,%cpu,%mem,command --no-headers | sort -nr -k 3 | head -10
+  echo "USER PID %CPU %MEM COMMAND"
+  sudo ps -eo user,pid,%cpu,%mem,command --no-headers | sort -nr -k 3 | head -10
 }
 
-### DOCKER ###
-# User and access management
-alias adduserd='sudo usermod -aG docker $USER'                   # Add user to "docker" group (run once, then re-login).
+connections() {
+  ss -tan | awk '/ESTAB/ {print $5}' | cut -d: -f1 | sort | uniq -c | sort -nr | head -10
+}
 
-# Core Status & Inspect
-alias d='docker'                          # Example: d ps
-alias dps='docker ps'                     # Example: dps
-alias dpa='docker ps -a'                  # Example: dpa
-alias dpsq='docker ps -q'                 # Example: dpsq
-alias dls='docker ps -l -q'               # Example: dls
-alias di='docker images -a'               # Example: di
-alias diq='docker images -q'              # Example: diq
-alias dins='docker inspect'               # Example: dins myapp
-alias diins='docker image inspect'        # Example: diins nginx:alpine
-alias dv='docker version'                 # Example: dv
-alias dinfo='docker system info'          # Example: dinfo
-alias ddf='docker system df'              # Example: ddf
-alias dstats='docker stats'               # Example: dstats (or dstats myapp)
-alias devents='docker system events'      # Example: devents
-alias ddisk='df -h /var/lib/docker'       # Example: ddisk
-alias ddaemon='cat /etc/docker/daemon.json'  # Example: ddaemon
-alias djfeuc='sudo journalctl -feu containerd'                            # Example: dfeuc
-alias djfeud='sudo journalctl -feu docker'                                # Example: dfeud
+n3() {
+  for unit in $(systemctl list-unit-files "r*.service" --type=service --no-legend | awk '{print $1}'); do
+    port=$(systemctl show "$unit" --property=Environment | grep -oP '(?<=:)\d+')
+    [[ -n "$port" ]] && echo "$port $unit"
+  done
+}
 
-# Build & Images
-alias db='docker build -t'                # Example: db myapp:v1 .
-alias dbc='docker build --no-cache -t'    # Example: dbc myapp:debug .
-alias dbf='docker build -f -t'            # Example: dbf Dockerfile.prod -t myapp:prod .
-alias dph='docker pull'                   # Example: dph nginx:alpine
-alias drs='docker search'                 # Example: drs postgres
-alias dih='docker image history'          # Example: dih nginx:alpine
-alias drmi='docker rmi'                   # Example: drmi myapp:v1
-
-
-# Run & Exec (Safe defaults)
-alias drun='docker run -it --rm'          # Example: drun nginx:alpine bash
-alias drund='docker run -d --rm'          # Example: drund nginx:alpine
-alias drp='docker run -d -p --rm'         # Example: drp 8080:80 nginx:alpine
-alias drP='docker run -d -P --rm'         # Example: drP nginx:alpine
-alias dexec='docker exec -it'               # Example: dexec myapp bash
-alias dsh='docker exec -it $(docker ps -lq) sh || docker exec -it $(docker ps -lq) bash'  # Example: dsh (uses last cont)
-alias datt='docker attach'                # Example: datt myapp
-
-# Control & Lifecycle
-alias dlogs='docker logs -f --tail 100'   # Example: dlogs myapp
-alias dstop='docker stop'                 # Example: dstop myapp
-alias dkill='docker kill'                 # Example: dkill myapp
-alias drst='docker restart'               # Example: drst myapp
-alias dstart='docker start'               # Example: dstart myapp
-alias drm='docker rm -f'                  # Example: drm myapp (or dpsq | xargs drm)
-alias drename='docker rename'             # Example: drename oldname newname
-alias dcp='docker cp'                     # Example: dcp README.md myapp:/app/
-
-# Cleanup (Progressive)
-alias dcpr='docker container prune -f'    # Example: dcpr
-alias dipr='docker image prune -a -f'     # Example: dipr
-alias dvpr='docker volume prune -f'       # Example: dvpr
-alias dnpr='docker network prune -f'      # Example: dnpr
-alias dbpr='docker builder prune -a -f'   # Example: dbpr
-alias dspr='docker system prune -a -f'    # Example: dspr
-alias dsprv='docker system prune -a -f --volumes'  # Example: dsprv (⚠️ CAREFUL)
-
-# Volumes
-alias dvl='docker volume ls'              # Example: dvl
-alias dvins='docker volume inspect'       # Example: dvins mydata
-alias dvcr='docker volume create'         # Example: dvcr mydata
-alias dvrm='docker volume rm'             # Example: dvrm mydata
-
-# Docker Compose
-alias dc='docker compose'                 # Example: dc ps
-alias dcu='docker compose up -d'          # Example: dcu
-alias dcub='docker compose up -d --build' # Example: dcub
-alias dcd='docker compose down -v'        # Example: dcd
-alias dcl='docker compose logs -f'        # Example: dcl
-alias dcp='docker compose ps'             # Example: dcp
-alias dce='docker compose exec'           # Example: dce web bash
-alias dcb='docker compose build'          # Example: dcb
-alias dcrm='docker compose rm -f'         # Example: dcrm
-alias dcfg='docker compose config'        # Example: dcfg
-
-# Swarm
-alias dsi='docker swarm init'                # Example: dsi
-alias dsjw='docker swarm join-token worker'  # Example: dsjw
-alias dsjm='docker swarm join-token manager' # Example: dsjm
-alias dsnl='docker node ls'                  # Example: dsnl
-alias dsls='docker service ls'               # Example: dsls
-alias dsdeploy='docker stack deploy --compose-file'  # Example: dsdeploy docker-compose.yml mystack
-alias dsrm='docker stack rm'                 # Example: dsrm mystack
-
-# Docker stack
-alias dnls='docker node ls'                                      # Check my cluster docker compose                              Example: dnls
-alias dsls='docker service ls'                                    # Check my services in cluster                                 Example: dsls
-alias dsdeploy='docker stack deploy --compose-file'              # Deploy or update a stack using a compose file.               Example: dstackdeploy docker-compose.yml mystack
-alias dsls='docker stack ls'                                     # List all stacks deployed in the swarm.                       Example: dstackls
-alias dsservices='docker stack services'                         # List services running in a specific stack.                   Example: dstackservices mystack
-alias dsps='docker stack ps'                                     # List all tasks (containers) in a stack with their status.    Example: dstackps mystack
-alias dsrm='docker stack rm'                                     # Remove a stack and all its services.                         Example: dstackrm mystack
-alias dslogs='docker service logs'                               # View logs for a specific service in a stack.                 Example: dservicelogs mystack_web
-alias dsconfig='docker stack config'                             # Show the combined configuration of a stack.                  Example: dstackconfig mystack
-
-## K8S
-### Minikube
-alias mks='minikube status'                       # Check status minikube
-alias mkr='minikube start'                        # Check status minikube
-alias mks='minikube service'                      # Check status minikube `mks nginx`
-
-### Get
-
-alias kgno='kubectl get nodes'                    # used to list all nodes in a cluster
-alias kgpo='kubectl get pods'                     # show list of all available PODs
-alias kgall='kubectl get all'                     # show list of all available kubernetes object
-alias kgs='kubectl get service'                   # show list of all kubernetes object
-alias kgrs='kubectl get replicaset'               # show you status `replicaset`
-alias kge='kubectl get endpoints'                 # show list of endpoints kubernetes object
-alias kgallp='kubectl get po -A'                 # show list of all PODs with systems kubernetes object
-
-### Describe
-alias kdpo='kubectl describe pod'                 # Show describe our pod `kdp nginx`
-alias kdse='kubectl describe service'             # Show describe our pod `kds service`
-alias kdrs='kubectl describe rs'                  # Show describe our pod `kdrs nginx`
-alias kddp='kubectl describe deploy'              # Show describe our pod `kddp nginx`
-alias kdn='kubectl describe node'                 # Describe a node <pod-name>
-alias kl='kubectl logs'                           # Show logs of a pod `kl nginx`
-alias klf='kubectl logs -f'                       # Tail logs of a pod `klf nginx`
-
-### Clean
-alias kdelpo='kubectl delete pod'                 # Delete  our pod `kdelpo nginx`
-alias kdelrs='kubectl delete rs'                  # Delete  our rc `kdelrc replicaset.yml`
-alias kdeldp='kubectl delete deploy'              # Delete  our deploy `kdelrs replicationcontroller.yaml`
-alias kdels='kubectl delete service'              # Delete  our deploy `kdelrs replicationcontroller.yaml`
-
-### Deploy
-alias krstatus='kubectl rollout status deploy'    # Show status update `krstatus deployment/my-app`
-alias krhistory='kubectl rollout history'         # Show status deployment revision `krhistory deployment/my-app`
-alias krundo='kubectl rollout undo'               # Rollout to back you update `krundo deployment/my-app`
-
-### Basic
-alias kci='kubectl cluster-info'                  # Check kubectl cluster
-alias kr='kubectl run'                            # used to deploy an application to a cluster
-alias kci='kubectl cluster-info'                  # used to view cluster information
-alias kcf='kubectl create -f'                     # Kubernetes will create POD `kcf pod-definition.yml`
-alias kaf='kubectl apply -f'                      # applying manifest for pod `kaf pod.yml`
-alias krrs='kubectl replace replicaset -f'        # update manifest for `krrs replicaset.yml`
-alias kers='kubectl edit replicaset'              # edit  manifest for `kers replicaset.yml`
-alias kadry='kubectl apply --dry-run=client -f'   # Check file to validate `kadry deploy .yml`
-
-## Node and cluster info
-alias kci='kubectl cluster-info'                  # Show cluster info
-alias ktop='kubectl top'                          # Show resource usage (requires metrics server)
-alias ktopn='kubectl top node'                    # Show node metrics
-alias ktopp='kubectl top pod'                     # Show pod metrics (CPU, RAM)
-
-# Additional scripts
-## Run welcome script on SSH login
-if [[ -n "$SSH_CONNECTION" ]]; then
-  ~/tools/welcome.sh
-fi
-
-## Sudo systemctl edit
 ssv() {
-  sudo vim "/etc/systemd/system/$@"
+  sudo vim "/etc/systemd/system/${1}"
 }
