@@ -1,88 +1,136 @@
 #!/bin/bash
-set -euo pipefail
-
-# Colors
+# Server info + problem-hunting diagnostics
+# Цвета
 RED='\033[0;31m'
+YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-# IP address – first non‑loopback IPv4
-LOCAL_IP=$(ip -4 addr show 2>/dev/null | grep -oP '(?<=inet\s)\d+\.\d+\.\d+\.\d+' | grep -v '^127\.' | head -1)
-if [ -z "$LOCAL_IP" ]; then
-    LOCAL_IP=$(hostname -I 2>/dev/null | awk '{print $1}')
-fi
-LOCAL_IP="${LOCAL_IP:-N/A}"
-
-# Hostname
+# IP первого сетевого интерфейса
+LOCAL_IP=$(ip -4 addr show | grep -oP '(?<=inet\s)\d+\.\d+\.\d+\.\d+' | grep -v '^127\.' | head -n 1)
 HOSTNAME=$(hostname)
-
-# OS pretty name
-OS=$(grep PRETTY_NAME /etc/os-release 2>/dev/null | cut -d= -f2- | tr -d '"')
-OS="${OS:-Unknown}"
-
-# Current user
+OS=$(grep PRETTY_NAME /etc/os-release | cut -d= -f2 | tr -d '"')
 USER_NAME=$(whoami)
 if [ "$USER_NAME" = "root" ]; then
-    USER_COLOR="${RED}${USER_NAME}${NC}"
-else
-    USER_COLOR="$USER_NAME"
+    USER_NAME="${RED}${USER_NAME}${NC}"
 fi
 
-# Load average (1, 5, 15 min)
-LOADAVG=$(awk '{print $1, $2, $3}' /proc/loadavg 2>/dev/null || echo "N/A")
+LOADAVG=$(awk '{print $1" "$2" "$3}' /proc/loadavg)
+UPTIME=$(uptime -p)
+CPU_COUNT=$(nproc)
 
-# Uptime
-UPTIME=$(uptime -p 2>/dev/null | sed 's/^up //' || echo "N/A")
+RAM_TOTAL=$(free -m | awk '/Mem:/ {print $2}')
+RAM_FREE=$(free -m | awk '/Mem:/ {print $7}')
+RAM_FREE_PCT=$(( RAM_FREE * 100 / RAM_TOTAL ))
 
-# CPU count
-CPU_COUNT=$(nproc 2>/dev/null || grep -c ^processor /proc/cpuinfo 2>/dev/null || echo "N/A")
+DISK_TOTAL_HUMAN=$(df -h / | awk 'NR==2 {print $2}')
+DISK_FREE_HUMAN=$(df -h / | awk 'NR==2 {print $4}')
+DISK_TOTAL=$(df -k / | awk 'NR==2 {print $2}')
+DISK_FREE=$(df -k / | awk 'NR==2 {print $4}')
+DISK_FREE_PCT=$(( DISK_FREE * 100 / DISK_TOTAL ))
 
-# Memory – prefer "available" (column 7) otherwise "free" (column 4)
-mem_info=$(free -m 2>/dev/null | awk '/Mem:/{print $2,$4,$7}')
-if [ -n "$mem_info" ]; then
-    RAM_TOTAL=$(echo "$mem_info" | awk '{print $1}')
-    RAM_FREE_FALLBACK=$(echo "$mem_info" | awk '{print $2}')
-    RAM_AVAILABLE=$(echo "$mem_info" | awk '{print $3}')
-    # If available column exists and is non‑empty, use it, else fallback to free
-    if [ -n "$RAM_AVAILABLE" ] && [ "$RAM_AVAILABLE" != "" ]; then
-        RAM_FREE=$RAM_AVAILABLE
-    else
-        RAM_FREE=$RAM_FREE_FALLBACK
-    fi
-    RAM_FREE_PCT=$(awk -v total="$RAM_TOTAL" -v free="$RAM_FREE" 'BEGIN{printf "%.1f", (free*100/total)}')
-else
-    RAM_TOTAL="N/A"
-    RAM_FREE="N/A"
-    RAM_FREE_PCT="N/A"
-fi
-
-# Disk space for /
-disk_info=$(df -B1 --output=size,avail / 2>/dev/null | awk 'NR==2 {print $1, $2}')
-if [ -n "$disk_info" ]; then
-    DISK_TOTAL_BYTES=$(echo "$disk_info" | awk '{print $1}')
-    DISK_FREE_BYTES=$(echo "$disk_info" | awk '{print $2}')
-    DISK_TOTAL_HUMAN=$(numfmt --to=iec --suffix=B "$DISK_TOTAL_BYTES" 2>/dev/null || echo "$((DISK_TOTAL_BYTES/1024/1024/1024))G")
-    DISK_FREE_HUMAN=$(numfmt --to=iec --suffix=B "$DISK_FREE_BYTES" 2>/dev/null || echo "$((DISK_FREE_BYTES/1024/1024/1024))G")
-    DISK_FREE_PCT=$(awk -v total="$DISK_TOTAL_BYTES" -v free="$DISK_FREE_BYTES" 'BEGIN{printf "%.1f", (free*100/total)}')
-else
-    DISK_TOTAL_HUMAN="N/A"
-    DISK_FREE_HUMAN="N/A"
-    DISK_FREE_PCT="N/A"
-fi
-
-# ─────────────────────────────────────────
-#  Display
-# ─────────────────────────────────────────
 echo ""
 echo "-----------------------------------------"
-echo "IP                    : ${LOCAL_IP}"
-echo "Hostname              : ${HOSTNAME}"
-echo "OS                    : ${OS}"
-echo -e "USER                  : ${USER_COLOR}"
-echo "Load Average          : ${LOADAVG}"
-echo "Uptime                : ${UPTIME}"
+echo "IP                    : ${LOCAL_IP:-N/A}"
+echo "Hostname              : $HOSTNAME"
+echo "OS                    : $OS"
+echo -e "USER                  : $USER_NAME"
+echo "Load Average          : $LOADAVG"
+echo "Uptime                : $UPTIME"
 echo "-----------------------------------------"
-echo "CPU                   : ${CPU_COUNT} CPU(s)"
-echo "RAM                   : ${RAM_TOTAL} MB total, ${RAM_FREE} MB available (${RAM_FREE_PCT}%)"
-echo "HDD (/)               : ${DISK_TOTAL_HUMAN} total, ${DISK_FREE_HUMAN} free (${DISK_FREE_PCT}%)"
+echo "CPU                   : ${CPU_COUNT} CPU"
+echo "RAM                   : ${RAM_TOTAL} MB, ${RAM_FREE} MB (${RAM_FREE_PCT}%) free"
+echo "HDD (/)               : ${DISK_TOTAL_HUMAN}, ${DISK_FREE_HUMAN} (${DISK_FREE_PCT}%) free"
+echo "-----------------------------------------"
+
+# ---- I/O wait (flags a disk bottleneck) ----
+vmstat_out=$(vmstat 1 2 | tail -n 1)
+IO_WAIT=$(echo "$vmstat_out" | awk '{print $16}')
+IO_BLOCKED=$(echo "$vmstat_out" | awk '{print $1}')
+IO_LINE="CPU IO-Wait: ${IO_WAIT}% | Tasks Blocked on I/O: ${IO_BLOCKED}"
+# highlight if IO wait or blocked tasks look high
+if [ "$IO_WAIT" -ge 20 ] 2>/dev/null || [ "$IO_BLOCKED" -ge 1 ] 2>/dev/null; then
+    echo -e "${YELLOW}${IO_LINE}${NC}"
+else
+    echo "$IO_LINE"
+fi
+
+# ---- Network traffic (1s sample) ----
+net_interface=$(ip route | grep default | awk '{print $5}' | head -n 1)
+[ -z "$net_interface" ] && net_interface=$(awk 'NR>2 {print $1}' /proc/net/dev | tr -d ':' | grep -v 'lo' | head -n 1)
+
+if [ -n "$net_interface" ]; then
+    stat1=$(grep "$net_interface" /proc/net/dev | awk '{print $2" "$10}')
+    sleep 1
+    stat2=$(grep "$net_interface" /proc/net/dev | awk '{print $2" "$10}')
+    rx1=$(echo "$stat1" | awk '{print $1}'); tx1=$(echo "$stat1" | awk '{print $2}')
+    rx2=$(echo "$stat2" | awk '{print $1}'); tx2=$(echo "$stat2" | awk '{print $2}')
+    rx_speed=$(echo "$rx1 $rx2" | awk '{printf "%.2f", ($2-$1)/1024/1024}')
+    tx_speed=$(echo "$tx1 $tx2" | awk '{printf "%.2f", ($2-$1)/1024/1024}')
+    echo "Network [$net_interface]  : RX: $rx_speed MB/s | TX: $tx_speed MB/s"
+fi
+echo "-----------------------------------------"
+
+# ---- Top services/containers by summed CPU ----
+echo "TOP SERVICES/CONTAINERS BY CPU"
+
+tmp_file=$(mktemp)
+
+has_docker=false
+command -v docker &> /dev/null && has_docker=true
+
+ps -eo pid,%cpu,comm --no-headers | while read -r pid cpu comm; do
+    [[ -z "$pid" || -z "$cpu" ]] && continue
+    # Skip the ps command itself and this script's own helper processes —
+    # a freshly-started ps/grep/awk shows a fake near-100% CPU spike
+    # (its own cpu-time divided by its own near-zero elapsed lifetime)
+    case "$comm" in
+        ps|grep|awk|sed|cat|head|tr) continue ;;
+    esac
+    [[ "$pid" == "$$" ]] && continue
+
+    source_origin=""
+    cgroup_file="/proc/$pid/cgroup"
+
+    if [ -r "$cgroup_file" ]; then
+        cgroup_content=$(cat "$cgroup_file" 2>/dev/null)
+
+        # Docker container?
+        container_id=$(grep -oE 'docker-[a-f0-9]{64}' <<< "$cgroup_content" | head -n 1 | sed 's/docker-//')
+        [ -z "$container_id" ] && container_id=$(grep -oE '/docker/[a-f0-9]{64}' <<< "$cgroup_content" | head -n 1 | awk -F'/' '{print $3}')
+
+        if [ -n "$container_id" ] && $has_docker; then
+            container_name=$(docker ps --filter "id=$container_id" --format "{{.Names}}" 2>/dev/null)
+            [ -n "$container_name" ] && source_origin="Docker: $container_name"
+        fi
+
+        # Systemd unit — parsed straight from the cgroup path, no subprocess
+        if [ -z "$source_origin" ]; then
+            unit=$(grep -oE '[a-zA-Z0-9_.@:-]+\.(service|scope)' <<< "$cgroup_content" | head -n 1)
+            [ -n "$unit" ] && source_origin="Service: $unit"
+        fi
+    fi
+
+    # Real fallback: the actual process name, never a vague label
+    [ -z "$source_origin" ] && source_origin="Proc: ${comm:-unknown}"
+
+    echo "$cpu|$source_origin" >> "$tmp_file"
+done
+
+printf "%-9s %-40s %s\n" "CPU SUM%" "SERVICE / CONTAINER" "PROCS"
+
+awk -F'|' '
+{
+    cpu_sum[$2] += $1;
+    proc_cnt[$2]++;
+}
+END {
+    for (service in cpu_sum) {
+        printf "%.2f|%-40s|%d\n", cpu_sum[service], service, proc_cnt[service]
+    }
+}' "$tmp_file" | sort -rn -t'|' -k1 | head -n 5 | while IFS='|' read -r sum_cpu svc_name p_count; do
+    printf "%-9s %-40s %s\n" "${sum_cpu}%" "$svc_name" "$p_count"
+done
+
+rm -f "$tmp_file"
 echo "-----------------------------------------"
 echo ""
