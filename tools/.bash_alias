@@ -163,7 +163,7 @@ alias dcd='sudo docker compose down'
 alias dcl='sudo docker compose logs -f'
 alias dcp='sudo docker compose ps'
 alias dce='sudo docker compose exec'
-alias dcb='sudo docker compose build'
+alias dcb='docker compose build'
 alias dcrm='sudo docker compose rm -f'
 alias dcfg='sudo docker compose config'
 
