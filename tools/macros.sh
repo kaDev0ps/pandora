@@ -17,3 +17,5 @@ wget https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/.bash_alias -
 mkdir -p "$HOME/tools" && wget -q --show-progress https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/.ncdu.sh -O "$HOME/tools/install_ncdu.sh" && chmod +x "$HOME/tools/install_ncdu.sh" && "$HOME/tools/install_ncdu.sh"
 # Install delta
 wget https://github.com/dandavison/delta/releases/download/0.18.2/delta-0.18.2-x86_64-unknown-linux-musl.tar.gz && tar -xzf delta-0.18.2-x86_64-unknown-linux-musl.tar.gz && sudo mv delta-0.18.2-x86_64-unknown-linux-musl/delta /usr/local/bin/ && sudo chmod +x /usr/local/bin/delta && delta --version
+# Install duf
+mkdir -p "$HOME/tools" && wget -q --show-progress https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/duf.sh -O "$HOME/tools/duf.sh" && chmod +x "$HOME/tools/duf.sh" && "$HOME/tools/duf.sh"
