@@ -27,18 +27,37 @@ else
     SUDO=""
 fi
 
-# Already installed? (check both iotop-c and iotop, since some distros
-# ship the C version under the name "iotop")
-if command -v iotop-c &>/dev/null; then
-    info "iotop-c is already installed: $(iotop-c --version 2>&1 | head -n1)"
+# Locate iotop-c / iotop binary.
+# iotop-c is installed into /usr/sbin on Debian-derived systems (including
+# Astra Linux), and /usr/sbin is usually NOT in a non-root user's PATH.
+# So check PATH first, then the well-known sbin/local locations.
+find_iotop_bin() {
+    local cand
+    for cand in iotop-c iotop; do
+        if command -v "$cand" &>/dev/null; then
+            command -v "$cand"; return 0
+        fi
+        if [[ -x "/usr/sbin/$cand" ]]; then
+            echo "/usr/sbin/$cand"; return 0
+        fi
+        if [[ -x "/sbin/$cand" ]]; then
+            echo "/sbin/$cand"; return 0
+        fi
+        if [[ -x "/usr/local/sbin/$cand" ]]; then
+            echo "/usr/local/sbin/$cand"; return 0
+        fi
+        if [[ -x "/usr/local/bin/$cand" ]]; then
+            echo "/usr/local/bin/$cand"; return 0
+        fi
+    done
+    return 1
+}
+
+# Already installed?
+if IOTOP_BIN="$(find_iotop_bin)"; then
+    IOTOP_VER="$("$IOTOP_BIN" --version 2>&1 | head -n1 || true)"
+    info "iotop-c is already installed: $IOTOP_BIN — $IOTOP_VER"
     exit 0
-elif command -v iotop &>/dev/null; then
-    # Check if the installed iotop is the C version (it usually accepts --version)
-    IOTOP_VER="$(iotop --version 2>&1 | head -n1 || true)"
-    if [[ "$IOTOP_VER" == *"iotop-c"* ]] || [[ "$IOTOP_VER" == *"C version"* ]]; then
-        info "iotop-c is already installed (as 'iotop'): $IOTOP_VER"
-        exit 0
-    fi
 fi
 
 # Detect OS
@@ -88,11 +107,7 @@ install_via_yum() {
 
 install_via_zypper() {
     info "Trying to install iotop-c via zypper..."
-    if zypper search --installed-only iotop-c &>/dev/null; then
-        # Already installed
-        return 0
-    fi
-    if zypper search iotop-c &>/dev/null | grep -q iotop-c; then
+    if zypper search iotop-c 2>/dev/null | grep -q '^i\? *| *iotop-c'; then
         $SUDO zypper install -y iotop-c
         return 0
     fi
@@ -204,13 +219,19 @@ if [[ "$INSTALLED" -ne 1 ]]; then
     install_from_source
 fi
 
-# Verify installation (check both possible command names)
-if command -v iotop-c &>/dev/null; then
-    info "iotop-c successfully installed: $(iotop-c --version 2>&1 | head -n1)"
-elif command -v iotop &>/dev/null; then
-    info "iotop-c successfully installed (as 'iotop'): $(iotop --version 2>&1 | head -n1)"
+# Verify installation (handle /usr/sbin not being in PATH)
+if IOTOP_BIN="$(find_iotop_bin)"; then
+    IOTOP_VER="$("$IOTOP_BIN" --version 2>&1 | head -n1 || true)"
+    info "iotop-c successfully installed: $IOTOP_BIN — $IOTOP_VER"
+
+    # Warn if it's only reachable via full path (common on Debian/Astra)
+    if ! command -v iotop-c &>/dev/null && ! command -v iotop &>/dev/null; then
+        warn "'iotop-c' is in /usr/sbin and may not be in your user PATH."
+        warn "Run it with: sudo $IOTOP_BIN"
+        warn "Or add sbin to PATH: export PATH=\"\$PATH:/usr/sbin:/sbin\""
+    fi
 else
     error "iotop-c installation failed."
 fi
 
-info "All done! Run 'iotop-c' or 'iotop' to see your disk I/O usage."
+info "All done! Run 'sudo iotop-c' (or 'sudo iotop') to see disk I/O usage."
