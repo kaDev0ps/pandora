@@ -38,6 +38,9 @@ alias update='sudo apt update'
 alias clean='sudo apt clean'
 alias autoremove='sudo apt autoremove -y'
 
+# ---------- Storage ----------
+alias io='sudo iotop-c'
+
 # ---------- Monitoring ----------
 alias h='history'
 alias j='jobs -l'
