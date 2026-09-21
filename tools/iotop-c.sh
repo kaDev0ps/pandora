@@ -75,7 +75,9 @@ info "Detected OS: $NAME $VERSION"
 
 install_via_apt() {
     info "Trying to install iotop-c via apt..."
-    $SUDO apt update
+    # apt update can report errors on some stale repos (e.g. Astra uu/last)
+    # without being fatal — we still only need the package metadata.
+    $SUDO apt update || warn "apt update reported errors; continuing anyway..."
     if apt-cache show iotop-c &>/dev/null; then
         $SUDO apt install -y iotop-c
         return 0
@@ -159,7 +161,7 @@ install_from_source() {
         warn "Missing build tools: ${missing[*]}. Attempting to install them..."
 
         if   command -v apt    &>/dev/null; then
-            $SUDO apt update
+            $SUDO apt update || warn "apt update reported errors; continuing anyway..."
             $SUDO apt install -y git build-essential libncurses-dev libncursesw5-dev pkg-config
         elif command -v dnf    &>/dev/null; then
             $SUDO dnf install -y git gcc make ncurses-devel pkgconfig
@@ -224,11 +226,10 @@ if IOTOP_BIN="$(find_iotop_bin)"; then
     IOTOP_VER="$("$IOTOP_BIN" --version 2>&1 | head -n1 || true)"
     info "iotop-c successfully installed: $IOTOP_BIN — $IOTOP_VER"
 
-    # Warn if it's only reachable via full path (common on Debian/Astra)
     if ! command -v iotop-c &>/dev/null && ! command -v iotop &>/dev/null; then
-        warn "'iotop-c' is in /usr/sbin and may not be in your user PATH."
-        warn "Run it with: sudo $IOTOP_BIN"
-        warn "Or add sbin to PATH: export PATH=\"\$PATH:/usr/sbin:/sbin\""
+        warn "'iotop-c' lives in /usr/sbin and is not in your user PATH."
+        warn "Run it with:  sudo $IOTOP_BIN"
+        warn "Or add sbin to PATH:  export PATH=\"\$PATH:/usr/sbin:/sbin\""
     fi
 else
     error "iotop-c installation failed."
