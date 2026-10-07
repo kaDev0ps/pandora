@@ -21,3 +21,5 @@ wget https://github.com/dandavison/delta/releases/download/0.18.2/delta-0.18.2-x
 mkdir -p "$HOME/tools" && wget -q --show-progress https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/duf.sh -O "$HOME/tools/duf.sh" && chmod +x "$HOME/tools/duf.sh" && "$HOME/tools/duf.sh"
 # Install iotop-c
 mkdir -p "$HOME/tools" && wget -q --show-progress https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/iotop-c.sh -O "$HOME/tools/iotop-c.sh" && chmod +x "$HOME/tools/iotop-c.sh" && "$HOME/tools/iotop-c.sh"
+# Install installation_tools
+mkdir -p "$HOME/tools" && wget -q --show-progress https://raw.githubusercontent.com/kaDev0ps/pandora/main/tools/installation_toolkit.sh -O "$HOME/tools/installation_toolkit.sh" && chmod +x "$HOME/tools/installation_toolkit.sh" && "$HOME/tools/installation_toolkit.sh"
