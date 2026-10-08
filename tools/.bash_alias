@@ -2,6 +2,9 @@
 #  .bash_aliases – clean, safe, no duplicates, no auto-welcome
 # ============================================================
 
+# Filterde aliases with toolkit
+alias ez='eza -l'
+
 # ---------- Basic commands ----------
 alias up='uptime -p'
 alias scat='sudo cat -n'
