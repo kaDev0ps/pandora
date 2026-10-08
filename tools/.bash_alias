@@ -3,7 +3,7 @@
 # ============================================================
 
 # Filterde aliases with toolkit
-alias ez='eza -l'
+alias ez='sudo eza -l'
 
 # ---------- Basic commands ----------
 alias up='uptime -p'
