@@ -2,8 +2,8 @@
 #  .bash_aliases – clean, safe, no duplicates, no auto-welcome
 # ============================================================
 
-# Filterde aliases with toolkit
-alias ez='sudo eza -l'
+# Filtred aliases with toolkit
+alias ez='sudo eza -l' # Show files in catalog as ls -l
 
 # ---------- Basic commands ----------
 alias up='uptime -p'
