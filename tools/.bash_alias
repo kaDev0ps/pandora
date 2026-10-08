@@ -5,6 +5,78 @@
 # Filtred aliases with toolkit
 alias ez='sudo eza -l' # Show files in catalog as ls -l
 
+
+# Aliases from toolkit
+# Filtered aliases with toolkit
+# Source from ~/.bash_aliases or ~/.bashrc:   source ~/toolkit_aliases.sh
+# Every block is guarded, so a host with a missing tool simply skips that alias.
+
+_have() { command -v "$1" &>/dev/null; }
+
+# ---------- Productivity & Navigation ----------
+_have eza && {
+    alias ez='sudo eza -l'                  # ls -l with colors
+    alias ezl='eza -la --git'               # all files + git status
+    alias ezt='eza -T -L2'                  # tree, 2 levels
+}
+_have zoxide && eval "$(zoxide init bash)"  # gives: z <part-of-path>, zi (interactive pick)
+_have rg && {
+    alias rgi='rg -i'                       # case-insensitive search:  rgi error /var/log
+    alias rgl='rg -l'                       # only list files that match
+}
+_have fd && {
+    alias fdf='fd -t f'                     # find files:        fdf '\.yml$'
+    alias fdd='fd -t d'                     # find directories
+}
+_have bat  && alias bp='bat -p'             # cat with syntax highlight, no decorations
+_have delta && alias dl='delta'             # nice diff of two files:  dl a.conf b.conf
+_have fastfetch && alias ff='fastfetch'     # system summary
+_have yazi && y() {                         # file manager; shell cd's to where you quit
+    local tmp cwd
+    tmp="$(mktemp -t yazi-cwd.XXXXXX)"
+    yazi "$@" --cwd-file="$tmp"
+    if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+        builtin cd -- "$cwd"
+    fi
+    rm -f -- "$tmp"
+}
+
+# ---------- Process, CPU & Memory ----------
+alias lsp='sudo lsof -iTCP -sTCP:LISTEN -P -n'   # who listens on which port
+alias vm='vmstat -S M 1'                         # memory/CPU/IO every second, in MB
+alias mp='mpstat -P ALL 1'                       # per-core CPU every second
+
+# ---------- Logs ----------
+_have lnav && {
+    alias lgv='sudo lnav /var/log'                                  # browse all logs
+    alias jnl='sudo journalctl -o short-iso -n 5000 | lnav'         # last 5000 journal lines in lnav
+}
+_have lazyjournal && alias lj='sudo lazyjournal'                    # TUI for journald/files/docker logs
+
+# ---------- Networking ----------
+alias tcpd='sudo tcpdump -nni any'               # usage: tcpd port 443   |   tcpd host 10.0.0.5
+_have tshark && tsp() { sudo tshark -i any -f "port ${1:?usage: tsp <port>}"; }
+alias mt='mtr -rwbc 50'                          # route report: mt 8.8.8.8
+alias ift='sudo iftop -nNP'                      # bandwidth per connection, no DNS, with ports
+alias digs='dig +short'                          # digs example.com
+alias diga='dig +noall +answer'                  # full answer lines only
+_have xh && alias xv='xh -v'                     # HTTP request, show request + response
+alias ncz='nc -zv'                               # port check: ncz host 443
+alias speed='speedtest-cli --simple'             # ping / down / up
+
+# ---------- Storage & Disk I/O ----------
+_have duf && alias dfl='duf --only local'        # disks, without tmpfs/network noise
+_have ncdu && {
+    alias ncx='ncdu -x'                          # usage of current dir, stay on one filesystem
+    alias ncr='sudo ncdu -x /'                   # what eats the root filesystem
+}
+_iot="$(command -v iotop-c || command -v iotop)"
+[ -n "$_iot" ] && alias iot="sudo $_iot -o"      # only processes doing I/O right now
+unset _iot
+alias smh='sudo smartctl -H'                     # disk health:   smh /dev/sda
+alias sma='sudo smartctl -a'                     # full SMART report
+# ---------- END Toolkit commands ----------
+
 # ---------- Basic commands ----------
 alias up='uptime -p'
 alias scat='sudo cat -n'
