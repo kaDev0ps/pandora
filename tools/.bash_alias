@@ -3,7 +3,8 @@
 # ============================================================
 
 # Filtred aliases with toolkit
-alias ez='sudo eza -l' # Show files in catalog as ls -l
+alias ez='sudo eza -l'                       # Show files in catalog as ls -l
+alias pg='sudo -u postgres psql'             # Enter to pgsql
 
 
 # Aliases from toolkit
