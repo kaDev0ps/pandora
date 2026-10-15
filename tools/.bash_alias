@@ -5,7 +5,7 @@
 # Filtred aliases with toolkit
 alias ez='sudo eza -l'                       # Show files in catalog as ls -l
 alias pg='sudo -u postgres psql'             # Enter to pgsql
-
+alias scat='sudo cat'                        # Show file content
 
 # Aliases from toolkit
 # Filtered aliases with toolkit
@@ -80,7 +80,6 @@ alias sma='sudo smartctl -a'                     # full SMART report
 
 # ---------- Basic commands ----------
 alias up='uptime -p'
-alias scat='sudo cat -n'
 alias tails='tail -n +1'
 alias c='clear'
 alias ipa='ip -br -c a'
