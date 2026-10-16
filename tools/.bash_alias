@@ -11,6 +11,12 @@ _have() { command -v "$1" >/dev/null 2>&1; }
 # _ali <tool> <alias-name> '<command>'  -> define alias only if <tool> exists
 _ali()  { _have "$1" || return 0; alias "$2=$3"; }
 
+# fzf installed via git clone lives in ~/.fzf/bin; ~/.fzf.bash is sourced AFTER this
+# file in .bashrc, so add it to PATH here to make the guards below see fzf
+if [ -d "$HOME/.fzf/bin" ]; then
+    case ":$PATH:" in *":$HOME/.fzf/bin:"*) ;; *) PATH="$PATH:$HOME/.fzf/bin" ;; esac
+fi
+
 # Debian/Ubuntu/Astra ship these under different names (batcat, fdfind)
 unalias bat fd 2>/dev/null
 _bat="$(command -v bat || command -v batcat)"
@@ -91,6 +97,52 @@ _iot="$(command -v iotop-c || command -v iotop)"
 [ -n "$_iot" ] && alias iot="sudo $_iot -o"             # only processes doing I/O right now
 _ali smartctl smh 'sudo smartctl -H'                    # disk health:  smh /dev/sda
 _ali smartctl sma 'sudo smartctl -a'                    # full SMART report
+
+# ---------- fzf: interactive fuzzy selection ----------
+# Built-in keys (from ~/.fzf.bash / ~/.fzf.zsh): Ctrl-T files, Ctrl-R history, Alt-C cd
+if _have fzf; then
+    export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
+    if [ -n "$_fd" ]; then
+        export FZF_DEFAULT_COMMAND="$_fd --type f --hidden --exclude .git"
+        export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+        export FZF_ALT_C_COMMAND="$_fd --type d --hidden --exclude .git"
+        _fzf_dircmd="$FZF_ALT_C_COMMAND"
+    else
+        _fzf_dircmd="find . -type d -not -path '*/.git/*' 2>/dev/null"
+    fi
+    if [ -n "$_bat" ]; then
+        _fzf_prev="$_bat --style=numbers --color=always --line-range :200 {}"
+    else
+        _fzf_prev='head -200 {}'
+    fi
+
+    fo() {      # fo [dir]  - pick a file (with preview), open in $EDITOR
+        local base="${1:-.}" f
+        f="$(cd "$base" && fzf --preview "$_fzf_prev")" || return
+        ${EDITOR:-vim} "$base/$f"
+    }
+    fcd() {     # fcd [dir] - pick a directory and cd into it
+        local base="${1:-.}" d
+        d="$(cd "$base" && eval "$_fzf_dircmd" | fzf)" || return
+        cd "$base/$d" || return
+    }
+    fkill() {   # fkill [signal] - pick process(es), TAB = multi-select, default SIGTERM
+        local pids
+        pids="$(ps -eo pid,user,%cpu,%mem,etime,cmd --sort=-%cpu | fzf -m --header-lines=1 | awk '{print $1}')" || return
+        [ -n "$pids" ] && echo "$pids" | xargs sudo kill -"${1:-15}"
+    }
+    fjl() {     # fjl - pick a systemd service and follow its journal
+        local u
+        u="$(systemctl list-units --type=service --all --no-legend --plain | awk '{print $1}' \
+            | fzf --preview 'systemctl status --no-pager -n 15 {}')" || return
+        sudo journalctl -u "$u" -n 200 -f
+    }
+    fssh() {    # fssh - pick a host from ~/.ssh/config and connect
+        local h
+        h="$(awk '$1=="Host"{for(i=2;i<=NF;i++) if($i !~ /[*?!]/) print $i}' ~/.ssh/config 2>/dev/null | fzf)" || return
+        ssh "$h"
+    }
+fi
 
 unset _bat _fd _iot
 # ---------- END toolkit aliases ----------
