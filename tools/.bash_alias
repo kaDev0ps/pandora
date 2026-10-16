@@ -61,7 +61,7 @@ _ali rg rgl 'rg -l'                                     # only list matching fil
 
 # ---------- System management & logs ----------
 _ali systemd-manager-tui smt 'sudo systemd-manager-tui' # TUI for system units
-_ali lnav lgv 'sudo lnav /var/log'                      # browse all logs
+_ali lnav lgv 'sudo lnav'                      # views logs
 if _have lnav; then
     alias jnl='sudo journalctl -o short-iso -n 5000 | lnav'   # last 5000 journal lines in lnav
 fi
