@@ -13,7 +13,6 @@
 #  Ends with a checklist of every tool. Safe to run again at any time.
 #
 #  Usage:   ./install_toolkit.sh [options]
-#    --aliases      also install ~/.bash_aliases (embedded copy; old one is backed up)
 #    --no-github    never download from GitHub (offline / closed network)
 #    --only a,b     install only the listed tools, e.g. --only fzf,eza,lnav
 #    --list         print the tool list and exit
@@ -22,10 +21,9 @@
 # ============================================================
 set -u
 
-GITHUB=1; WITH_ALIASES=0; ONLY=""; LIST=0
+GITHUB=1; ONLY=""; LIST=0
 while [ $# -gt 0 ]; do
     case "$1" in
-        --aliases)   WITH_ALIASES=1 ;;
         --no-github) GITHUB=0 ;;
         --only)      ONLY=",${2:-}," ; shift ;;
         --list)      LIST=1 ;;
@@ -157,7 +155,7 @@ try_pkg() {   # try candidates in order, first that installs wins
     done
     return 1
 }
-# tshark asks whether non-root users may capture: answer "no" (aliases use sudo)
+# tshark asks whether non-root users may capture: answer "no" (use sudo for captures)
 command -v debconf-set-selections >/dev/null 2>&1 && \
     echo 'wireshark-common wireshark-common/install-setuid boolean false' | $SUDO debconf-set-selections 2>/dev/null
 
@@ -249,26 +247,6 @@ for pair in "bat:batcat" "fd:fdfind"; do
     fi
 done
 
-# ---------- Optional: ~/.bash_aliases ----------
-install_aliases() {
-    local dst="$TARGET_HOME/.bash_aliases" tmp="$GH_TMP/bash_aliases.new" rc
-    sed -n "/^: <<'__ALIASES_END__'\$/,/^__ALIASES_END__\$/p" "$0" | sed '1d;$d' > "$tmp"
-    if [ -f "$dst" ] && cmp -s "$tmp" "$dst"; then info "  [skip] $dst is up to date"
-    else
-        [ -f "$dst" ] && cp -p "$dst" "$dst.bak.$(date +%Y%m%d-%H%M%S)" && info "  old file backed up to $dst.bak.*"
-        install -m 0644 "$tmp" "$dst" && chown "$TARGET_USER" "$dst" 2>/dev/null
-        info "  ${G}[ OK ]${N} $dst written"
-    fi
-    for rc in "$TARGET_HOME/.bashrc" "$TARGET_HOME/.zshrc"; do
-        [ -f "$rc" ] || continue
-        grep -q 'bash_aliases' "$rc" 2>/dev/null || {
-            printf '\n[ -f ~/.bash_aliases ] && . ~/.bash_aliases\n' >> "$rc"
-            info "  added source line to $rc"
-        }
-    done
-}
-if [ "$WITH_ALIASES" -eq 1 ]; then info; info "${B}Aliases${N}"; install_aliases; fi
-
 # ---------- Checklist ----------
 nok=0; nnew=0; nfail=0; failed=""
 info; info "${B}==================== CHECKLIST ====================${N}"
@@ -288,156 +266,3 @@ info; info "Already present: $nok   Installed now: $nnew   Missing: $nfail"
 info
 info "Next: reload the shell (source ~/.bashrc  or  source ~/.zshrc), fzf is picked up from ~/.fzf/bin"
 [ "$nfail" -eq 0 ]; exit $?
-
-# ---------- Embedded aliases (written by --aliases) ----------
-# A no-op heredoc: bash never executes it, install_aliases() extracts it with sed.
-: <<'__ALIASES_END__'
-# ============================================================
-#  ~/.bash_aliases - toolkit aliases (bash + zsh)
-#  Every alias is guarded: a host without the tool skips it silently.
-# ============================================================
-
-# Interactive shells only
-case $- in *i*) ;; *) return 0 ;; esac
-
-# ---------- Helpers ----------
-_have() { command -v "$1" >/dev/null 2>&1; }
-# _ali <tool> <alias-name> '<command>'  -> define alias only if <tool> exists
-_ali()  { _have "$1" || return 0; alias "$2=$3"; }
-
-# fzf installed via git clone lives in ~/.fzf/bin; ~/.fzf.bash is sourced AFTER this
-# file in .bashrc, so add it to PATH here to make the guards below see fzf
-if [ -d "$HOME/.fzf/bin" ]; then
-    case ":$PATH:" in *":$HOME/.fzf/bin:"*) ;; *) PATH="$PATH:$HOME/.fzf/bin" ;; esac
-fi
-
-# Debian/Ubuntu/Astra ship these under different names (batcat, fdfind)
-unalias bat fd 2>/dev/null
-_bat="$(command -v bat || command -v batcat)"
-_fd="$(command -v fd || command -v fdfind)"
-case "$_bat" in *batcat) alias bat='batcat' ;; esac
-case "$_fd"  in *fdfind) alias fd='fdfind'  ;; esac
-
-# ---------- Always available ----------
-alias scat='sudo cat'                                   # read a root-only file
-_ali psql pg 'sudo -u postgres psql'                    # psql as postgres user
-
-# ---------- Navigation & files ----------
-_ali eza ez   'eza -l --group-directories-first'        # ls -l with colors, dirs first
-_ali eza ezs  'sudo eza -l --group-directories-first'   # same, as root (restricted dirs)
-_ali eza ezl  'eza -la --git'                           # all files + git status
-_ali eza ezt  'eza -T -L2'                              # tree, 2 levels
-if _have zoxide; then                                   # z <part-of-path>, zi = interactive pick
-    if [ -n "$ZSH_VERSION" ]; then eval "$(zoxide init zsh)"; else eval "$(zoxide init bash)"; fi
-fi
-[ -n "$_bat" ] && alias bp="$_bat -p"                   # cat with syntax highlight, no decorations
-_ali delta dl 'delta'                                   # nice diff of two files: dl a.conf b.conf
-_ali fastfetch ff 'fastfetch'                           # system summary
-if _have yazi; then                                     # file manager; shell cd's to where you quit
-    y() {
-        local tmp cwd
-        tmp="$(mktemp -t yazi-cwd.XXXXXX)"
-        yazi "$@" --cwd-file="$tmp"
-        if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-            builtin cd -- "$cwd"
-        fi
-        rm -f -- "$tmp"
-    }
-fi
-
-# ---------- Search ----------
-_ali rg rgi 'rg -i'                                     # case-insensitive: rgi error /var/log
-_ali rg rgl 'rg -l'                                     # only list matching files
-[ -n "$_fd" ] && {
-    alias fdf="$_fd -t f"                               # find files:       fdf '\.yml$'
-    alias fdd="$_fd -t d"                               # find directories: fdd postgres
-}
-
-# ---------- System management & logs ----------
-_ali systemd-manager-tui smt 'sudo systemd-manager-tui' # TUI for system units
-_ali lnav lgv 'sudo lnav /var/log'                      # browse all logs
-if _have lnav; then
-    alias jnl='sudo journalctl -o short-iso -n 5000 | lnav'   # last 5000 journal lines in lnav
-fi
-_ali journalctl jerr 'sudo journalctl -p err -b -o short-iso' # errors since last boot
-_ali lazyjournal lj 'sudo lazyjournal'                  # TUI for journald/files/docker logs
-
-# ---------- Process, CPU & memory ----------
-_ali lsof   lsp 'sudo lsof -iTCP -sTCP:LISTEN -P -n'    # who listens on which TCP port
-_ali ss     lss 'sudo ss -tulpn'                        # listening TCP+UDP sockets with process
-_ali vmstat vm  'vmstat -S M 1'                         # memory/CPU/IO every second, in MB
-_ali mpstat mp  'mpstat -P ALL 1'                       # per-core CPU every second
-
-# ---------- Networking ----------
-_ali tcpdump tcpd 'sudo tcpdump -nni any'               # tcpd port 443 | tcpd host 10.0.0.5
-if _have tshark; then
-    tsp() { sudo tshark -n -i any -f "port ${1:?usage: tsp <port> [tshark args]}" "${@:2}"; }
-fi
-_ali mtr  mt   'mtr -rwbc 50'                           # route report: mt 8.8.8.8
-_ali iftop ift 'sudo iftop -nNP'                        # bandwidth per connection, with ports
-_ali dig  digs 'dig +short'                             # digs example.com
-_ali dig  diga 'dig +noall +answer'                     # answer lines only
-_ali xh   xv   'xh -v'                                  # HTTP request, show request + response
-_ali nc   ncz  'nc -zv -w 3'                            # port check (3s timeout): ncz host 443
-_ali speedtest-cli speed 'speedtest-cli --simple'       # ping / down / up
-
-# ---------- Storage & disk I/O ----------
-_ali duf dfl 'duf --only local'                         # disks without tmpfs/network noise
-if _have ncdu; then
-    alias ncx='ncdu -x'                                 # usage of current dir, one filesystem
-    alias ncr='sudo ncdu -x /'                          # what eats the root filesystem
-fi
-_iot="$(command -v iotop-c || command -v iotop)"
-[ -n "$_iot" ] && alias iot="sudo $_iot -o"             # only processes doing I/O right now
-_ali smartctl smh 'sudo smartctl -H'                    # disk health:  smh /dev/sda
-_ali smartctl sma 'sudo smartctl -a'                    # full SMART report
-
-# ---------- fzf: interactive fuzzy selection ----------
-# Built-in keys (from ~/.fzf.bash / ~/.fzf.zsh): Ctrl-T files, Ctrl-R history, Alt-C cd
-if _have fzf; then
-    export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
-    if [ -n "$_fd" ]; then
-        export FZF_DEFAULT_COMMAND="$_fd --type f --hidden --exclude .git"
-        export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-        export FZF_ALT_C_COMMAND="$_fd --type d --hidden --exclude .git"
-        _fzf_dircmd="$FZF_ALT_C_COMMAND"
-    else
-        _fzf_dircmd="find . -type d -not -path '*/.git/*' 2>/dev/null"
-    fi
-    if [ -n "$_bat" ]; then
-        _fzf_prev="$_bat --style=numbers --color=always --line-range :200 {}"
-    else
-        _fzf_prev='head -200 {}'
-    fi
-
-    fo() {      # fo [dir]  - pick a file (with preview), open in $EDITOR
-        local base="${1:-.}" f
-        f="$(cd "$base" && fzf --preview "$_fzf_prev")" || return
-        ${EDITOR:-vim} "$base/$f"
-    }
-    fcd() {     # fcd [dir] - pick a directory and cd into it
-        local base="${1:-.}" d
-        d="$(cd "$base" && eval "$_fzf_dircmd" | fzf)" || return
-        cd "$base/$d" || return
-    }
-    fkill() {   # fkill [signal] - pick process(es), TAB = multi-select, default SIGTERM
-        local pids
-        pids="$(ps -eo pid,user,%cpu,%mem,etime,cmd --sort=-%cpu | fzf -m --header-lines=1 | awk '{print $1}')" || return
-        [ -n "$pids" ] && echo "$pids" | xargs sudo kill -"${1:-15}"
-    }
-    fjl() {     # fjl - pick a systemd service and follow its journal
-        local u
-        u="$(systemctl list-units --type=service --all --no-legend --plain | awk '{print $1}' \
-            | fzf --preview 'systemctl status --no-pager -n 15 {}')" || return
-        sudo journalctl -u "$u" -n 200 -f
-    }
-    fssh() {    # fssh - pick a host from ~/.ssh/config and connect
-        local h
-        h="$(awk '$1=="Host"{for(i=2;i<=NF;i++) if($i !~ /[*?!]/) print $i}' ~/.ssh/config 2>/dev/null | fzf)" || return
-        ssh "$h"
-    }
-fi
-
-unset _bat _fd _iot
-# ---------- END toolkit aliases ----------
-__ALIASES_END__
