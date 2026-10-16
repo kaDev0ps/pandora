@@ -1,87 +1,99 @@
 # ============================================================
-#  .bash_aliases – clean, safe, no duplicates, no auto-welcome
+#  ~/.bash_aliases - toolkit aliases (bash + zsh)
+#  Every alias is guarded: a host without the tool skips it silently.
 # ============================================================
 
-# Guard function – must be defined BEFORE any guarded alias
-_have() { command -v "$1" &>/dev/null; }
+# Interactive shells only
+case $- in *i*) ;; *) return 0 ;; esac
 
-# Filtred aliases with toolkit
-alias ez='sudo eza -l'                       # Show files in catalog as ls -l
-alias pg='sudo -u postgres psql'             # Enter to pgsql
-alias scat='sudo cat'                        # Show file content
+# ---------- Helpers ----------
+_have() { command -v "$1" >/dev/null 2>&1; }
+# _ali <tool> <alias-name> '<command>'  -> define alias only if <tool> exists
+_ali()  { _have "$1" || return 0; alias "$2=$3"; }
 
-# Aliases from toolkit
-# Filtered aliases with toolkit
-# Source from ~/.bash_aliases or ~/.bashrc:   source ~/toolkit_aliases.sh
-# Every block is guarded, so a host with a missing tool simply skips that alias.
+# Debian/Ubuntu/Astra ship these under different names (batcat, fdfind)
+unalias bat fd 2>/dev/null
+_bat="$(command -v bat || command -v batcat)"
+_fd="$(command -v fd || command -v fdfind)"
+case "$_bat" in *batcat) alias bat='batcat' ;; esac
+case "$_fd"  in *fdfind) alias fd='fdfind'  ;; esac
 
-# ---------- Productivity & Navigation ----------
-_have eza && {
-    alias ez='sudo eza -l'                  # ls -l with colors
-    alias ezl='eza -la --git'               # all files + git status
-    alias ezt='eza -T -L2'                  # tree, 2 levels
+# ---------- Always available ----------
+alias scat='sudo cat'                                   # read a root-only file
+_ali psql pg 'sudo -u postgres psql'                    # psql as postgres user
+
+# ---------- Navigation & files ----------
+_ali eza ez   'eza -l --group-directories-first'        # ls -l with colors, dirs first
+_ali eza ezs  'sudo eza -l --group-directories-first'   # same, as root (restricted dirs)
+_ali eza ezl  'eza -la --git'                           # all files + git status
+_ali eza ezt  'eza -T -L2'                              # tree, 2 levels
+if _have zoxide; then                                   # z <part-of-path>, zi = interactive pick
+    if [ -n "$ZSH_VERSION" ]; then eval "$(zoxide init zsh)"; else eval "$(zoxide init bash)"; fi
+fi
+[ -n "$_bat" ] && alias bp="$_bat -p"                   # cat with syntax highlight, no decorations
+_ali delta dl 'delta'                                   # nice diff of two files: dl a.conf b.conf
+_ali fastfetch ff 'fastfetch'                           # system summary
+if _have yazi; then                                     # file manager; shell cd's to where you quit
+    y() {
+        local tmp cwd
+        tmp="$(mktemp -t yazi-cwd.XXXXXX)"
+        yazi "$@" --cwd-file="$tmp"
+        if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+            builtin cd -- "$cwd"
+        fi
+        rm -f -- "$tmp"
+    }
+fi
+
+# ---------- Search ----------
+_ali rg rgi 'rg -i'                                     # case-insensitive: rgi error /var/log
+_ali rg rgl 'rg -l'                                     # only list matching files
+[ -n "$_fd" ] && {
+    alias fdf="$_fd -t f"                               # find files:       fdf '\.yml$'
+    alias fdd="$_fd -t d"                               # find directories: fdd postgres
 }
-_have zoxide && eval "$(zoxide init bash)"  # gives: z <part-of-path>, zi (interactive pick)
-_have rg && {
-    alias rgi='rg -i'                       # case-insensitive search:  rgi error /var/log
-    alias rgl='rg -l'                       # only list files that match
-}
-_have fd && {
-    alias fdf='fd -t f'                     # find files:        fdf '\.yml$'
-    alias fdd='fd -t d'                     # find directories
-}
-_have bat  && alias bp='bat -p'             # cat with syntax highlight, no decorations
-_have delta && alias dl='delta'             # nice diff of two files:  dl a.conf b.conf
-_have fastfetch && alias ff='fastfetch'     # system summary
-_have yazi && y() {                         # file manager; shell cd's to where you quit
-    local tmp cwd
-    tmp="$(mktemp -t yazi-cwd.XXXXXX)"
-    yazi "$@" --cwd-file="$tmp"
-    if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-        builtin cd -- "$cwd"
-    fi
-    rm -f -- "$tmp"
-}
 
-# ---------- System Management ----------
-_have systemd-manager-tui && alias smt='sudo systemd-manager-tui'   # TUI for systemd services (system units)
-# For user/session units, run directly: systemd-manager-tui
+# ---------- System management & logs ----------
+_ali systemd-manager-tui smt 'sudo systemd-manager-tui' # TUI for system units
+_ali lnav lgv 'sudo lnav /var/log'                      # browse all logs
+if _have lnav; then
+    alias jnl='sudo journalctl -o short-iso -n 5000 | lnav'   # last 5000 journal lines in lnav
+fi
+_ali journalctl jerr 'sudo journalctl -p err -b -o short-iso' # errors since last boot
+_ali lazyjournal lj 'sudo lazyjournal'                  # TUI for journald/files/docker logs
 
-# ---------- Process, CPU & Memory ----------
-alias lsp='sudo lsof -iTCP -sTCP:LISTEN -P -n'   # who listens on which port
-alias vm='vmstat -S M 1'                         # memory/CPU/IO every second, in MB
-alias mp='mpstat -P ALL 1'                       # per-core CPU every second
-
-# ---------- Logs ----------
-_have lnav && {
-    alias lgv='sudo lnav /var/log'                                  # browse all logs
-    alias jnl='sudo journalctl -o short-iso -n 5000 | lnav'         # last 5000 journal lines in lnav
-}
-_have lazyjournal && alias lj='sudo lazyjournal'                    # TUI for journald/files/docker logs
+# ---------- Process, CPU & memory ----------
+_ali lsof   lsp 'sudo lsof -iTCP -sTCP:LISTEN -P -n'    # who listens on which TCP port
+_ali ss     lss 'sudo ss -tulpn'                        # listening TCP+UDP sockets with process
+_ali vmstat vm  'vmstat -S M 1'                         # memory/CPU/IO every second, in MB
+_ali mpstat mp  'mpstat -P ALL 1'                       # per-core CPU every second
 
 # ---------- Networking ----------
-alias tcpd='sudo tcpdump -nni any'               # usage: tcpd port 443   |   tcpd host 10.0.0.5
-_have tshark && tsp() { sudo tshark -i any -f "port ${1:?usage: tsp <port>}"; }
-alias mt='mtr -rwbc 50'                          # route report: mt 8.8.8.8
-alias ift='sudo iftop -nNP'                      # bandwidth per connection, no DNS, with ports
-alias digs='dig +short'                          # digs example.com
-alias diga='dig +noall +answer'                  # full answer lines only
-_have xh && alias xv='xh -v'                     # HTTP request, show request + response
-alias ncz='nc -zv'                               # port check: ncz host 443
-alias speed='speedtest-cli --simple'             # ping / down / up
+_ali tcpdump tcpd 'sudo tcpdump -nni any'               # tcpd port 443 | tcpd host 10.0.0.5
+if _have tshark; then
+    tsp() { sudo tshark -n -i any -f "port ${1:?usage: tsp <port> [tshark args]}" "${@:2}"; }
+fi
+_ali mtr  mt   'mtr -rwbc 50'                           # route report: mt 8.8.8.8
+_ali iftop ift 'sudo iftop -nNP'                        # bandwidth per connection, with ports
+_ali dig  digs 'dig +short'                             # digs example.com
+_ali dig  diga 'dig +noall +answer'                     # answer lines only
+_ali xh   xv   'xh -v'                                  # HTTP request, show request + response
+_ali nc   ncz  'nc -zv -w 3'                            # port check (3s timeout): ncz host 443
+_ali speedtest-cli speed 'speedtest-cli --simple'       # ping / down / up
 
-# ---------- Storage & Disk I/O ----------
-_have duf && alias dfl='duf --only local'        # disks, without tmpfs/network noise
-_have ncdu && {
-    alias ncx='ncdu -x'                          # usage of current dir, stay on one filesystem
-    alias ncr='sudo ncdu -x /'                   # what eats the root filesystem
-}
+# ---------- Storage & disk I/O ----------
+_ali duf dfl 'duf --only local'                         # disks without tmpfs/network noise
+if _have ncdu; then
+    alias ncx='ncdu -x'                                 # usage of current dir, one filesystem
+    alias ncr='sudo ncdu -x /'                          # what eats the root filesystem
+fi
 _iot="$(command -v iotop-c || command -v iotop)"
-[ -n "$_iot" ] && alias iot="sudo $_iot -o"      # only processes doing I/O right now
-unset _iot
-alias smh='sudo smartctl -H'                     # disk health:   smh /dev/sda
-alias sma='sudo smartctl -a'                     # full SMART report
-# ---------- END Toolkit commands ----------
+[ -n "$_iot" ] && alias iot="sudo $_iot -o"             # only processes doing I/O right now
+_ali smartctl smh 'sudo smartctl -H'                    # disk health:  smh /dev/sda
+_ali smartctl sma 'sudo smartctl -a'                    # full SMART report
+
+unset _bat _fd _iot
+# ---------- END toolkit aliases ----------
 
 # ---------- Basic commands ----------
 alias up='uptime -p'
