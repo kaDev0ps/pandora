@@ -36,7 +36,7 @@ _ali eza ezt  'eza -T -L2'                              # tree, 2 levels
 if _have zoxide; then                                   # z <part-of-path>, zi = interactive pick
     if [ -n "$ZSH_VERSION" ]; then eval "$(zoxide init zsh)"; else eval "$(zoxide init bash)"; fi
 fi
-[ -n "$_bat" ] && alias bp="$_bat -pp"                   # cat with syntax highlight, no decorations
+[ -n "$_bat" ] && alias bp="sudo $_bat -pp"             # cat with syntax highlight, no decorations
 _ali delta dl 'delta'                                   # nice diff of two files: dl a.conf b.conf
 _ali fastfetch ff 'fastfetch'                           # system summary
 if _have yazi; then                                     # file manager; shell cd's to where you quit
@@ -295,7 +295,7 @@ alias dcpr='sudo docker container prune -f'
 alias dipr='sudo docker image prune -a -f'
 alias dvpr='sudo docker volume prune -f'
 alias dnpr='sudo docker network prune -f'
-alias dbpr='sudo docker builder prune -a -f'
+alias dr='sudo docker builder prune -a -f'
 alias dspr='sudo docker system prune -a -f'
 alias dsprv='sudo docker system prune -a -f --volumes'
 
