@@ -1,6 +1,7 @@
 # ==============================================================================
 # ~/.bash_aliases - Unified Aliases & Shell Toolkit (bash + zsh)
 # ==============================================================================
+
 # Interactive shells only
 case $- in *i*) ;; *) return 0 ;; esac
 
@@ -8,10 +9,10 @@ case $- in *i*) ;; *) return 0 ;; esac
 # PART 1: ALIAS VIEWER, TIPS & TOPIC INDEX
 # ==============================================================================
 # Usage:
-#   aliases           -> List all categories / TOC
-#   aliases <topic>   -> View aliases in <topic> (e.g. 'aliases Network', 'aliases Cheatsheet')
-#   tips [tool]       -> Quick hotkey guide for yazi, lnav, ranger, fzf, delta
-#   aliases | grep .. -> Filter across all categories and examples
+#   aliases            -> List all categories / TOC
+#   aliases <topic>    -> View aliases in <topic> (e.g. 'aliases Network', 'aliases Cheatsheet')
+#   tips [tool]        -> Quick hotkey guide for yazi, lnav, fzf, delta
+#   aliases | grep ..  -> Filter across all categories and examples
 
 aliases() {
     local target_file="${BASH_SOURCE[0]:-${(%):-%x}}"
@@ -30,43 +31,40 @@ aliases() {
 
     local query="$1"
     awk -v query="$query" '
-        BEGIN { IGNORECASE = 1; show = (query == "all") }
-        /^# TOPIC::/ {
-            if (query == "all") {
-                split($0, a, ":: ");
-                printf "\n\033[1;33m[%s]\033[0m\n", a[2];
-                next;
-            }
-            if ($0 ~ query) {
-                split($0, a, ":: ");
-                printf "\n\033[1;33m[%s]\033[0m\n", a[2];
-                show = 1;
-            } else {
-                show = 0;
-            }
+    BEGIN { IGNORECASE = 1; show = (query == "all") }
+    /^# TOPIC::/ {
+        if (query == "all") {
+            split($0, a, ":: ");
+            printf "\n\033[1;33m[%s]\033[0m\n", a[2];
             next;
         }
-        show && /^(alias |_ali |[a-zA-Z0-9_-]+\(\)[ \t]*\{)/ {
-            line = $0;
-            match(line, /#.*/);
-            if (RSTART > 0) {
-                comment = substr(line, RSTART + 1);
-                code = substr(line, 1, RSTART - 1);
-            } else {
-                comment = "";
-                code = line;
-            }
-            sub(/^[ \t]+/, "", comment);
-            sub(/^[ \t]+|[ \t]+$/, "", code);
-
-            sub(/[ \t]*\{.*/, "()", code);
-
-            n = split(comment, parts, "| eg: ");
-            desc = parts[1];
-            eg = (n > 1) ? parts[2] : "";
-
-            printf "  \033[1;32m%-22s\033[0m %-36s \033[0;35m%s\033[0m\n", code, desc, (eg ? "eg: " eg : "");
+        if ($0 ~ query) {
+            split($0, a, ":: ");
+            printf "\n\033[1;33m[%s]\033[0m\n", a[2];
+            show = 1;
+        } else {
+            show = 0;
         }
+        next;
+    }
+    show && /^(alias |_ali |[a-zA-Z0-9_-]+\(\)[ \t]*\{)/ {
+        line = $0;
+        match(line, /#.*/);
+        if (RSTART > 0) {
+            comment = substr(line, RSTART + 1);
+            code = substr(line, 1, RSTART - 1);
+        } else {
+            comment = "";
+            code = line;
+        }
+        sub(/^[ \t]+/, "", comment);
+        sub(/^[ \t]+|[ \t]+$/, "", code);
+        sub(/[ \t]*\{.*/, "()", code);
+        n = split(comment, parts, "| eg: ");
+        desc = parts[1];
+        eg = (n > 1) ? parts[2] : "";
+        printf "  \033[1;32m%-22s\033[0m %-36s \033[0;35m%s\033[0m\n", code, desc, (eg ? "eg: " eg : "");
+    }
     ' "$target_file"
 }
 
@@ -76,46 +74,45 @@ tips() {
     local tool="${1:-all}"
 
     awk -v tool="$tool" '
-        BEGIN { IGNORECASE = 1; in_cheat = 0; print_block = 0 }
-        /^# TOPIC:: Cheatsheet/ { in_cheat = 1; next }
-        in_cheat && /^# TOPIC::/ { in_cheat = 0 }
-        in_cheat {
-            if ($0 ~ /^# --- \[.*\] ---/) {
-                if (tool == "all" || $0 ~ tool) {
-                    print_block = 1;
-                    match($0, /\[.*\]/);
-                    printf "\n\033[1;36m=== %s ===\033[0m\n", substr($0, RSTART, RLENGTH);
-                } else {
-                    print_block = 0;
-                }
-                next;
+    BEGIN { IGNORECASE = 1; in_cheat = 0; print_block = 0 }
+    /^# TOPIC:: Cheatsheet/ { in_cheat = 1; next }
+    in_cheat && /^# TOPIC::/ { in_cheat = 0 }
+    in_cheat {
+        if ($0 ~ /^# --- \[.*\] ---/) {
+            if (tool == "all" || $0 ~ tool) {
+                print_block = 1;
+                match($0, /\[.*\]/);
+                printf "\n\033[1;36m=== %s ===\033[0m\n", substr($0, RSTART, RLENGTH);
+            } else {
+                print_block = 0;
             }
-            if (print_block && $0 ~ /^#   /) {
-                sub(/^#   /, "");
-                split($0, cols, " : ");
-                if (length(cols[2]) > 0) {
-                    printf "  \033[1;33m%-18s\033[0m %s\n", cols[1], cols[2];
-                } else {
-                    printf "  %s\n", $0;
-                }
+            next;
+        }
+        if (print_block && $0 ~ /^# /) {
+            sub(/^# /, "");
+            split($0, cols, " : ");
+            if (length(cols[2]) > 0) {
+                printf "  \033[1;33m%-18s\033[0m %s\n", cols[1], cols[2];
+            } else {
+                printf "  %s\n", $0;
             }
         }
+    }
     ' "$target_file"
 }
 
 # Topic Directory:
-# TOPIC:: Navigation     :: Directory navigation, listings, and file discovery
-# TOPIC:: Search         :: ripgrep, fd, and file content filtering
-# TOPIC:: System         :: OS metrics, logs, units, and process monitoring
-# TOPIC:: Storage        :: Disk usage, I/O monitoring, and filesystem utilities
-# TOPIC:: Network        :: Ports, sockets, traffic analysis, and HTTP utilities
-# TOPIC:: Containers     :: Docker, Compose, and container lifecycles
-# TOPIC:: Kubernetes     :: Kubectl cluster and workload administration
-# TOPIC:: Git            :: Version control shortcuts
-# TOPIC:: Services       :: Web server checks and systemd daemon reloads
-# TOPIC:: Tools          :: Interactive fzf utilities, network/process helpers
-# TOPIC:: Cheatsheet     :: Popular hotkeys and tips for yazi, lnav, ranger, fzf, delta
-
+# TOPIC:: Navigation :: Directory navigation, listings, and file discovery
+# TOPIC:: Search :: ripgrep, fd, and file content filtering
+# TOPIC:: System :: OS metrics, logs, units, and process monitoring
+# TOPIC:: Storage :: Disk usage, I/O monitoring, and filesystem utilities
+# TOPIC:: Network :: Ports, sockets, traffic analysis, and HTTP utilities
+# TOPIC:: Containers :: Docker, Compose, and container lifecycles
+# TOPIC:: Kubernetes :: Kubectl cluster and workload administration
+# TOPIC:: Git :: Version control shortcuts
+# TOPIC:: Services :: Web server checks and systemd daemon reloads
+# TOPIC:: Tools :: Interactive fzf utilities, network/process helpers
+# TOPIC:: Cheatsheet :: Popular hotkeys and tips for yazi, lnav, fzf, delta
 
 # ==============================================================================
 # PART 2: DEFINITIONS, ALIASES & FUNCTIONS
@@ -123,7 +120,7 @@ tips() {
 
 # ---------- Core Guards & Binary Detection ----------
 _have() { command -v "$1" >/dev/null 2>&1; }
-_ali()  { _have "$1" || return 0; alias "$2=$3"; }
+_ali() { _have "$1" || return 0; alias "$2=$3"; }
 
 # Path resolution for git-cloned fzf
 if [ -d "$HOME/.fzf/bin" ]; then
@@ -135,174 +132,170 @@ unalias bat fd 2>/dev/null
 _bat="$(command -v bat || command -v batcat)"
 _fd="$(command -v fd || command -v fdfind)"
 case "$_bat" in *batcat) alias bat='batcat' ;; esac
-case "$_fd"  in *fdfind) alias fd='fdfind'  ;; esac
-_iot="$(command -v iotop-c || command -v iotop)"
+case "$_fd" in *fdfind) alias fd='fdfind' ;; esac
 
 export EDITOR=vim
 export HISTTIMEFORMAT="%d.%m.20%y %T "
 export HIST_STAMPS="%F %T"
 
 # TOPIC:: Navigation
-alias ..='cd ..'                                       # go up one directory level | eg: ..
-alias l='ls -lAh'                                       # detailed list with hidden files | eg: l /var/www
-alias mkdir='mkdir -pv'                                 # create parent dirs with progress log | eg: mkdir -pv a/b/c
-alias c='clear'                                         # clear terminal screen buffer | eg: c
-alias scat='sudo cat'                                   # read protected root file | eg: scat /etc/shadow
-alias r='ranger'                                        # terminal file browser | eg: r /var/log
-alias del='sudo rm -rf'                                 # forcefully delete file or directory | eg: del /tmp/cache_dir
-_ali eza ez   'eza -l --group-directories-first'        # ls with colors and top dirs | eg: ez /etc
-[ -n "$_bat" ] && alias bp="sudo $_bat -pp"             # print file without syntax decor | eg: bp /etc/nginx/nginx.conf
-_ali delta dl 'delta'                                   # side-by-side terminal diff viewer | eg: dl old.conf new.conf
-_ali fastfetch ff 'fastfetch'                           # hardware & OS summary fetch | eg: ff
+alias ..='cd ..'                                          # go up one directory level | eg: ..
+alias l='ls -lAh'                                         # detailed list with hidden files | eg: l /var/www
+alias mkdir='mkdir -pv'                                   # create parent dirs with progress log | eg: mkdir -pv a/b/c
+alias c='clear'                                           # clear terminal screen buffer | eg: c
+alias scat='sudo cat'                                     # read protected root file | eg: scat /etc/shadow
+alias del='sudo rm -rf'                                   # forcefully delete file or directory | eg: del /tmp/cache_dir
+_ali eza ez 'eza -l --group-directories-first'            # ls with colors and top dirs | eg: ez /etc
+[ -n "$_bat" ] && alias bp="sudo $_bat -pp"               # print file without syntax decor | eg: bp /etc/nginx/nginx.conf
+_ali delta dl 'delta'                                     # side-by-side terminal diff viewer | eg: dl old.conf new.conf
+_ali fastfetch ff 'fastfetch'                             # hardware & OS summary fetch | eg: ff
 
 # TOPIC:: Search
-_ali rg rgi 'rg -i'                                     # case-insensitive content search | eg: rgi "connection reset" /var/log
-_ali rg rgl 'rg -l'                                     # print matching file paths only | eg: rgl "postgres" /etc/
-alias gr="grep -Ev '^\s*#|^$'"                          # filter out comments and blank lines | eg: gr /etc/redis/redis.conf
-alias psg='ps aux | grep'                               # find running process by name | eg: psg nginx
-alias col='column -t -s'                                # format delimited stream as a table | eg: cat /etc/passwd | col :
-alias cutc='cut -c'                                     # extract substring character ranges | eg: cutc 1-10 file.txt
+_ali rg rgi 'rg -i'                                       # case-insensitive content search | eg: rgi "connection reset" /var/log
+_ali rg rgl 'rg -l'                                       # print matching file paths only | eg: rgl "postgres" /etc/
+alias gr="grep -Ev '^\s*#|^$'"                            # filter out comments and blank lines | eg: gr /etc/redis/redis.conf
+alias psg='ps aux | grep'                                 # find running process by name | eg: psg nginx
+alias col='column -t -s'                                  # format delimited stream as a table | eg: cat /etc/passwd | col :
+alias cutc='cut -c'                                       # extract substring character ranges | eg: cutc 1-10 file.txt
 [ -n "$_fd" ] && {
-    alias fdf="$_fd -t f"                               # find files by name pattern | eg: fdf '\.conf$'
-    alias fdd="$_fd -t d"                               # find directories by name pattern | eg: fdd 'backup'
+    alias fdf="$_fd -t f"                                 # find files by name pattern | eg: fdf '\.conf$'
+    alias fdd="$_fd -t d"                                 # find directories by name pattern | eg: fdd 'backup'
 }
 
 # TOPIC:: System
-alias up='uptime -p'                                    # human-readable server uptime | eg: up
+alias up='uptime -p'                                      # human-readable server uptime | eg: up
 alias sysinfo='lsb_release -a && arch && cat /etc/os-release' # distribution and architecture details | eg: sysinfo
-alias update='sudo apt update && sudo apt upgrade -y'   # sync repositories and update packages | eg: update
-alias clean='sudo apt clean'                            # delete local apt package cache | eg: clean
-alias aremove='sudo apt autoremove -y'                  # purge unneeded orphan dependencies | eg: aremove
-alias svim='sudo vim'                                   # edit root file using vim | eg: svim /etc/fstab
-alias vs='sudo visudo'                                  # safely validate and edit sudoers | eg: vs
-alias h='history'                                       # display full command history | eg: h 25
-alias j='jobs -l'                                       # list active background shell jobs | eg: j
-alias killu='sudo pkill -9 -u'                          # terminate all processes of user | eg: killu www-data
-alias scg='systemd-cgtop -d 5'                          # monitor cgroup CPU & memory consumption | eg: scg
-_ali vmstat vm 'vmstat -S M 1'                          # live memory & I/O throughput in MB | eg: vm
-_ali mpstat mp 'mpstat -P ALL 1'                        # per-CPU core utilization every second | eg: mp
-_ali systemd-manager-tui smt 'sudo systemd-manager-tui' # TUI manager for systemd services | eg: smt
-_ali lnav lgv 'sudo lnav'                               # open file in lnav interactive reader | eg: lgv /var/log/syslog
-_ali lazyjournal lj 'sudo lazyjournal'                  # interactive TUI for journald and docker | eg: lj
-alias logs='sudo journalctl -xe'                        # review recent system errors | eg: logs
-alias jfeu='sudo journalctl -n 20 -feu'                 # stream specific service journal logs | eg: jfeu nginx
-alias clearlogs='sudo journalctl --vacuum-time=1d'      # delete journal entries older than 24h | eg: clearlogs
+alias update='sudo apt update && sudo apt upgrade -y'     # sync repositories and update packages | eg: update
+alias clean='sudo apt clean'                              # delete local apt package cache | eg: clean
+alias aremove='sudo apt autoremove -y'                    # purge unneeded orphan dependencies | eg: aremove
+alias svim='sudo vim'                                     # edit root file using vim | eg: svim /etc/fstab
+alias vs='sudo visudo'                                    # safely validate and edit sudoers | eg: vs
+alias h='history'                                         # display full command history | eg: h 25
+alias j='jobs -l'                                         # list active background shell jobs | eg: j
+alias killu='sudo pkill -9 -u'                            # terminate all processes of user | eg: killu www-data
+alias scg='systemd-cgtop -d 5'                            # monitor cgroup CPU & memory consumption | eg: scg
+_ali vmstat vm 'vmstat -S M 1'                            # live memory & I/O throughput in MB | eg: vm
+_ali mpstat mp 'mpstat -P ALL 1'                          # per-CPU core utilization every second | eg: mp
+_ali systemd-manager-tui smt 'sudo systemd-manager-tui'   # TUI manager for systemd services | eg: smt
+_ali lnav lgv 'sudo lnav'                                 # open file in lnav interactive reader | eg: lgv /var/log/syslog
+_ali lazyjournal lj 'sudo lazyjournal'                    # interactive TUI for journald and docker | eg: lj
+alias logs='sudo journalctl -xe'                          # review recent system errors | eg: logs
+alias jfeu='sudo journalctl -n 20 -feu'                   # stream specific service journal logs | eg: jfeu nginx
+alias clearlogs='sudo journalctl --vacuum-time=1d'        # delete journal entries older than 24h | eg: clearlogs
 _ali journalctl jerr 'sudo journalctl -p err -b -o short-iso' # show system errors since boot | eg: jerr
 
 # TOPIC:: Storage
-alias df='df -h'                                        # human-readable disk free stats | eg: df
-alias du='du -ch'                                       # calculate directory tree size | eg: du /var/cache
+alias df='df -h'                                          # human-readable disk free stats | eg: df
+alias du='du -ch'                                         # calculate directory tree size | eg: du /var/cache
 alias duse='du -ah --max-depth=1 . | sort -rh | head -n 10' # top 10 largest items in current path | eg: duse
 alias dlog='sudo du -sh /var/log/* 2>/dev/null | sort -hr | head -n 10' # top 10 largest log files | eg: dlog
-alias taz='tar -czvf'                                   # compress target into tar.gz | eg: taz archive.tar.gz /path
-alias untaz='tar -xzvf'                                 # extract compressed tar.gz file | eg: untaz archive.tar.gz
-_ali duf dfl 'duf --only local'                         # clean table of physical disk mounts | eg: dfl
-[ -n "$_iot" ] && alias iot="sudo $_iot -oPa"           # active I/O processes with accumulated counters | eg: iot
-_ali smartctl smh 'sudo smartctl -H'                    # quick disk drive health check | eg: smh /dev/nvme0n1
-_ali smartctl sma 'sudo smartctl -a'                    # full SMART hardware reliability report | eg: sma /dev/sda
+alias taz='tar -czvf'                                     # compress target into tar.gz | eg: taz archive.tar.gz /path
+alias untaz='tar -xzvf'                                   # extract compressed tar.gz file | eg: untaz archive.tar.gz
+_ali duf dfl 'duf --only local'                           # clean table of physical disk mounts | eg: dfl
+_ali smartctl smh 'sudo smartctl -H'                      # quick disk drive health check | eg: smh /dev/nvme0n1
+_ali smartctl sma 'sudo smartctl -a'                      # full SMART hardware reliability report | eg: sma /dev/sda
 if _have ncdu; then
-    alias ncx='ncdu -x'                                 # interactive disk usage on single filesystem | eg: ncx /home
-    alias ncr='sudo ncdu -x /'                          # scan full root filesystem interactively | eg: ncr
+    alias ncx='ncdu -x'                                   # interactive disk usage on single filesystem | eg: ncx /home
+    alias ncr='sudo ncdu -x /'                            # scan full root filesystem interactively | eg: ncr
 fi
 
 # TOPIC:: Network
-alias ipa='ip -br -c a'                                 # concise colored network interfaces | eg: ipa
-alias myip='curl ifconfig.me'                           # print external public IP address | eg: myip
-alias ports='sudo ss -tulnp'                            # listening TCP and UDP sockets with PIDs | eg: ports
-alias open='sudo nmap -sUT -p- localhost'               # scan local machine for listening ports | eg: open
-alias mtr10='mtr -r -c 10'                              # generate 10-probe traceroute report | eg: mtr10 1.1.1.1
-_ali lsof lsp 'sudo lsof -iTCP -sTCP:LISTEN -P -n'      # list processes bound to listening TCP ports | eg: lsp
-_ali tcpdump tcpd 'sudo tcpdump -nni any'               # capture live traffic across all devices | eg: tcpd port 443
-_ali iftop ift 'sudo iftop -nNP'                        # real-time network bandwidth monitor | eg: ift
-_ali dig digs 'dig +short'                              # quick DNS resolution without extra info | eg: digs example.com
-_ali xh xv 'xh -v'                                      # verbose HTTP request and response inspector | eg: xv get httpbin.org/get
-_ali nc ncz 'nc -zv -w 3'                               # verify port accessibility with 3s timeout | eg: ncz db.local 5432
-_ali speedtest-cli speed 'speedtest-cli --simple'       # benchmark latency, download and upload | eg: speed
+alias ipa='ip -br -c a'                                   # concise colored network interfaces | eg: ipa
+alias myip='curl ifconfig.me'                             # print external public IP address | eg: myip
+alias ports='sudo ss -tulnp'                              # listening TCP and UDP sockets with PIDs | eg: ports
+alias open='sudo nmap -sUT -p- localhost'                 # scan local machine for listening ports | eg: open
+alias mtr10='mtr -r -c 10'                                # generate 10-probe traceroute report | eg: mtr10 1.1.1.1
+_ali lsof lsp 'sudo lsof -iTCP -sTCP:LISTEN -P -n'        # list processes bound to listening TCP ports | eg: lsp
+_ali tcpdump tcpd 'sudo tcpdump -nni any'                 # capture live traffic across all devices | eg: tcpd port 443
+_ali dig digs 'dig +short'                                # quick DNS resolution without extra info | eg: digs example.com
+_ali xh xv 'xh -v'                                        # verbose HTTP request and response inspector | eg: xv get httpbin.org/get
+_ali nc ncz 'nc -zv -w 3'                                 # verify port accessibility with 3s timeout | eg: ncz db.local 5432
+_ali speedtest-cli speed 'speedtest-cli --simple'         # benchmark latency, download and upload | eg: speed
 
 # TOPIC:: Containers
-alias d='sudo docker'                                   # docker CLI shortcut | eg: d info
-alias dps='sudo docker ps'                              # view active running containers | eg: dps
-alias dpa='sudo docker ps -a'                           # view all containers including stopped | eg: dpa
-alias dstats='sudo docker stats'                        # stream container CPU & memory utilization | eg: dstats
-alias dlogs='sudo docker logs -f --tail 100'            # follow container log output | eg: dlogs web_app
-alias dstop='sudo docker stop'                          # gracefully stop container | eg: dstop redis_cache
-alias dstart='sudo docker start'                        # start existing stopped container | eg: dstart postgres_db
-alias drestart='sudo docker restart'                    # restart container | eg: drestart proxy
-alias drm='sudo docker rm -f'                           # force delete container | eg: drm test_env
+alias d='sudo docker'                                     # docker CLI shortcut | eg: d info
+alias dps='sudo docker ps'                                # view active running containers | eg: dps
+alias dpa='sudo docker ps -a'                             # view all containers including stopped | eg: dpa
+alias dstats='sudo docker stats'                          # stream container CPU & memory utilization | eg: dstats
+alias dlogs='sudo docker logs -f --tail 100'              # follow container log output | eg: dlogs web_app
+alias dstop='sudo docker stop'                            # gracefully stop container | eg: dstop redis_cache
+alias dstart='sudo docker start'                          # start existing stopped container | eg: dstart postgres_db
+alias drestart='sudo docker restart'                      # restart container | eg: drestart proxy
+alias drm='sudo docker rm -f'                             # force delete container | eg: drm test_env
 alias dsh='sudo docker exec -it "$(sudo docker ps -lq)" sh 2>/dev/null || sudo docker exec -it "$(sudo docker ps -lq)" bash' # attach shell to latest container | eg: dsh
-alias di='sudo docker images -a'                        # list all locally downloaded images | eg: di
-alias drmi='sudo docker rmi'                            # delete container image by ID/tag | eg: drmi node:18-alpine
-alias dprune='sudo docker system prune -a -f --volumes' # delete stopped containers, networks & volumes | eg: dprune
-alias dc='docker compose'                               # docker compose command shortcut | eg: dc ps
-alias dcu='docker compose up -d'                        # start compose services in background | eg: dcu
-alias dcd='docker compose down'                         # stop and tear down compose services | eg: dcd
-alias dcl='docker compose logs -f'                      # follow logs for whole compose stack | eg: dcl
+alias di='sudo docker images -a'                          # list all locally downloaded images | eg: di
+alias drmi='sudo docker rmi'                              # delete container image by ID/tag | eg: drmi node:18-alpine
+alias dprune='sudo docker system prune -a -f --volumes'   # delete stopped containers, networks & volumes | eg: dprune
+alias dc='docker compose'                                 # docker compose command shortcut | eg: dc ps
+alias dcu='docker compose up -d'                          # start compose services in background | eg: dcu
+alias dcd='docker compose down'                           # stop and tear down compose services | eg: dcd
+alias dcl='docker compose logs -f'                        # follow logs for whole compose stack | eg: dcl
 
 # TOPIC:: Kubernetes
-alias mks='minikube status'                             # check local minikube cluster status | eg: mks
-alias mkr='minikube start'                              # start or resume local minikube VM/node | eg: mkr
-alias kgno='kubectl get nodes'                          # list cluster nodes with status and roles | eg: kgno
-alias kgpo='kubectl get pods'                           # list pods in current namespace | eg: kgpo
-alias kgallp='kubectl get po -A'                        # list pods across all cluster namespaces | eg: kgallp
-alias kgs='kubectl get service'                         # display configured services and IPs | eg: kgs
-alias kdpo='kubectl describe pod'                       # show detailed events and state for pod | eg: kdpo api-7f4b89
-alias klf='kubectl logs -f'                             # stream live logs for pod | eg: klf web-server-pod
-alias kaf='kubectl apply -f'                            # apply deployment or service manifest | eg: kaf deploy.yaml
-alias ktopn='kubectl top node'                          # display node CPU and memory pressure | eg: ktopn
-alias ktopp='kubectl top pod'                           # display pod CPU and memory usage | eg: ktopp
+alias mks='minikube status'                               # check local minikube cluster status | eg: mks
+alias mkr='minikube start'                                # start or resume local minikube VM/node | eg: mkr
+alias kgno='kubectl get nodes'                            # list cluster nodes with status and roles | eg: kgno
+alias kgpo='kubectl get pods'                             # list pods in current namespace | eg: kgpo
+alias kgallp='kubectl get po -A'                          # list pods across all cluster namespaces | eg: kgallp
+alias kgs='kubectl get service'                           # display configured services and IPs | eg: kgs
+alias kdpo='kubectl describe pod'                         # show detailed events and state for pod | eg: kdpo api-7f4b89
+alias klf='kubectl logs -f'                               # stream live logs for pod | eg: klf web-server-pod
+alias kaf='kubectl apply -f'                              # apply deployment or service manifest | eg: kaf deploy.yaml
+alias ktopn='kubectl top node'                            # display node CPU and memory pressure | eg: ktopn
+alias ktopp='kubectl top pod'                             # display pod CPU and memory usage | eg: ktopp
 
 # TOPIC:: Git
-alias gitp='gitc && git push'                           # commit all changes with date and push | eg: gitp
+alias gitp='gitc && git push'                             # commit all changes with date and push | eg: gitp
 
 # TOPIC:: Services
-alias sss='sudo systemctl stop'                         # stop system service immediately | eg: sss apache2
-alias ssr='sudo systemctl restart'                      # restart system service | eg: ssr docker
-alias sse='sudo systemctl enable --now'                 # enable service and start it immediately | eg: sse fail2ban
-alias ssd='sudo systemctl disable --now'                # stop service and disable boot launch | eg: ssd bluetooth
-alias ssi='sudo systemctl status'                       # inspect service state and recent errors | eg: ssi redis
-alias slu='sudo systemctl list-units --type=service'    # list currently active systemd services | eg: slu
-alias sdr='sudo systemctl daemon-reload'                # reload systemd manager configuration | eg: sdr
-alias nt='sudo nginx -t'                                # validate nginx configuration syntax | eg: nt
-alias at='sudo angie -t'                                # validate angie configuration syntax | eg: at
-alias srn='sudo systemctl reload nginx'                 # reload nginx configuration without downtime | eg: srn
-alias sra='sudo systemctl reload angie'                 # reload angie configuration without downtime | eg: sra
+alias sss='sudo systemctl stop'                           # stop system service immediately | eg: sss apache2
+alias ssr='sudo systemctl restart'                        # restart system service | eg: ssr docker
+alias sse='sudo systemctl enable --now'                   # enable service and start it immediately | eg: sse fail2ban
+alias ssd='sudo systemctl disable --now'                  # stop service and disable boot launch | eg: ssd bluetooth
+alias ssi='sudo systemctl status'                         # inspect service state and recent errors | eg: ssi redis
+alias slu='sudo systemctl list-units --type=service'      # list currently active systemd services | eg: slu
+alias sdr='sudo systemctl daemon-reload'                  # reload systemd manager configuration | eg: sdr
+alias nt='sudo nginx -t'                                  # validate nginx configuration syntax | eg: nt
+alias at='sudo angie -t'                                  # validate angie configuration syntax | eg: at
+alias srn='sudo systemctl reload nginx'                   # reload nginx configuration without downtime | eg: srn
+alias sra='sudo systemctl reload angie'                   # reload angie configuration without downtime | eg: sra
 
 # TOPIC:: Tools
 # Interactive fzf file search and preview
-fo() {                                                  # fuzzy-find file with preview & edit in vim | eg: fo
+fo() { # fuzzy-find file with preview & edit in vim | eg: fo
     local f
     f="$(fzf --preview "$_fzf_prev")" && ${EDITOR:-vim} "$f"
 }
 
 # Interactive fzf directory changer
-fcd() {                                                 # fuzzy-find directory and cd into it | eg: fcd
+fcd() { # fuzzy-find directory and cd into it | eg: fcd
     local d
     d="$(eval "$_fzf_dircmd" | fzf)" && cd "$d"
 }
 
 # Interactive fzf process killer
-fkill() {                                               # fuzzy-kill process(es) with optional signal | eg: fkill 9
+fkill() { # fuzzy-kill process(es) with optional signal | eg: fkill 9
     local pids
     pids="$(ps -eo pid,user,%cpu,%mem,etime,cmd --sort=-%cpu | fzf -m --header-lines=1 | awk '{print $1}')" || return
     [ -n "$pids" ] && echo "$pids" | xargs sudo kill -"${1:-15}"
 }
 
 # Interactive fzf systemd journal follower
-fjl() {                                                 # fuzzy-select systemd service and tail logs | eg: fjl
+fjl() { # fuzzy-select systemd service and tail logs | eg: fjl
     local u
     u="$(systemctl list-units --type=service --all --no-legend --plain | awk '{print $1}' | fzf --preview 'systemctl status --no-pager -n 15 {}')" || return
     sudo journalctl -u "$u" -n 200 -f
 }
 
 # Interactive fzf SSH picker
-fssh() {                                                # fuzzy-select host from ~/.ssh/config and connect | eg: fssh
+fssh() { # fuzzy-select host from ~/.ssh/config and connect | eg: fssh
     local h
     h="$(awk '$1=="Host"{for(i=2;i<=NF;i++) if($i !~ /[*?!]/) print $i}' ~/.ssh/config 2>/dev/null | fzf)" || return
     ssh "$h"
 }
 
 # Shell wrapper for yazi
-y() {                                                   # launch yazi file manager and sync exit path | eg: y
+y() { # launch yazi file manager and sync exit path | eg: y
     local tmp cwd
     tmp="$(mktemp -t yazi-cwd.XXXXXX)"
     yazi "$@" --cwd-file="$tmp"
@@ -312,78 +305,66 @@ y() {                                                   # launch yazi file manag
     rm -f -- "$tmp"
 }
 
-# Packet capture by port
-tsp() {                                                 # capture packets filtered by port using tshark | eg: tsp 80 -c 50
-    sudo tshark -n -i any -f "port ${1:?usage: tsp <port> [tshark args]}" "${@:2}"
-}
-
 # Automated git commit
-gitc() {                                                # stage all changes and commit with timestamp | eg: gitc
+gitc() { # stage all changes and commit with timestamp | eg: gitc
     git add . && git commit -m "$(date '+%Y-%m-%d %H:%M:%S')" || echo "Git commit failed"
 }
 
 # CPU & Memory process top 10
-info() {                                                # display top 10 CPU-consuming processes | eg: info
+info() { # display top 10 CPU-consuming processes | eg: info
     echo "USER PID %CPU %MEM COMMAND"
     sudo ps -eo user,pid,%cpu,%mem,command --no-headers | sort -nr -k 3 | head -10
 }
 
 # Established network connections by remote IP
-connections() {                                         # top 10 remote IPs with ESTABLISHED connections | eg: connections
+connections() { # top 10 remote IPs with ESTABLISHED connections | eg: connections
     ss -tan | awk '/ESTAB/ {print $5}' | cut -d: -f1 | sort | uniq -c | sort -nr | head -10
 }
 
 # Edit systemd unit file
-ssv() {                                                 # edit unit file directly in /etc/systemd/system | eg: ssv my-worker.service
+ssv() { # edit unit file directly in /etc/systemd/system | eg: ssv my-worker.service
     sudo vim "/etc/systemd/system/${1:?usage: ssv <unit.service>}"
 }
 
 # TOPIC:: Cheatsheet
 # --- [YAZI] ---
-#   h / j / k / l      : Navigation (left/parent, down, up, right/open)
-#   space              : Toggle select single file
-#   v                  : Visual select mode (multiselect with j/k)
-#   y / x / p          : Yank (copy) / Cut / Paste
-#   d                  : Move item to trash
-#   a / A              : Create new file / new directory
-#   r                  : Rename selected item
-#   .                  : Toggle hidden dotfiles
-#   /                  : Filter current directory view
-#   z                  : Jump to path using integrated zoxide
-#   q                  : Quit (alias 'y' will cd to current folder)
-#   Q                  : Quit without changing current shell directory
-# --- [LNAV] ---
-#   e / E              : Jump forward / backward through error messages
-#   w / W              : Jump forward / backward through warning messages
-#   u / U              : Jump forward / backward through user marks
-#   m                  : Mark / unmark the current log line
-#   / <pattern>        : Live search logs using regular expressions
-#   :filter-in <pat>   : Only display lines matching pattern
-#   :filter-out <pat>  : Hide lines matching pattern
-#   t                  : Toggle text/timeline view
-#   p                  : Switch to structured log parser/JSON view
-#   s                  : Jump to next search hit
-#   q                  : Quit log view / close popup window
-# --- [RANGER] ---
-#   h / j / k / l      : Navigation (parent, down, up, open file/dir)
-#   yy / dd / pp       : Yank (copy) / Cut / Paste
-#   dD                 : Permanently delete file immediately
-#   zh                 : Toggle display of hidden files
-#   cw                 : Rename selected item
-#   S                  : Spawn interactive subshell in current directory
-#   yp                 : Copy full absolute path to clipboard
-#   q                  : Quit ranger
-# --- [FZF] ---
-#   Ctrl-J / Ctrl-K    : Move selection down / up
-#   Tab / Shift-Tab    : Multiselect items (when -m is enabled)
-#   Ctrl-R             : Search bash history (installed by ~/.fzf.bash)
-#   Ctrl-T             : Search files and insert selected path at cursor
-#   Alt-C              : Fuzzy-cd into selected directory
-#   Esc / Ctrl-C       : Abort fuzzy finder
-# --- [DELTA] ---
-#   n / N              : Jump to next / previous diff file
-#   q                  : Exit diff pager
+# h / j / k / l : Navigation (left/parent, down, up, right/open)
+# space : Toggle select single file
+# v : Visual select mode (multiselect with j/k)
+# y / x / p : Yank (copy) / Cut / Paste
+# d : Move item to trash
+# a / A : Create new file / new directory
+# r : Rename selected item
+# . : Toggle hidden dotfiles
+# / : Filter current directory view
+# z : Jump to path using integrated zoxide
+# q : Quit (alias 'y' will cd to current folder)
+# Q : Quit without changing current shell directory
 
+# --- [LNAV] ---
+# e / E : Jump forward / backward through error messages
+# w / W : Jump forward / backward through warning messages
+# u / U : Jump forward / backward through user marks
+# m : Mark / unmark the current log line
+# / <pattern> : Live search logs using regular expressions
+# :filter-in <pat> : Only display lines matching pattern
+# :filter-out <pat> : Hide lines matching pattern
+# t : Toggle text/timeline view
+# p : Switch to structured log parser/JSON view
+# s : Jump to next search hit
+# q : Quit log view / close popup window
+
+# --- [FZF] ---
+# Ctrl-J / Ctrl-K : Move selection down / up
+# Tab / Shift-Tab : Multiselect items (when -m is enabled)
+# Ctrl-R : Search bash history (installed by ~/.fzf.bash)
+# Ctrl-T : Search files and insert selected path at cursor
+# Alt-C : Fuzzy-cd into selected directory
+# Esc / Ctrl-C : Abort fuzzy finder
+
+# --- [DELTA] ---
+# n / N : Jump to next / previous diff file
+# q : Exit diff pager
 
 # ==============================================================================
 # Dynamic Shell Init & Cleanups
@@ -400,7 +381,6 @@ if _have fzf; then
     else
         _fzf_dircmd="find . -type d -not -path '*/.git/*' 2>/dev/null"
     fi
-
     if [ -n "$_bat" ]; then
         _fzf_prev="$_bat --style=numbers --color=always --line-range :200 {}"
     else
@@ -413,4 +393,4 @@ if _have zoxide; then
     if [ -n "$ZSH_VERSION" ]; then eval "$(zoxide init zsh)"; else eval "$(zoxide init bash)"; fi
 fi
 
-unset _bat _fd _iot
+unset _bat _fd
