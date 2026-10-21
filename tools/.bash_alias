@@ -9,14 +9,21 @@ case $- in *i*) ;; *) return 0 ;; esac
 # PART 1: ALIAS VIEWER, TIPS & TOPIC INDEX
 # ==============================================================================
 # Usage:
-#   aliases            -> List all categories / TOC
-#   aliases <topic>    -> View aliases in <topic> (e.g. 'aliases Network', 'aliases Cheatsheet')
-#   tips [tool]        -> Quick hotkey guide for yazi, lnav, fzf, delta
-#   aliases | grep ..  -> Filter across all categories and examples
+#   aliases           -> List all categories / TOC
+#   aliases <topic>   -> View aliases in <topic> (e.g. 'aliases Network', 'aliases Cheatsheet')
+#   tips [tool]       -> Quick hotkey guide for yazi, lnav, fzf, delta, lazyjournal, smt
+#   aliases | grep .. -> Filter across all categories and examples
 
 aliases() {
     local target_file="${BASH_SOURCE[0]:-${(%):-%x}}"
-    [ -f "$target_file" ] || target_file="$HOME/.bash_aliases"
+    if [ ! -f "$target_file" ]; then
+        for f in "$HOME/.bash_aliases" "$HOME/.bash_alias"; do
+            if [ -f "$f" ]; then
+                target_file="$f"
+                break
+            fi
+        done
+    fi
 
     if [ -z "$1" ]; then
         if [ -t 1 ]; then
@@ -70,7 +77,14 @@ aliases() {
 
 tips() {
     local target_file="${BASH_SOURCE[0]:-${(%):-%x}}"
-    [ -f "$target_file" ] || target_file="$HOME/.bash_aliases"
+    if [ ! -f "$target_file" ]; then
+        for f in "$HOME/.bash_aliases" "$HOME/.bash_alias"; do
+            if [ -f "$f" ]; then
+                target_file="$f"
+                break
+            fi
+        done
+    fi
     local tool="${1:-all}"
 
     awk -v tool="$tool" '
@@ -112,7 +126,7 @@ tips() {
 # TOPIC:: Git :: Version control shortcuts
 # TOPIC:: Services :: Web server checks and systemd daemon reloads
 # TOPIC:: Tools :: Interactive fzf utilities, network/process helpers
-# TOPIC:: Cheatsheet :: Popular hotkeys and tips for yazi, lnav, fzf, delta
+# TOPIC:: Cheatsheet :: Popular hotkeys and tips for yazi, lnav, fzf, delta, lazyjournal, smt
 
 # ==============================================================================
 # PART 2: DEFINITIONS, ALIASES & FUNCTIONS
@@ -153,6 +167,7 @@ _ali fastfetch ff 'fastfetch'                             # hardware & OS summar
 # TOPIC:: Search
 _ali rg rgi 'rg -i'                                       # case-insensitive content search | eg: rgi "connection reset" /var/log
 _ali rg rgl 'rg -l'                                       # print matching file paths only | eg: rgl "postgres" /etc/
+_ali rg rgc 'rg -C 3 -i'                                  # case-insensitive search with 3 context lines | eg: rgc "timeout" logs/
 alias gr="grep -Ev '^\s*#|^$'"                            # filter out comments and blank lines | eg: gr /etc/redis/redis.conf
 alias psg='ps aux | grep'                                 # find running process by name | eg: psg nginx
 alias col='column -t -s'                                  # format delimited stream as a table | eg: cat /etc/passwd | col :
@@ -183,6 +198,13 @@ alias logs='sudo journalctl -xe'                          # review recent system
 alias jfeu='sudo journalctl -n 20 -feu'                   # stream specific service journal logs | eg: jfeu nginx
 alias clearlogs='sudo journalctl --vacuum-time=1d'        # delete journal entries older than 24h | eg: clearlogs
 _ali journalctl jerr 'sudo journalctl -p err -b -o short-iso' # show system errors since boot | eg: jerr
+
+# Systemd Journal Time-Window Shortcuts
+alias jtoday='sudo journalctl --since today'              # all journal logs since midnight | eg: jtoday
+alias jyesterday='sudo journalctl --since yesterday --until today' # journal logs for previous day | eg: jyesterday
+alias j1h='sudo journalctl --since "1 hour ago"'          # journal logs from the last hour | eg: j1h
+alias j2d='sudo journalctl --since "2 days ago" -p 4'     # warnings and errors from the past 2 days | eg: j2d
+alias jf='sudo journalctl -f'                             # live journal stream follower | eg: jf
 
 # TOPIC:: Storage
 alias df='df -h'                                          # human-readable disk free stats | eg: df
@@ -294,15 +316,17 @@ fssh() { # fuzzy-select host from ~/.ssh/config and connect | eg: fssh
     ssh "$h"
 }
 
-# Shell wrapper for yazi
+# Resilient Shell wrapper for yazi
 y() { # launch yazi file manager and sync exit path | eg: y
     local tmp cwd
-    tmp="$(mktemp -t yazi-cwd.XXXXXX)"
+    tmp="$(mktemp -t yazi-cwd.XXXXXX 2>/dev/null || mktemp /tmp/yazi-cwd.XXXXXX)"
     yazi "$@" --cwd-file="$tmp"
-    if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-        builtin cd -- "$cwd"
+    if [ -f "$tmp" ]; then
+        if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+            builtin cd -- "$cwd"
+        fi
+        rm -f -- "$tmp"
     fi
-    rm -f -- "$tmp"
 }
 
 # Automated git commit
@@ -353,6 +377,25 @@ ssv() { # edit unit file directly in /etc/systemd/system | eg: ssv my-worker.ser
 # p : Switch to structured log parser/JSON view
 # s : Jump to next search hit
 # q : Quit log view / close popup window
+
+# --- [LAZYJOURNAL] ---
+# Tab / Shift-Tab : Switch between log adapters (systemd-journald, Docker, Podman, File)
+# j / k or Up/Down : Scroll through log entries list
+# / : Fuzzy search across current adapter logs
+# p : Cycle priority levels (Error, Warn, Info, Debug)
+# Enter : Open log entry detail view (full stack trace / metadata)
+# f : Toggle live follow / tail mode
+# r : Refresh log buffer
+# q : Exit modal or quit lazyjournal
+
+# --- [SMT] ---
+# j / k or Up/Down : Navigate service units list
+# / : Filter unit list by name
+# Enter or l : Open selected unit details & inspect live journal logs
+# Space : Toggle start / stop for selected unit
+# r : Restart selected unit
+# e : Open unit file in editor
+# q : Back to previous view / quit application
 
 # --- [FZF] ---
 # Ctrl-J / Ctrl-K : Move selection down / up
