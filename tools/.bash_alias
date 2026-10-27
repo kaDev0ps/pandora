@@ -5,128 +5,130 @@
 # Interactive shells only
 case $- in *i*) ;; *) return 0 ;; esac
 
+# Remember where this file lives (used by 'aliases' and 'tips')
+if [ -n "$BASH_VERSION" ]; then
+    _ALIASES_FILE="${BASH_SOURCE[0]}"
+else
+    eval '_ALIASES_FILE="${(%):-%x}"'
+fi
+
 # ==============================================================================
 # PART 1: ALIAS VIEWER, TIPS & TOPIC INDEX
 # ==============================================================================
 # Usage:
-#   aliases           -> List all categories / TOC
-#   aliases <topic>   -> View aliases in <topic> (e.g. 'aliases Network', 'aliases Cheatsheet')
-#   tips [tool]       -> Quick hotkey guide for yazi, lnav, fzf, delta, lazyjournal, smt
-#   aliases | grep .. -> Filter across all categories and examples
+#   aliases           -> List all topics (TOC)
+#   aliases <topic>   -> View aliases in <topic> (e.g. 'aliases network')
+#   aliases all       -> View everything
+#   tips [tool]       -> Hotkey guide for yazi, lnav, fzf, delta, lazyjournal, smt
+#   aliases | grep .. -> Filter across all topics
+
+_aliases_src() {
+    local f
+    for f in "$_ALIASES_FILE" "$HOME/.bash_aliases" "$HOME/.bash_alias"; do
+        [ -n "$f" ] && [ -f "$f" ] && { printf '%s' "$f"; return 0; }
+    done
+    return 1
+}
 
 aliases() {
-    local target_file="${BASH_SOURCE[0]:-${(%):-%x}}"
-    if [ ! -f "$target_file" ]; then
-        for f in "$HOME/.bash_aliases" "$HOME/.bash_alias"; do
-            if [ -f "$f" ]; then
-                target_file="$f"
-                break
-            fi
-        done
-    fi
+    local src q
+    src="$(_aliases_src)" || { echo "aliases: source file not found" >&2; return 1; }
+    q="$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')"
 
-    if [ -z "$1" ]; then
-        if [ -t 1 ]; then
-            printf "\033[1;36m=== ALIAS & TOOL TOPICS (Run: aliases <topic> or tips <tool>) ===\033[0m\n"
-            awk -F':: ' '/^# TOPIC::/ {printf "  %-22s %s\n", $2, $3}' "$target_file"
-            printf "\nTip: 'aliases all' displays everything. Run 'tips' for tool hotkeys.\n"
-        else
-            awk -F':: ' '/^# TOPIC::/ {printf "[%s] %s\n", $2, $3}' "$target_file"
-        fi
-        return 0
-    fi
+    case "$q" in
+        "")
+            [ -t 1 ] && printf "\033[1;36m=== ALIAS & TOOL TOPICS (Run: aliases <topic> or tips <tool>) ===\033[0m\n"
+            awk -F':: ' '/^# INDEX::/ { sub(/ +$/, "", $2); printf "  %-14s %s\n", $2, $3 }' "$src"
+            [ -t 1 ] && printf "\nTip: 'aliases all' displays everything. Run 'tips' for tool hotkeys.\n"
+            return 0
+            ;;
+        cheatsheet|tips)
+            tips
+            return 0
+            ;;
+    esac
 
-    local query="$1"
-    awk -v query="$query" '
-    BEGIN { IGNORECASE = 1; show = (query == "all") }
+    awk -v query="$q" '
+    BEGIN { show = (query == "all") }
     /^# TOPIC::/ {
-        if (query == "all") {
-            split($0, a, ":: ");
-            printf "\n\033[1;33m[%s]\033[0m\n", a[2];
-            next;
-        }
-        if ($0 ~ query) {
-            split($0, a, ":: ");
-            printf "\n\033[1;33m[%s]\033[0m\n", a[2];
-            show = 1;
+        split($0, a, ":: ")
+        name = a[2]
+        if (query == "all" || index(tolower(name), query)) {
+            printf "\n\033[1;33m[%s]\033[0m\n", name
+            show = 1
         } else {
-            show = 0;
+            show = 0
         }
-        next;
+        next
     }
-    show && /^(alias |_ali |[a-zA-Z0-9_-]+\(\)[ \t]*\{)/ {
-        line = $0;
-        match(line, /#.*/);
-        if (RSTART > 0) {
-            comment = substr(line, RSTART + 1);
-            code = substr(line, 1, RSTART - 1);
+    show && /^[ \t]*(alias |_ali |[a-zA-Z0-9_-]+\(\)[ \t]*\{)/ {
+        line = $0
+        sub(/^[ \t]+/, "", line)
+        comment = ""; code = line
+        if (match(line, /[ \t]#[ \t]/)) {
+            comment = substr(line, RSTART + 1)
+            sub(/^#[ \t]*/, "", comment)
+            code = substr(line, 1, RSTART - 1)
+        }
+        if (code ~ /^_ali /) {
+            split(code, f, " "); name = f[3]
+        } else if (code ~ /^alias /) {
+            name = code; sub(/^alias /, "", name); sub(/=.*/, "", name)
         } else {
-            comment = "";
-            code = line;
+            name = code; sub(/[ \t]*\{.*/, "", name)
         }
-        sub(/^[ \t]+/, "", comment);
-        sub(/^[ \t]+|[ \t]+$/, "", code);
-        sub(/[ \t]*\{.*/, "()", code);
-        n = split(comment, parts, "| eg: ");
-        desc = parts[1];
-        eg = (n > 1) ? parts[2] : "";
-        printf "  \033[1;32m%-22s\033[0m %-36s \033[0;35m%s\033[0m\n", code, desc, (eg ? "eg: " eg : "");
+        n = split(comment, parts, /[|] eg: /)
+        desc = parts[1]
+        eg = (n > 1) ? parts[2] : ""
+        printf "  \033[1;32m%-14s\033[0m %-48s \033[0;35m%s\033[0m\n", name, desc, (eg ? "eg: " eg : "")
     }
-    ' "$target_file"
+    ' "$src"
 }
 
 tips() {
-    local target_file="${BASH_SOURCE[0]:-${(%):-%x}}"
-    if [ ! -f "$target_file" ]; then
-        for f in "$HOME/.bash_aliases" "$HOME/.bash_alias"; do
-            if [ -f "$f" ]; then
-                target_file="$f"
-                break
-            fi
-        done
-    fi
-    local tool="${1:-all}"
+    local src
+    src="$(_aliases_src)" || { echo "tips: source file not found" >&2; return 1; }
 
-    awk -v tool="$tool" '
-    BEGIN { IGNORECASE = 1; in_cheat = 0; print_block = 0 }
+    awk -v tool="$(printf '%s' "${1:-all}" | tr '[:upper:]' '[:lower:]')" '
+    BEGIN { in_cheat = 0; print_block = 0 }
     /^# TOPIC:: Cheatsheet/ { in_cheat = 1; next }
     in_cheat && /^# TOPIC::/ { in_cheat = 0 }
     in_cheat {
         if ($0 ~ /^# --- \[.*\] ---/) {
-            if (tool == "all" || $0 ~ tool) {
-                print_block = 1;
-                match($0, /\[.*\]/);
-                printf "\n\033[1;36m=== %s ===\033[0m\n", substr($0, RSTART, RLENGTH);
+            if (tool == "all" || index(tolower($0), tool)) {
+                print_block = 1
+                match($0, /\[.*\]/)
+                printf "\n\033[1;36m=== %s ===\033[0m\n", substr($0, RSTART, RLENGTH)
             } else {
-                print_block = 0;
+                print_block = 0
             }
-            next;
+            next
         }
         if (print_block && $0 ~ /^# /) {
-            sub(/^# /, "");
-            split($0, cols, " : ");
+            sub(/^# /, "")
+            split($0, cols, " : ")
             if (length(cols[2]) > 0) {
-                printf "  \033[1;33m%-18s\033[0m %s\n", cols[1], cols[2];
+                printf "  \033[1;33m%-18s\033[0m %s\n", cols[1], cols[2]
             } else {
-                printf "  %s\n", $0;
+                printf "  %s\n", $0
             }
         }
     }
-    ' "$target_file"
+    ' "$src"
 }
 
-# Topic Directory:
-# TOPIC:: Navigation :: Directory navigation, listings, and file discovery
-# TOPIC:: Search :: ripgrep, fd, and file content filtering
-# TOPIC:: System :: OS metrics, logs, units, and process monitoring
-# TOPIC:: Storage :: Disk usage, I/O monitoring, and filesystem utilities
-# TOPIC:: Network :: Ports, sockets, traffic analysis, and HTTP utilities
-# TOPIC:: Containers :: Docker, Compose, and container lifecycles
-# TOPIC:: Kubernetes :: Kubectl cluster and workload administration
-# TOPIC:: Git :: Version control shortcuts
-# TOPIC:: Services :: Web server checks and systemd daemon reloads
-# TOPIC:: Tools :: Interactive fzf utilities, network/process helpers
-# TOPIC:: Cheatsheet :: Popular hotkeys and tips for yazi, lnav, fzf, delta, lazyjournal, smt
+# Topic Directory (shown by 'aliases'):
+# INDEX:: Navigation :: Directory navigation, listings, and file discovery
+# INDEX:: Search :: ripgrep, fd, and file content filtering
+# INDEX:: System :: OS metrics, logs, units, and process monitoring
+# INDEX:: Storage :: Disk usage, I/O monitoring, and filesystem utilities
+# INDEX:: Network :: Ports, sockets, traffic analysis, HTTP utilities, nginx/angie
+# INDEX:: Containers :: Docker, Compose, and container lifecycles
+# INDEX:: Kubernetes :: Kubectl cluster and workload administration
+# INDEX:: Git :: Version control shortcuts
+# INDEX:: Services :: systemd service control and daemon reloads
+# INDEX:: Tools :: Interactive fzf utilities, network/process helpers
+# INDEX:: Cheatsheet :: Hotkeys for yazi, lnav, fzf, delta, lazyjournal, smt (use: tips)
 
 # ==============================================================================
 # PART 2: DEFINITIONS, ALIASES & FUNCTIONS
@@ -149,18 +151,20 @@ case "$_bat" in *batcat) alias bat='batcat' ;; esac
 case "$_fd" in *fdfind) alias fd='fdfind' ;; esac
 
 export EDITOR=vim
-export HISTTIMEFORMAT="%d.%m.20%y %T "
+export HISTTIMEFORMAT="%d.%m.%Y %T "
 export HIST_STAMPS="%F %T"
 
 # TOPIC:: Navigation
 alias ..='cd ..'                                          # go up one directory level | eg: ..
 alias l='ls -lAh'                                         # detailed list with hidden files | eg: l /var/www
-alias mkdir='mkdir -pv'                                   # create parent dirs with progress log | eg: mkdir -pv a/b/c
+alias mkdir='mkdir -pv'                                   # create parent dirs with progress log | eg: mkdir a/b/c
 alias c='clear'                                           # clear terminal screen buffer | eg: c
 alias scat='sudo cat'                                     # read protected root file | eg: scat /etc/shadow
 alias del='sudo rm -rf'                                   # forcefully delete file or directory | eg: del /tmp/cache_dir
 _ali eza ez 'eza -l --group-directories-first'            # ls with colors and top dirs | eg: ez /etc
-[ -n "$_bat" ] && alias bp="sudo $_bat -pp"               # print file without syntax decor | eg: bp /etc/nginx/nginx.conf
+if [ -n "$_bat" ]; then
+    alias bp="sudo $_bat -pp"                             # print file without syntax decor | eg: bp /etc/nginx/nginx.conf
+fi
 _ali delta dl 'delta'                                     # side-by-side terminal diff viewer | eg: dl old.conf new.conf
 _ali fastfetch ff 'fastfetch'                             # hardware & OS summary fetch | eg: ff
 
@@ -172,10 +176,10 @@ alias gr="grep -Ev '^\s*#|^$'"                            # filter out comments 
 alias psg='ps aux | grep'                                 # find running process by name | eg: psg nginx
 alias col='column -t -s'                                  # format delimited stream as a table | eg: cat /etc/passwd | col :
 alias cutc='cut -c'                                       # extract substring character ranges | eg: cutc 1-10 file.txt
-[ -n "$_fd" ] && {
+if [ -n "$_fd" ]; then
     alias fdf="$_fd -t f"                                 # find files by name pattern | eg: fdf '\.conf$'
     alias fdd="$_fd -t d"                                 # find directories by name pattern | eg: fdd 'backup'
-}
+fi
 
 # TOPIC:: System
 alias up='uptime -p'                                      # human-readable server uptime | eg: up
@@ -209,7 +213,7 @@ alias jf='sudo journalctl -f'                             # live journal stream 
 # TOPIC:: Storage
 alias df='df -h'                                          # human-readable disk free stats | eg: df
 alias du='du -ch'                                         # calculate directory tree size | eg: du /var/cache
-alias duse='du -ah --max-depth=1 . | sort -rh | head -n 10' # top 10 largest items in current path | eg: duse
+alias duse='command du -ah --max-depth=1 . | sort -rh | head -n 10' # top 10 largest items in current path | eg: duse
 alias dlog='sudo du -sh /var/log/* 2>/dev/null | sort -hr | head -n 10' # top 10 largest log files | eg: dlog
 alias taz='tar -czvf'                                     # compress target into tar.gz | eg: taz archive.tar.gz /path
 alias untaz='tar -xzvf'                                   # extract compressed tar.gz file | eg: untaz archive.tar.gz
@@ -233,6 +237,10 @@ _ali dig digs 'dig +short'                                # quick DNS resolution
 _ali xh xv 'xh -v'                                        # verbose HTTP request and response inspector | eg: xv get httpbin.org/get
 _ali nc ncz 'nc -zv -w 3'                                 # verify port accessibility with 3s timeout | eg: ncz db.local 5432
 _ali speedtest-cli speed 'speedtest-cli --simple'         # benchmark latency, download and upload | eg: speed
+alias nt='sudo nginx -t'                                  # validate nginx configuration syntax | eg: nt
+alias srn='sudo systemctl reload nginx'                   # reload nginx configuration without downtime | eg: srn
+alias at='sudo angie -t'                                  # validate angie configuration syntax | eg: at
+alias sra='sudo systemctl reload angie'                   # reload angie configuration without downtime | eg: sra
 
 # TOPIC:: Containers
 alias d='sudo docker'                                     # docker CLI shortcut | eg: d info
@@ -248,10 +256,10 @@ alias dsh='sudo docker exec -it "$(sudo docker ps -lq)" sh 2>/dev/null || sudo d
 alias di='sudo docker images -a'                          # list all locally downloaded images | eg: di
 alias drmi='sudo docker rmi'                              # delete container image by ID/tag | eg: drmi node:18-alpine
 alias dprune='sudo docker system prune -a -f --volumes'   # delete stopped containers, networks & volumes | eg: dprune
-alias dc='docker compose'                                 # docker compose command shortcut | eg: dc ps
-alias dcu='docker compose up -d'                          # start compose services in background | eg: dcu
-alias dcd='docker compose down'                           # stop and tear down compose services | eg: dcd
-alias dcl='docker compose logs -f'                        # follow logs for whole compose stack | eg: dcl
+alias dc='sudo docker compose'                            # docker compose command shortcut | eg: dc ps
+alias dcu='sudo docker compose up -d'                     # start compose services in background | eg: dcu
+alias dcd='sudo docker compose down'                      # stop and tear down compose services | eg: dcd
+alias dcl='sudo docker compose logs -f'                   # follow logs for whole compose stack | eg: dcl
 
 # TOPIC:: Kubernetes
 alias mks='minikube status'                               # check local minikube cluster status | eg: mks
@@ -277,10 +285,6 @@ alias ssd='sudo systemctl disable --now'                  # stop service and dis
 alias ssi='sudo systemctl status'                         # inspect service state and recent errors | eg: ssi redis
 alias slu='sudo systemctl list-units --type=service'      # list currently active systemd services | eg: slu
 alias sdr='sudo systemctl daemon-reload'                  # reload systemd manager configuration | eg: sdr
-alias nt='sudo nginx -t'                                  # validate nginx configuration syntax | eg: nt
-alias at='sudo angie -t'                                  # validate angie configuration syntax | eg: at
-alias srn='sudo systemctl reload nginx'                   # reload nginx configuration without downtime | eg: srn
-alias sra='sudo systemctl reload angie'                   # reload angie configuration without downtime | eg: sra
 
 # TOPIC:: Tools
 # Interactive fzf file search and preview
@@ -337,12 +341,12 @@ gitc() { # stage all changes and commit with timestamp | eg: gitc
 # CPU & Memory process top 10
 info() { # display top 10 CPU-consuming processes | eg: info
     echo "USER PID %CPU %MEM COMMAND"
-    sudo ps -eo user,pid,%cpu,%mem,command --no-headers | sort -nr -k 3 | head -10
+    ps -eo user,pid,%cpu,%mem,command --no-headers | sort -nr -k 3 | head -10
 }
 
 # Established network connections by remote IP
 connections() { # top 10 remote IPs with ESTABLISHED connections | eg: connections
-    ss -tan | awk '/ESTAB/ {print $5}' | cut -d: -f1 | sort | uniq -c | sort -nr | head -10
+    ss -tan | awk '/ESTAB/ {sub(/:[0-9]+$/, "", $5); print $5}' | sort | uniq -c | sort -nr | head -10
 }
 
 # Edit systemd unit file
@@ -356,13 +360,15 @@ ssv() { # edit unit file directly in /etc/systemd/system | eg: ssv my-worker.ser
 # space : Toggle select single file
 # v : Visual select mode (multiselect with j/k)
 # y / x / p : Yank (copy) / Cut / Paste
-# d : Move item to trash
-# a / A : Create new file / new directory
+# d / D : Move to trash / delete permanently
+# a : Create file (end the name with / to create a directory)
 # r : Rename selected item
 # . : Toggle hidden dotfiles
-# / : Filter current directory view
-# z : Jump to path using integrated zoxide
-# q : Quit (alias 'y' will cd to current folder)
+# f : Filter current directory view
+# / : Find in current directory (n / N for next / previous)
+# s / S : Search files by name (fd) / by content (ripgrep)
+# z / Z : Jump to path via zoxide / via fzf
+# q : Quit (function 'y' will cd to current folder)
 # Q : Quit without changing current shell directory
 
 # --- [LNAV] ---
@@ -371,21 +377,18 @@ ssv() { # edit unit file directly in /etc/systemd/system | eg: ssv my-worker.ser
 # u / U : Jump forward / backward through user marks
 # m : Mark / unmark the current log line
 # / <pattern> : Live search logs using regular expressions
+# n / N : Jump to next / previous search hit
 # :filter-in <pat> : Only display lines matching pattern
 # :filter-out <pat> : Hide lines matching pattern
-# t : Toggle text/timeline view
-# p : Switch to structured log parser/JSON view
-# s : Jump to next search hit
+# t : Switch to text file view
+# p : Toggle pretty-print (structured/JSON) view
 # q : Quit log view / close popup window
 
 # --- [LAZYJOURNAL] ---
-# Tab / Shift-Tab : Switch between log adapters (systemd-journald, Docker, Podman, File)
+# Tab / Shift-Tab : Switch between panes/windows (verify with the built-in help)
 # j / k or Up/Down : Scroll through log entries list
-# / : Fuzzy search across current adapter logs
-# p : Cycle priority levels (Error, Warn, Info, Debug)
-# Enter : Open log entry detail view (full stack trace / metadata)
-# f : Toggle live follow / tail mode
-# r : Refresh log buffer
+# / : Filter / search logs in current pane
+# Enter : Open log entry detail view
 # q : Exit modal or quit lazyjournal
 
 # --- [SMT] ---
@@ -406,7 +409,7 @@ ssv() { # edit unit file directly in /etc/systemd/system | eg: ssv my-worker.ser
 # Esc / Ctrl-C : Abort fuzzy finder
 
 # --- [DELTA] ---
-# n / N : Jump to next / previous diff file
+# n / N : Jump to next / previous diff file (needs navigate = true in delta config)
 # q : Exit diff pager
 
 # ==============================================================================
