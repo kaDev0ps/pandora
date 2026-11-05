@@ -19,7 +19,7 @@ fi
 #   aliases           -> List all topics (TOC)
 #   aliases <topic>   -> View aliases in <topic> (e.g. 'aliases network')
 #   aliases all       -> View everything
-#   tips [tool]       -> Hotkey guide for yazi, lnav, fzf, delta, lazyjournal, smt
+#   tips [tool]       -> Hotkey guide for yazi, lnav, fzf, delta, smt
 #   aliases | grep .. -> Filter across all topics
 
 _aliases_src() {
@@ -128,7 +128,7 @@ tips() {
 # INDEX:: Git :: Version control shortcuts
 # INDEX:: Services :: systemd service control and daemon reloads
 # INDEX:: Tools :: Interactive fzf utilities, network/process helpers
-# INDEX:: Cheatsheet :: Hotkeys for yazi, lnav, fzf, delta, lazyjournal, smt (use: tips)
+# INDEX:: Cheatsheet :: Hotkeys for yazi, lnav, fzf, delta, smt (use: tips)
 
 # ==============================================================================
 # PART 2: DEFINITIONS, ALIASES & FUNCTIONS
@@ -162,6 +162,7 @@ alias c='clear'                                           # clear terminal scree
 alias scat='sudo cat'                                     # read protected root file | eg: scat /etc/shadow
 alias del='sudo rm -rf'                                   # forcefully delete file or directory | eg: del /tmp/cache_dir
 _ali eza ez 'eza -l --group-directories-first'            # ls with colors and top dirs | eg: ez /etc
+_ali eza ezt 'eza -T'                                     # directory tree view | eg: ezt /etc/nginx
 if [ -n "$_bat" ]; then
     alias bp="sudo $_bat -pp"                             # print file without syntax decor | eg: bp /etc/nginx/nginx.conf
 fi
@@ -197,7 +198,6 @@ _ali vmstat vm 'vmstat -S M 1'                            # live memory & I/O th
 _ali mpstat mp 'mpstat -P ALL 1'                          # per-CPU core utilization every second | eg: mp
 _ali systemd-manager-tui smt 'sudo systemd-manager-tui'   # TUI manager for systemd services | eg: smt
 _ali lnav lgv 'sudo lnav'                                 # open file in lnav interactive reader | eg: lgv /var/log/syslog
-_ali lazyjournal lj 'sudo lazyjournal'                    # interactive TUI for journald and docker | eg: lj
 alias logs='sudo journalctl -xe'                          # review recent system errors | eg: logs
 alias jfeu='sudo journalctl -n 20 -feu'                   # stream specific service journal logs | eg: jfeu nginx
 alias clearlogs='sudo journalctl --vacuum-time=1d'        # delete journal entries older than 24h | eg: clearlogs
@@ -383,13 +383,6 @@ ssv() { # edit unit file directly in /etc/systemd/system | eg: ssv my-worker.ser
 # t : Switch to text file view
 # p : Toggle pretty-print (structured/JSON) view
 # q : Quit log view / close popup window
-
-# --- [LAZYJOURNAL] ---
-# Tab / Shift-Tab : Switch between panes/windows (verify with the built-in help)
-# j / k or Up/Down : Scroll through log entries list
-# / : Filter / search logs in current pane
-# Enter : Open log entry detail view
-# q : Exit modal or quit lazyjournal
 
 # --- [SMT] ---
 # j / k or Up/Down : Navigate service units list
