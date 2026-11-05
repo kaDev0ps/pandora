@@ -58,7 +58,6 @@ TOOLS=(
 
   "@Logs and systemd"
   "lnav|lnav|lnav|lnav|gh_lnav"
-  "lazyjournal|lazyjournal|-|-|gh_lazyjournal"
   "grc|grc|grc|grc|"
   "systemd-manager-tui|systemd-manager-tui|-|-|gh_smt"
 
@@ -188,7 +187,6 @@ gh_lnav()  { local t; t="$(gh_tag tstack/lnav)"; gh_pack "$GH/tstack/lnav/releas
 gh_eza()   { gh_pack "$GH/eza-community/eza/releases/latest/download/eza_x86_64-unknown-linux-musl.tar.gz" eza; }
 gh_yazi()  { gh_pack "$GH/sxyazi/yazi/releases/latest/download/yazi-x86_64-unknown-linux-musl.zip" yazi ya; }
 gh_fastfetch() { gh_pack "$GH/fastfetch-cli/fastfetch/releases/latest/download/fastfetch-linux-amd64.tar.gz" fastfetch; }
-gh_lazyjournal() { local t; t="$(gh_tag Lifailon/lazyjournal)"; gh_bin "$GH/Lifailon/lazyjournal/releases/download/$t/lazyjournal-$t-linux-amd64" lazyjournal; }
 gh_smt()   { gh_bin "$GH/matheus-git/systemd-manager-tui/releases/latest/download/systemd-manager-tui" systemd-manager-tui; }
 
 gh_speedtest() {   # single python script
