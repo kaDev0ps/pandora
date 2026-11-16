@@ -261,6 +261,32 @@ alias dcu='sudo docker compose up -d'                     # start compose servic
 alias dcd='sudo docker compose down'                      # stop and tear down compose services | eg: dcd
 alias dcl='sudo docker compose logs -f'                   # follow logs for whole compose stack | eg: dcl
 
+# TOPIC:: Containers
+alias d='sudo docker'                                     # docker CLI shortcut | eg: d info
+alias dps='sudo docker ps'                                # view active running containers | eg: dps
+alias dpa='sudo docker ps -a'                             # view all containers including stopped | eg: dpa
+alias dstats='sudo docker stats'                          # stream container CPU & memory utilization | eg: dstats
+alias dlogs='sudo docker logs -f --tail 100'              # follow container log output | eg: dlogs web_app
+alias dstop='sudo docker stop'                            # gracefully stop container | eg: dstop redis_cache
+alias dstart='sudo docker start'                          # start existing stopped container | eg: dstart postgres_db
+alias drestart='sudo docker restart'                      # restart container | eg: drestart proxy
+alias drm='sudo docker rm -f'                             # force delete container | eg: drm test_env
+alias dsh='sudo docker exec -it "$(sudo docker ps -lq)" sh 2>/dev/null || sudo docker exec -it "$(sudo docker ps -lq)" bash' # attach shell to latest container | eg: dsh
+alias di='sudo docker images -a'                          # list all locally downloaded images | eg: di
+alias drmi='sudo docker rmi'                              # delete container image by ID/tag | eg: drmi node:18-alpine
+alias dprune='sudo docker system prune -a -f --volumes'   # delete stopped containers, networks & volumes | eg: dprune
+alias dc='sudo docker compose'                            # docker compose command shortcut | eg: dc ps
+alias dcu='sudo docker compose up -d'                     # start compose services in background | eg: dcu
+alias dcd='sudo docker compose down'                      # stop and tear down compose services | eg: dcd
+alias dcl='sudo docker compose logs -f'                   # follow logs for whole compose stack | eg: dcl
+
+# --- Docker cleanup (granular) ----------------------------------------------
+alias dclean='sudo docker container prune -f && sudo docker image prune -f && sudo docker network prune -f && sudo docker builder prune -f' # safe: stopped containers + dangling images + unused networks + build cache | eg: dclean
+alias dclean-img='sudo docker image prune -a -f'          # remove ALL unused images (not just dangling) | eg: dclean-img
+alias dclean-vol='sudo docker volume prune -f'            # remove unused volumes (⚠️ dangerous for stopped stateful containers) | eg: dclean-vol
+alias dclean-all='sudo docker system prune -a --volumes -f' # full prune: containers + ALL unused images + networks + volumes (⚠️ most destructive) | eg: dclean-all
+alias ddf='sudo docker system df -v'                      # show disk usage per image/container/volume | eg: ddf
+
 # TOPIC:: Kubernetes
 alias mks='minikube status'                               # check local minikube cluster status | eg: mks
 alias mkr='minikube start'                                # start or resume local minikube VM/node | eg: mkr
